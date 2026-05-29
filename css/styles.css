@@ -1,0 +1,6525 @@
+:root {
+    /* Redefinición de variables para tema claro basado en guinda, blanco y gris */
+    --primary: #931D3D;         /* Guinda principal */
+    --primary-dark: #781634;    /* Variante oscura para hover */
+    --primary-light: #B04159;   /* Tono claro para acentos */
+    --bg-dark: #F5F5F5;         /* Fondo general claro */
+    --bg-panel: #FFFFFF;        /* Paneles blancos */
+    --bg-card: #F7F7F7;         /* Tarjetas ligeramente gris claro */
+    --text-primary: #2E2E2E;    /* Texto principal oscuro */
+    --text-secondary: #666666;  /* Texto secundario gris medio */
+    --accent: #B04159;          /* Acento derivado del primario */
+    --success: #10b981;         /* Mantener éxito */
+    --warning: #f59e0b;         /* Mantener advertencia */
+    --border: rgba(0,0,0,0.1); /* Bordes sutiles */
+    --shadow: 0 4px 12px rgba(0,0,0,0.15); /* Sombras suaves */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    --sidebar-open-width: 328px;
+    --sidebar-collapsed-width: 0px;
+    --sidebar-width: var(--sidebar-open-width);
+    /*
+     * Define a default header height.  On larger viewports the header
+     * occupies 68px; on smaller devices this value is overridden via
+     * media queries.  Using a CSS custom property allows the
+     * main‑container positioning to reference a single source of
+     * truth instead of hard‑coding pixel values throughout the
+     * stylesheet.
+     */
+    --header-h: 60px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+body.sidebar-collapsed {
+    --sidebar-width: var(--sidebar-collapsed-width);
+}
+
+/* Evitar arrastre/selección accidental en la UI */
+.header-brand,
+.header-brand *,
+.header-tools,
+.header-tools *,
+.sidebar,
+.sidebar *,
+.legend-panel,
+.legend-panel *,
+.geocoder-container,
+.geocoder-container *,
+.coords-container,
+.coords-container *,
+.ol-control button,
+.ol-control button *,
+.ol-scale-line,
+.ol-scale-line *,
+.intro-splash__content--logo,
+.intro-splash__content--logo * {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.header-brand img,
+.header-tools img,
+.sidebar img,
+.legend-panel img,
+.geocoder-container img,
+.coords-container img,
+.ol-control img,
+.intro-splash__content--logo img {
+    -webkit-user-drag: none;
+    user-drag: none;
+}
+
+/* Mantener escribibles/seleccionables los campos de captura */
+.sidebar input,
+.sidebar textarea,
+.sidebar select,
+.geocoder-container input,
+.geocoder-container textarea,
+.geocoder-container select,
+.coords-container input,
+.coords-container textarea,
+.coords-container select {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
+
+/* Header */
+.header {
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    right: 0;
+    height: 60px;
+    background:
+        radial-gradient(1100px 78px at 50% -10%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.015) 42%, transparent 68%),
+        linear-gradient(180deg, #971f42 0%, #791735 56%, #621126 100%);
+    display: flex;
+    align-items: center;
+    padding: 0;
+    gap: 0;
+    z-index: 1000;
+    box-shadow: 0 6px 18px rgba(43, 6, 20, 0.26),
+                inset 0 1px 0 rgba(255,255,255,0.10),
+                inset 0 -1px 0 rgba(0,0,0,0.18);
+    border-bottom: 1px solid rgba(63, 8, 25, 0.82);
+    transition: left 0.28s ease;
+    overflow: visible;  /* permite que las etiquetas ::after de los pills asomen arriba */
+}
+.header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg,
+        rgba(255,255,255,0.05) 0%,
+        rgba(255,255,255,0.02) 18%,
+        transparent 38%,
+        transparent 62%,
+        rgba(255,255,255,0.025) 82%,
+        rgba(255,255,255,0.05) 100%);
+}
+.header::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+        rgba(255,255,255,0.00) 0%,
+        rgba(255,224,188,0.32) 22%,
+        rgba(255,255,255,0.44) 50%,
+        rgba(255,224,188,0.32) 78%,
+        rgba(255,255,255,0.00) 100%);
+    pointer-events: none;
+}
+
+/* ── Bloque institucional izquierdo ── */
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+    padding: 0 14px 0 12px;
+    background: linear-gradient(180deg, rgba(84, 11, 30, 0.38) 0%, rgba(52, 6, 18, 0.48) 100%);
+    border-right: 1px solid rgba(255,255,255,0.08);
+    box-shadow: inset -1px 0 0 rgba(255,255,255,0.04);
+    flex-shrink: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    position: relative;
+    z-index: 1;
+}
+.header-logo img {
+    height: 46px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.32));
+    opacity: 1;
+    transition: opacity 0.18s, transform 0.18s;
+}
+.header-logo:hover img {
+    opacity: 0.96;
+    transform: translateY(-1px);
+}
+
+.header-logo-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    line-height: 1.15;
+}
+.header-logo-line1 {
+    font-size: 0.56rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: rgba(255,255,255,0.72);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.header-logo-line2 {
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.98);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* ── Título del sistema ── */
+.header-brand {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    pointer-events: none;
+    position: relative;
+    z-index: 1;
+}
+
+.header-title {
+    width: 100%;
+    max-width: 780px;
+    font-family: 'Raleway', sans-serif;
+    font-size: clamp(0.96rem, 1.20vw, 1.12rem);
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+
+    /* ── Gradient text luminoso ── */
+    background: linear-gradient(
+        180deg,
+        #ffffff        0%,
+        #f9eaea       28%,
+        #ffd5d5       52%,
+        #f9eaea       76%,
+        #e8b8b8      100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
+    /* ── Glow multicapa: blanco suave + guinda profundo ── */
+    filter: drop-shadow(0 0 4px rgba(255,220,220,0.30))
+            drop-shadow(0 1px 2px rgba(100, 5, 25, 0.42));
+}
+/* Línea decorativa bajo el título */
+.header-title::after {
+    content: '';
+    display: block;
+    width: 56px;
+    height: 1px;
+    background: linear-gradient(90deg,
+        rgba(255,255,255,0.00) 0%,
+        rgba(255,200,200,0.90) 35%,
+        rgba(255,255,255,1.00) 50%,
+        rgba(255,200,200,0.90) 65%,
+        rgba(255,255,255,0.00) 100%
+    );
+    border-radius: 999px;
+    margin: 4px auto 0;
+    opacity: 0.82;
+    filter: drop-shadow(0 0 2px rgba(255,180,180,0.45));
+}
+
+.header-subtitle { display: none; }
+
+body.atlas-cesium-active .header-btn.cesium-hidden-tool,
+body.atlas-cesium-active .tb-btn.cesium-hidden-tool {
+    display: none !important;
+}
+
+body.atlas-cesium-active .toolbar-group.atlas-cesium-empty-group,
+body.atlas-cesium-active .tb-group.atlas-cesium-empty-group {
+    display: none !important;
+}
+
+body.atlas-cesium-active .tb-sep {
+    display: none !important;
+}
+
+body.atlas-cesium-active #geocoder-container,
+body.atlas-cesium-active #coords-container,
+body.atlas-cesium-active #route-container,
+body.atlas-cesium-active #analisis-panel,
+body.atlas-cesium-active #feature-modal,
+body.atlas-cesium-active #q9-info-panel,
+body.atlas-cesium-active .measure-tooltip,
+body.atlas-cesium-active .streetview-launch,
+body.atlas-cesium-active .streetview-coverage-toggle,
+body.atlas-cesium-active .ol-print,
+body.atlas-cesium-active .ol-print-dialog {
+    display: none !important;
+}
+
+/* ── Área de herramientas ── */
+.header-tools {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 12px 0 8px;
+    gap: 6px;
+    border-left: 1px solid rgba(255,255,255,0.08);
+    background: linear-gradient(180deg, rgba(49, 6, 19, 0.16) 0%, rgba(20, 2, 8, 0.20) 100%);
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Pill group container ── */
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px 5px;
+    background: rgba(0,0,0,0.22);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 10px;
+    position: relative;
+    flex-shrink: 0;
+}
+/* Separador entre pills eliminado — el gap de .header-tools lo reemplaza */
+.toolbar-group + .toolbar-group { margin-left: 0; }
+.toolbar-group + .toolbar-group::before { display: none; }
+
+/* Etiqueta flotante sobre el pill */
+.toolbar-group[data-group-label]::after {
+    content: attr(data-group-label);
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.38);
+    white-space: nowrap;
+    pointer-events: none;
+    line-height: 1;
+}
+
+.toolbar-separator { display: none; }
+
+/* Botones de herramientas */
+/* ── Botón dentro del pill: sin fondo propio ── */
+.header-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.82);
+    width: 36px;
+    height: 36px;
+    border-radius: 7px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.15s, color 0.15s;
+    flex: 0 0 auto;
+    position: relative;
+}
+.header-btn i { font-size: 1rem; line-height: 1; }
+
+#btn-zoom-general .zoom-general-icon { width: 18px; height: 18px; display: block; }
+#btn-zoom-general .zoom-general-icon * {
+    fill: currentColor;
+}
+
+#btn-location, #btn-geocoder-launch { display: none !important; }
+
+/* Botones de apoyo secundario: mantenerlos distinguibles pero con el mismo peso visual */
+#btn-guia,
+#btn-info { opacity: 0.82; }
+#btn-guia i,
+#btn-info i { font-size: 1.06rem; }
+#btn-guia:hover,
+#btn-info:hover { opacity: 1; }
+
+.header-btn:hover {
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    transform: translateY(-1px);
+}
+.header-btn, .header-btn *, .ol-control button, .ol-control button * {
+    cursor: pointer !important;
+}
+/* Estado activo: pill blanco sobre el fondo del grupo */
+.header-btn.active {
+    background: rgba(255,255,255,0.96);
+    color: #8a1a37;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.22);
+    transform: translateY(0);
+}
+.header-btn.active i { color: #8a1a37; }
+
+/* ── Botón 3D: igual que los demás botones del pill ── */
+.header-btn-3d {
+    width: 40px;
+    font-size: 0.80rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.82);
+    border-radius: 7px;
+}
+.header-btn-3d:hover {
+    background: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+    border: none !important;
+}
+.header-btn-3d span { display: inline-block; }
+
+.atlas-cesium-shell { position: absolute; inset: 0; z-index: 1200; background: #09111c; }
+#atlas-cesium-view { width: 100%; height: 100%; }
+.atlas-cesium-shell[hidden] { display: none !important; }
+
+.atlas-cesium-toolbar {
+    top: 14px;
+    right: 14px;
+    left: auto;
+    z-index: 30;
+}
+.atlas-cesium-toolbar-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    max-width: min(92vw, 560px);
+}
+.atlas-cesium-toolbar-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.atlas-cesium-toolbar-slot--search {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1 1 260px;
+    min-width: 220px;
+    width: 100%;
+}
+.atlas-cesium-toolbar-slot:empty,
+.atlas-cesium-toolbar-group:empty,
+.atlas-cesium-toolbar-row:empty {
+    display: none !important;
+}
+.atlas-cesium-geocoder {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-self: flex-start;
+    width: min(290px, 100%);
+    margin-right: 0;
+}
+.atlas-cesium-geocoder__bar {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    border-radius: 9px;
+    overflow: hidden;
+    background: rgba(22, 29, 39, 0.92);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.22);
+    backdrop-filter: blur(8px);
+}
+.atlas-cesium-geocoder__input {
+    flex: 1;
+    min-width: 0;
+    height: 34px;
+    padding: 0 10px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.96);
+    font-size: 12px;
+    font-weight: 500;
+    outline: none;
+}
+.atlas-cesium-geocoder__input::placeholder {
+    color: rgba(255,255,255,0.58);
+}
+.atlas-cesium-geocoder__submit,
+.atlas-cesium-geocoder__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.88);
+    cursor: pointer;
+}
+.atlas-cesium-geocoder__submit {
+    border-left: 1px solid rgba(255,255,255,0.10);
+}
+.atlas-cesium-geocoder__submit:hover,
+.atlas-cesium-geocoder__clear:hover {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+}
+.atlas-cesium-geocoder__results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: rgba(16, 23, 32, 0.96);
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.30);
+    backdrop-filter: blur(10px);
+    z-index: 35;
+}
+.atlas-cesium-geocoder__result {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.96);
+    text-align: left;
+    cursor: pointer;
+}
+.atlas-cesium-geocoder__result + .atlas-cesium-geocoder__result {
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+.atlas-cesium-geocoder__result:hover {
+    background: rgba(255,255,255,0.08);
+}
+.atlas-cesium-geocoder__result-main {
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+.atlas-cesium-geocoder__result-secondary {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.68);
+    line-height: 1.25;
+}
+.atlas-cesium-geocoder__status {
+    min-height: 16px;
+    padding: 4px 2px 0;
+    color: rgba(255,255,255,0.68);
+    font-size: 11px;
+    font-weight: 600;
+    pointer-events: none;
+}
+.atlas-cesium-geocoder__status.is-error {
+    color: #ffd1d9;
+}
+.atlas-cesium-geocoder__status.is-info {
+    color: rgba(255,255,255,0.72);
+}
+@media (max-width: 900px) {
+    .atlas-cesium-geocoder {
+        width: 100%;
+        margin-right: 0;
+    }
+    .atlas-cesium-geocoder__bar {
+        min-height: 32px;
+    }
+    .atlas-cesium-geocoder__input,
+    .atlas-cesium-geocoder__submit,
+    .atlas-cesium-geocoder__clear {
+        height: 32px;
+    }
+}
+
+
+.atlas-cesium-toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.atlas-cesium-toolbar-btn--native {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+}
+.atlas-cesium-toolbar-btn i {
+    pointer-events: none;
+    font-size: 15px;
+}
+.atlas-cesium-toolbar-btn.active {
+    border-color: rgba(120, 22, 52, 0.92);
+    box-shadow: inset 0 0 0 2px rgba(147, 29, 61, 0.58);
+}
+.atlas-cesium-toolbar-btn:hover {
+    border-color: rgba(120, 22, 52, 0.92);
+}
+.atlas-cesium-toolbar-btn--pdf {
+    background: rgba(255,255,255,0.08);
+}
+.atlas-cesium-toolbar-btn--pdf.is-busy {
+    cursor: wait;
+    opacity: 0.92;
+}
+.atlas-cesium-export-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: none;
+    background: rgba(7, 10, 16, 0.18);
+}
+.atlas-cesium-export-backdrop.is-open {
+    display: block;
+}
+.atlas-cesium-export-menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 20001;
+    width: min(248px, calc(100vw - 32px));
+    display: none;
+    padding: 10px;
+    border-radius: 14px;
+    background: rgba(18, 24, 34, 0.98);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 16px 42px rgba(0,0,0,0.30);
+    backdrop-filter: blur(12px);
+    color: rgba(255,255,255,0.96);
+    transform: translate(-50%, -50%);
+}
+.atlas-cesium-export-menu.is-open {
+    display: block;
+}
+.atlas-cesium-export-menu__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 8px;
+    padding: 2px 6px 8px;
+    color: rgba(255,255,255,0.94);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+}
+.atlas-cesium-export-menu__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.atlas-cesium-export-menu__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    width: 100%;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.97);
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+.atlas-cesium-export-menu__action i {
+    width: 16px;
+    font-size: 14px;
+    text-align: center;
+    opacity: 0.95;
+}
+.atlas-cesium-export-menu__action:hover {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.14);
+    transform: translateY(-1px);
+}
+.atlas-cesium-export-menu__action:disabled {
+    opacity: 0.68;
+    cursor: default;
+}
+.atlas-cesium-export-menu.is-busy,
+.atlas-cesium-export-backdrop.is-busy {
+    pointer-events: none;
+}
+
+
+@media (max-height: 520px), (max-width: 640px) {
+    .atlas-cesium-export-menu {
+        top: auto;
+        bottom: 18px;
+        left: 50%;
+        width: min(320px, calc(100vw - 24px));
+        padding: 8px;
+        border-radius: 12px;
+        transform: translateX(-50%);
+    }
+    .atlas-cesium-export-menu__header {
+        margin: 0 0 6px;
+        padding: 1px 4px 5px;
+        font-size: 12px;
+    }
+    .atlas-cesium-export-menu__actions {
+        flex-direction: row;
+        gap: 8px;
+    }
+    .atlas-cesium-export-menu__action {
+        flex: 1 1 0;
+        justify-content: center;
+        gap: 8px;
+        min-height: 38px;
+        padding: 0 10px;
+        text-align: center;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .atlas-cesium-export-menu {
+        width: min(224px, calc(100vw - 24px));
+        padding: 9px;
+        border-radius: 12px;
+    }
+    .atlas-cesium-export-menu__header {
+        margin-bottom: 7px;
+        padding-bottom: 7px;
+        font-size: 12.5px;
+    }
+    .atlas-cesium-export-menu__action {
+        min-height: 38px;
+        padding: 0 11px;
+        font-size: 12px;
+    }
+}
+.atlas-cesium-toolbar-btn:disabled {
+    opacity: 0.7;
+    cursor: default;
+}
+
+.atlas-cesium-toolbar-group {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 0;
+    padding: 3px 5px;
+    border-radius: 10px;
+    background: rgba(34, 45, 58, 0.84);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.20);
+    backdrop-filter: blur(8px);
+}
+.atlas-cesium-toolbar-group--quick {
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    max-width: 100%;
+}
+.atlas-cesium-toolbar-group--quick .atlas-cesium-toolbar-select-wrap {
+    max-width: 150px;
+}
+.atlas-cesium-toolbar-group--visual {
+    gap: 5px;
+}
+.atlas-cesium-toolbar-group .atlas-cesium-toolbar-btn {
+    margin: 0;
+    width: 28px;
+    height: 28px;
+}
+.atlas-cesium-toolbar-group .atlas-cesium-toolbar-select-wrap {
+    margin: 0;
+}
+.atlas-cesium-toolbar-select-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 28px;
+    padding: 0 7px;
+    border-radius: 7px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.92);
+}
+.atlas-cesium-toolbar-select-wrap i {
+    font-size: 13px;
+    opacity: 0.9;
+}
+.atlas-cesium-toolbar-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.96);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    padding-right: 2px;
+    min-width: 108px;
+    cursor: pointer;
+    outline: none;
+}
+.atlas-cesium-toolbar-select option {
+    color: #1f2937;
+}
+.atlas-cesium-coords {
+    position: absolute;
+    left: 16px;
+    bottom: 42px;
+    z-index: 20;
+    min-width: 320px;
+    max-width: min(62vw, 560px);
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(18, 24, 33, 0.84);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.96);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.35;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.22);
+    backdrop-filter: blur(8px);
+    pointer-events: none;
+}
+.atlas-cesium-compass {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 20;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(18, 24, 33, 0.82);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.26);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+}
+.atlas-cesium-compass:hover {
+    border-color: rgba(255,255,255,0.28);
+    background: rgba(24, 31, 43, 0.90);
+}
+.atlas-cesium-compass__ring,
+.atlas-cesium-compass__needle,
+.atlas-cesium-compass__label {
+    position: absolute;
+    display: block;
+}
+.atlas-cesium-compass__ring {
+    inset: 7px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: inset 0 0 0 1px rgba(147,29,61,0.32);
+}
+.atlas-cesium-compass__needle {
+    left: 50%;
+    top: 50%;
+    width: 4px;
+    height: 22px;
+    transform: translate(-50%, -50%);
+    transform-origin: 50% 65%;
+}
+.atlas-cesium-compass__needle::before,
+.atlas-cesium-compass__needle::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+}
+.atlas-cesium-compass__needle::before {
+    top: 0;
+    border-bottom: 12px solid rgba(176,65,89,0.98);
+}
+.atlas-cesium-compass__needle::after {
+    bottom: 0;
+    border-top: 10px solid rgba(255,255,255,0.92);
+}
+.atlas-cesium-compass__label {
+    font-size: 10px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.96);
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+}
+.atlas-cesium-compass__label--n {
+    left: 50%;
+    top: 7px;
+    transform: translateX(-50%);
+}
+.atlas-cesium-compass__label--s {
+    left: 50%;
+    bottom: 7px;
+    transform: translateX(-50%);
+}
+.atlas-cesium-compass__label--e {
+    right: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.atlas-cesium-compass__label--o {
+    left: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+@media (max-width: 900px) {
+    .atlas-cesium-toolbar {
+        top: 10px;
+        right: 10px;
+    }
+    .atlas-cesium-toolbar-layout {
+        max-width: min(96vw, 420px);
+        gap: 6px;
+    }
+    .atlas-cesium-toolbar-row {
+        gap: 6px;
+    }
+    .atlas-cesium-toolbar-slot--search {
+        flex-basis: 100%;
+        min-width: 0;
+    }
+    .atlas-cesium-geocoder {
+        width: 100%;
+    }
+    .atlas-cesium-toolbar-group {
+        gap: 4px;
+        padding: 5px 6px;
+    }
+    .atlas-cesium-coords {
+        left: 10px;
+        right: 10px;
+        bottom: 34px;
+        min-width: 0;
+        max-width: none;
+        font-size: 11px;
+        padding: 8px 12px;
+    }
+    .atlas-cesium-compass {
+        top: 12px;
+        left: 12px;
+        width: 52px;
+        height: 52px;
+    }
+}
+
+#btn-location.locating i, #btn-geocoder-close.locating i {
+    animation: current-location-spin 0.85s linear infinite;
+    transform-origin: center center; display: inline-block; will-change: transform;
+}
+@keyframes current-location-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ── Badge de capas activas en botón toolbar ── */
+.toolbar-active-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    min-width: 14px;
+    height: 14px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: rgba(255, 248, 236, 0.96);
+    border: 1.25px solid rgba(122, 22, 50, 0.28);
+    color: #8b1739;
+    font-size: 0.56rem;
+    font-weight: 800;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.16);
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.toolbar-active-badge.is-hidden {
+    display: none;
+}
+
+.header-btn:disabled { opacity: 0.30; cursor: not-allowed; transform: none; box-shadow: none; }
+.header-btn:disabled:hover {
+    background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.08);
+    box-shadow: none; transform: none;
+}
+
+/* Toggle del sidebar (aparece cuando el panel está colapsado) */
+.header-sidebar-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 100%;
+    padding: 0;
+    border: none;
+    border-right: 1px solid rgba(255,255,255,0.10);
+    background: rgba(0,0,0,0.15);
+    color: rgba(255,255,255,0.80);
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    flex-shrink: 0;
+}
+.header-sidebar-toggle:hover { background: rgba(0,0,0,0.25); color: #fff; }
+.header-sidebar-toggle i { color: inherit; }
+body.sidebar-collapsed .header-sidebar-toggle { display: inline-flex; }
+
+/* Main Container */
+.main-container {
+    position: fixed;
+    /*
+     * Anchor the container below the header.  The header height is
+     * defined via the --header-h custom property on body so that
+     * responsive breakpoints can override it.  Using the variable
+     * prevents hard‑coded pixel values from producing inconsistent
+     * gaps between the header and map on mobile devices.
+     */
+    top: var(--header-h);
+    left: var(--sidebar-width);
+    right: 0;
+    bottom: 0;
+    transition: left 0.28s ease;
+}
+/* Sidebar */
+.sidebar-shell {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: auto;
+    bottom: 0;
+    width: var(--sidebar-open-width);
+    z-index: 1200;
+    overflow: visible;
+    transition: width 0.28s ease;
+    box-shadow: 0 10px 24px rgba(28, 20, 23, 0.08);
+}
+
+
+.sidebar {
+    width: var(--sidebar-open-width);
+    height: 100%;
+    background: linear-gradient(180deg, #ffffff 0%, #fcfbfb 100%);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(122, 21, 50, 0.10);
+    transition: transform 0.28s ease;
+    will-change: transform;
+}
+
+.sidebar-shell.collapsed {
+    width: var(--sidebar-collapsed-width);
+    box-shadow: none;
+}
+
+.sidebar-shell.collapsed .sidebar {
+    transform: translateX(calc(-1 * var(--sidebar-open-width)));
+    border-right-color: transparent;
+}
+
+.sidebar-shell.collapsed .sidebar-panel-toggle {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.header-sidebar-toggle {
+    display: none;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid rgba(255,255,255,0.34);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.10);
+    color: #ffffff;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 1px 2px rgba(0,0,0,0.12);
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.header-sidebar-toggle:hover {
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.48);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 2px 6px rgba(0,0,0,0.16);
+}
+
+.header-sidebar-toggle i {
+    color: #ffffff;
+}
+
+body.sidebar-collapsed .header-sidebar-toggle {
+    display: inline-flex;
+}
+
+.sidebar-topbar {
+    height: 38px;
+    min-height: 38px;
+    background: linear-gradient(180deg, #8e1c3f 0%, #821938 100%);
+    position: relative;
+    border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+.sidebar-panel-toggle {
+    position: absolute;
+    top: 8px;
+    right: 2px;
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(255,255,255,0.36);
+    border-radius: 7px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.09) 100%);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    z-index: 5;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 1px 3px rgba(0,0,0,0.16);
+}
+
+.sidebar-panel-toggle:hover {
+    background: linear-gradient(180deg, rgba(255,255,255,0.23) 0%, rgba(255,255,255,0.14) 100%);
+    border-color: rgba(255,255,255,0.52);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 7px rgba(0,0,0,0.18);
+    transform: translateY(-1px);
+}
+
+.sidebar-panel-toggle i,
+.sidebar-reset-btn i,
+.sidebar-reset-btn .sidebar-reset-icon {
+    color: #ffffff;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.16);
+}
+
+.sidebar-reset-btn {
+    position: absolute;
+    top: 8px;
+    right: 36px;
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(255,255,255,0.36);
+    border-radius: 7px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.09) 100%);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    z-index: 5;
+    padding: 0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 1px 3px rgba(0,0,0,0.16);
+}
+
+.sidebar-reset-btn:hover {
+    background: linear-gradient(180deg, rgba(255,255,255,0.23) 0%, rgba(255,255,255,0.14) 100%);
+    border-color: rgba(255,255,255,0.52);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 7px rgba(0,0,0,0.18);
+    transform: translateY(-1px);
+}
+
+.sidebar-reset-btn i {
+    font-size: 0.82rem;
+    line-height: 1;
+}
+
+.sidebar-reset-btn .sidebar-reset-icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    overflow: visible;
+}
+
+.sidebar-reset-btn .sidebar-reset-icon path {
+    vector-effect: non-scaling-stroke;
+}
+
+.sidebar-header {
+    padding: 12px 12px 9px;
+    border-bottom: 1px solid rgba(112, 112, 112, 0.12);
+    background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(250,248,249,0.98) 100%);
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 14px 10px 38px;
+    background: #fbfbfc;
+    border: 1px solid rgba(119, 119, 119, 0.15);
+    border-radius: 10px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+    color: var(--text-primary);
+    font-size: 0.86rem;
+    transition: all 0.2s;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(147, 29, 61, 0.2);
+}
+
+.search-box i {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+}
+
+#layer-search-box {
+    position: relative;
+}
+
+#layer-search {
+    padding-right: 36px;
+}
+
+#layer-search-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    z-index: 3;
+}
+
+#layer-search-box.has-value #layer-search-clear {
+    display: inline-flex;
+}
+
+#layer-search-clear:hover {
+    color: var(--text-primary);
+}
+
+#layer-search-clear i {
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+    color: inherit;
+    font-size: 0.82rem;
+    line-height: 1;
+    pointer-events: none;
+}
+
+/* Layer Tree */
+.layer-tree {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 10px 12px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+}
+
+.layer-tree::-webkit-scrollbar {
+    width: 6px;
+}
+
+.layer-tree::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.layer-tree::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.layer-group {
+    margin-bottom: 8px;
+}
+
+.layer-group-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 11px;
+    background: linear-gradient(180deg, #97224a 0%, #8a1d42 100%);
+    border: 1px solid rgba(122, 21, 50, 0.62);
+    border-radius: 10px;
+    box-shadow: 0 2px 7px rgba(122, 21, 50, 0.10);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.layer-group-header:hover {
+    background: linear-gradient(180deg, #8f1d43 0%, #821a3c 100%);
+    box-shadow: 0 4px 10px rgba(122, 21, 50, 0.14);
+}
+
+.layer-group-header i.toggle {
+    margin-right: 8px;
+    transition: transform 0.2s;
+    font-size: 0.76rem;
+    color: rgba(255, 255, 255, 0.96);
+}
+
+.layer-group-header.collapsed i.toggle {
+    transform: rotate(-90deg);
+}
+
+.layer-group-header .icon {
+    margin-right: 8px;
+    color: #f6b2c2;
+    font-size: 1.2rem;
+}
+
+.layer-group-header .group-title {
+    flex: 1;
+    font-weight: 800;
+    font-size: 0.83rem;
+    color: #ffffff;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.26);
+}
+
+/* Solo el icono del grupo TEMAS en amarillo */
+.layer-tree > .layer-group:first-of-type > .layer-group-header .icon {
+    color: #f3d25f;
+    text-shadow: 0 0 0.01px currentColor, 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.layer-subgroup-header .group-title {
+    flex: 1;
+    min-width: 0;
+}
+
+
+.layer-category-header .group-title {
+    font-weight: 900;
+    color: #111111;
+    text-shadow: 0 0 0.01px rgba(0, 0, 0, 0.85);
+}
+
+.layer-category-header[data-group-id="medio-fisico"] .group-title,
+.layer-category-header[data-group-id="medio-sociodemografico"] .group-title,
+.layer-category-header[data-group-id="peligros"] .group-title,
+.layer-category-header[data-group-id="riesgos"] .group-title,
+.layer-category-header[data-group-id="obras"] .group-title {
+    letter-spacing: 0.01em;
+}
+
+.layer-active-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 0 0 auto;
+    min-width: 0;
+    height: 21px;
+    padding: 0 7px 0 6px;
+    margin-left: 7px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #ffffff;
+    font-size: 0.66rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 1px 3px rgba(0,0,0,0.06);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+.layer-active-badge i {
+    font-size: 0.73rem;
+    line-height: 1;
+    position: static;
+    top: auto;
+    opacity: 0.95;
+}
+.layer-active-badge-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font-size: 0.65rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.01em;
+}
+
+.layer-group-header .layer-active-badge {
+    margin-left: 7px;
+}
+
+.layer-subgroup-header .layer-active-badge {
+    height: 19px;
+    padding: 0 6px 0 5px;
+    margin-left: 6px;
+    background: rgba(147, 29, 61, 0.08);
+    border: 1px solid rgba(147, 29, 61, 0.12);
+    color: var(--primary);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 1px 3px rgba(72, 10, 28, 0.04);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+.layer-subgroup-header .layer-active-badge i {
+    font-size: 0.67rem;
+}
+.layer-subgroup-header .layer-active-badge-num {
+    background: none;
+    color: inherit;
+}
+
+.layer-active-badge.is-hidden {
+    display: none;
+}
+
+.layer-clear-btn {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.layer-clear-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.38);
+    transform: scale(1.04);
+}
+
+.layer-clear-btn:active {
+    transform: scale(0.97);
+}
+
+.layer-clear-btn i {
+    font-size: 0.7rem;
+    pointer-events: none;
+}
+
+
+.layer-group-content {
+    padding-left: 14px;
+    margin-top: 6px;
+    overflow: hidden;
+    /* Bug 4 fix: transición sobre height (medida en JS) en vez de max-height:10000px
+       que hacía la animación invisible. max-height se mantiene como fallback
+       para el estado inicial (sin JS todavía). */
+    transition: height 0.28s ease;
+    max-height: 10000px;
+}
+
+.layer-group-content.collapsed {
+    max-height: 0;
+}
+
+/* Subgroups */
+.layer-subgroup {
+    margin: 5px 0;
+    overflow: hidden;
+}
+
+.layer-subgroup-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    margin-bottom: 5px;
+    background: rgba(147, 29, 61, 0.035);
+    border: 1px solid rgba(147, 29, 61, 0.08);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.79rem;
+    transition: all 0.2s;
+    color: #2f2f2f;
+    font-weight: 800;
+    position: relative;
+    z-index: 1;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.layer-subgroup-header:hover {
+    background: rgba(147, 29, 61, 0.06);
+    border-color: rgba(147, 29, 61, 0.12);
+}
+
+.layer-subgroup-header i.toggle {
+    margin-right: 7px;
+    font-size: 0.66rem;
+    transition: transform 0.2s;
+    color: var(--primary);
+}
+
+.layer-subgroup-header i:not(.toggle) {
+    font-size: 1.05rem;
+    margin-right: 7px;
+    color: var(--primary);
+}
+
+.layer-subgroup-header.collapsed i.toggle {
+    transform: rotate(-90deg);
+}
+
+.layer-subgroup-content {
+    padding: 2px 0 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+    /* Bug 4 fix: mismo patrón que layer-group-content */
+    transition: height 0.28s ease;
+    max-height: 10000px;
+}
+
+.layer-subgroup-content.collapsed {
+    max-height: 0;
+}
+
+.layer-subgroup-content > .layer-item,
+.layer-subgroup-content > .layer-group,
+.layer-subgroup-content > .layer-subgroup {
+    margin-top: 0;
+}
+
+/* Layer Items */
+.layer-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 7px 10px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    margin: 1px 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: pan-y;
+}
+
+.layer-item:hover {
+    background: rgba(147, 29, 61, 0.045);
+}
+
+.layer-item.active {
+    background: rgba(147, 29, 61, 0.10);
+    box-shadow: inset 0 0 0 1px rgba(147, 29, 61, 0.10);
+    border-left: 3px solid var(--primary);
+    padding-left: 7px; /* 10px base − 3px border = 7px → sin layout shift */
+}
+
+.layer-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(84, 84, 84, 0.72);
+    border-radius: 4px;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    background: #ffffff;
+}
+
+.layer-item.active .layer-checkbox {
+    background: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(147, 29, 61, 0.10);
+}
+
+.layer-item.active .layer-checkbox::after {
+    content: '✓';
+    color: white;
+    font-size: 11px;
+}
+
+.layer-name {
+    flex: 1;
+    font-size: 0.78rem;
+    color: #5f5f5f;
+    line-height: 1.24;
+}
+
+.layer-item.active .layer-name {
+    color: #5d1b30;
+    font-weight: 600;
+}
+
+.layer-actions {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-left: 6px;
+}
+
+.layer-action-btn {
+    opacity: 0;
+    color: #6a6a6a;
+    font-size: 0.74rem;
+    padding: 3px;
+    border-radius: 4px;
+    transition: opacity 0.2s, background 0.2s, color 0.2s;
+    cursor: pointer;
+}
+
+.layer-action-btn:hover {
+    background: rgba(147, 29, 61, 0.12);
+    color: var(--primary);
+}
+
+.layer-item:hover .layer-action-btn {
+    opacity: 1;
+}
+
+.layer-item.active .layer-action-btn {
+    opacity: 1;
+    color: #6b4450;
+}
+
+.layer-item.active .layer-action-btn:hover {
+    color: var(--primary);
+}
+
+.layer-opacity-panel {
+    display: none;
+    width: 100%;
+    margin-top: 6px;
+    margin-left: 24px;
+    padding: 7px 9px;
+    background: rgba(147, 29, 61, 0.05);
+    border: 1px solid rgba(147, 29, 61, 0.08);
+    border-radius: 9px;
+    cursor: default;
+}
+
+.layer-item.show-opacity .layer-opacity-panel {
+    display: block;
+}
+
+.layer-item.show-opacity .layer-action-btn.layer-opacity-toggle {
+    opacity: 1;
+    color: var(--primary);
+    background: rgba(147, 29, 61, 0.12);
+}
+
+.layer-opacity-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.layer-opacity-title {
+    font-weight: 600;
+}
+
+.layer-opacity-value {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* Map Container */
+.map-container {
+    position: absolute;
+    inset: 0;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+/* Map Controls */
+.map-controls {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 100;
+}
+
+.map-ctrl-btn {
+    width: 44px;
+    height: 44px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+}
+
+.map-ctrl-btn:hover {
+    background: var(--primary);
+    transform: scale(1.05);
+}
+
+.map-ctrl-btn.active {
+    background: var(--primary);
+}
+
+/* Marca institucional en mapa */
+.map-brand {
+    position: absolute;
+    right: 18px;
+    bottom: 58px;
+    z-index: 95;
+    pointer-events: none;
+    user-select: none;
+}
+
+.map-brand img {
+    display: block;
+    width: 240px;
+    max-width: 34vw;
+    height: auto;
+    opacity: 0.96;
+    filter: drop-shadow(0 3px 10px rgba(0,0,0,0.22));
+}
+
+/* Buscador de dirección tipo PGO */
+.geocoder-launch.active {
+    background: rgba(255,255,255,0.28);
+}
+
+.geocoder-container {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 145;
+    width: 260px;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #374151;
+}
+
+.geocoder-container.visible {
+    display: flex;
+}
+
+.geocoder-container.dragging {
+    cursor: default;
+    user-select: none;
+}
+
+.geocoder-header {
+    order: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    cursor: default;
+    user-select: none;
+    flex: 0 0 auto;
+}
+
+.geocoder-title {
+    display: none;
+}
+
+.geocoder-close {
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(0,0,0,0.18);
+    border-radius: 7px;
+    background: rgba(255,255,255,0.9);
+    color: #444;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+
+.geocoder-close:hover {
+    background: #fff;
+}
+
+
+#btn-geocoder-close.locating {
+    box-shadow: 0 0 0 2px rgba(125, 86, 6, 0.18), 0 2px 8px rgba(0,0,0,0.18);
+}
+
+.geocoder-field {
+    order: 1;
+    position: relative;
+    flex: 1 1 auto;
+}
+
+.geocoder-field i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #2d3748;
+    font-size: 0.9rem;
+    z-index: 1;
+}
+
+.geocoder-input {
+    width: 100%;
+    height: 34px;
+    padding: 7px 36px 7px 34px;
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(0,0,0,0.18);
+    border-radius: 7px;
+    color: #1f2937;
+    font-size: 0.86rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+
+.geocoder-input:focus {
+    outline: none;
+    border-color: #ad5a72;
+    box-shadow: 0 0 0 2px rgba(173,90,114,0.18);
+    background: #fff;
+}
+
+.geocoder-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    z-index: 2;
+}
+
+#geocoder-field.has-value .geocoder-clear {
+    display: inline-flex;
+}
+
+.geocoder-clear:hover {
+    color: #111827;
+}
+
+.geocoder-clear i {
+    position: static;
+    transform: none;
+    font-size: 0.8rem;
+    color: inherit;
+}
+
+.geocoder-results {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #bdbdbd;
+    border-radius: 7px;
+    margin-top: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    display: none;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.22);
+}
+
+.ol-zoom {
+    top: 50px !important;
+    left: 8px !important;
+}
+
+.ol-zoom-general-control {
+    top: 111px;
+    left: 8px;
+}
+
+.ol-zoom button,
+.ol-zoom-general-control button {
+    width: 1.375em;
+    height: 1.375em;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    line-height: 1;
+}
+
+.ol-zoom button {
+    font-size: 1em;
+}
+
+.ol-zoom-general-control button {
+    font-size: 1em;
+}
+
+.ol-zoom-general-control .zoom-general-icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.ol-zoom-general-control .zoom-general-icon * {
+    fill: currentColor;
+}
+
+
+.geocoder-results.visible {
+    display: block;
+}
+
+.geocoder-result {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #ececec;
+    color: #374151;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    background: #fff;
+}
+
+.geocoder-result:hover {
+    background: #f3f4f6;
+}
+
+.geocoder-result:last-child {
+    border-bottom: none;
+}
+
+.geocoder-selection-popup {
+    position: relative;
+    min-width: 220px;
+    max-width: 260px;
+    padding: 12px 34px 12px 14px;
+    background: rgba(255,255,255,0.98);
+    border-radius: 18px;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.26);
+    color: #222;
+    font-size: 0.92rem;
+    line-height: 1.2;
+    border: 1px solid rgba(0,0,0,0.12);
+}
+
+.geocoder-selection-popup::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -12px;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid rgba(255,255,255,0.98);
+    filter: drop-shadow(0 3px 2px rgba(0,0,0,0.10));
+}
+
+.geocoder-selection-text {
+    word-break: break-word;
+}
+
+.geocoder-selection-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 3px;
+    background: #d81b3a;
+    color: #fff;
+    font-size: 11px;
+    line-height: 18px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+}
+
+.geocoder-selection-close:hover {
+    background: #bf1733;
+}
+
+.geocoder-selection-marker {
+    color: #ef2020;
+    font-size: 2rem;
+    line-height: 1;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    transform: translateY(2px);
+    pointer-events: none;
+}
+
+.current-location-popup {
+    position: relative;
+    min-width: 92px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.98);
+    border-radius: 14px;
+    border: 1px solid rgba(147, 29, 61, 0.20);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.20);
+    color: #222;
+    font-size: 0.90rem;
+    line-height: 1.08;
+    font-weight: 600;
+    text-align: center;
+    pointer-events: none;
+}
+
+.current-location-popup.is-hidden {
+    display: none;
+}
+
+.current-location-popup::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -11px;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-top: 11px solid rgba(255,255,255,0.98);
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.10));
+}
+
+.current-location-popup-text {
+    white-space: nowrap;
+}
+
+/* Legend Panel */
+.legend-panel {
+    position: fixed;
+    top: 78px;
+    right: 10px;
+    bottom: auto;
+    left: auto;
+    width: 238px;
+    height: min(420px, calc(100vh - 198px));
+    max-height: calc(100vh - 198px);
+    max-width: min(238px, calc(100vw - 24px));
+    background: var(--bg-panel);
+    border: 1px solid rgba(0,0,0,0.18);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    z-index: 1301;
+    display: none;
+    overflow: hidden;
+    transition: transform 0.22s ease, right 0.28s ease;
+}
+
+.legend-panel.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+.legend-panel.collapsed {
+    transform: none;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    bottom: auto;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+}
+
+.legend-panel.collapsed .legend-content {
+    display: none;
+}
+
+.legend-header {
+    display: grid;
+    grid-template-columns: 28px 1fr 28px;
+    align-items: center;
+    min-height: 34px;
+    padding: 3px 6px;
+    background: #eeeeee;
+    font-weight: 700;
+    color: #8c1230;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    font-size: 0.92rem;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.legend-header > span {
+    grid-column: 2;
+    display: block;
+    width: 100%;
+    text-align: center;
+    justify-self: center;
+    align-self: center;
+    margin: 0;
+    color: #7b0f28;
+    font-weight: 800;
+}
+
+.legend-panel.collapsed .legend-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    border-bottom: none;
+    min-height: 36px;
+    background: transparent;
+}
+
+.legend-panel.collapsed .legend-header > span {
+    display: none;
+}
+
+.legend-header .close-btn {
+    grid-column: 3;
+    justify-self: end;
+    position: static;
+    transform: none;
+    width: 28px;
+    height: 28px;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.18);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.legend-header .close-btn i {
+    font-size: 12px;
+    line-height: 1;
+    display: block;
+}
+
+.legend-panel.collapsed .legend-header .close-btn {
+    width: 28px;
+    height: 28px;
+    justify-self: center;
+    margin: 0 auto;
+}
+
+.legend-content {
+    padding: 10px 12px 14px;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.legend-item {
+    margin-bottom: 12px;
+}
+
+.legend-item-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+}
+
+.legend-item img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    background: transparent;
+    mix-blend-mode: multiply;
+    image-rendering: auto;
+}
+
+/* Feature Info Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.modal-overlay.visible {
+    display: flex;
+}
+
+.modal {
+    background: var(--bg-panel);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.modal-header {
+    padding: 20px 24px;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.modal-close {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-body {
+    padding: 20px 24px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal.modal-wide {
+    max-width: 920px;
+    width: min(92vw, 920px);
+}
+
+.modal-body.modal-body-wide {
+    max-height: 72vh;
+}
+
+.feature-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.feature-table tr {
+    border-bottom: 1px solid var(--border);
+}
+
+.feature-table td {
+    padding: 10px 0;
+    font-size: 0.9rem;
+}
+
+.feature-table td:first-child {
+    color: var(--text-secondary);
+    width: 40%;
+    font-weight: 500;
+}
+
+/* Measure Tooltip */
+.measure-tooltip {
+    background: var(--bg-panel);
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+/* Scale Line */
+.ol-scale-line {
+    background: var(--bg-panel);
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+
+.ol-scale-line-inner {
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+}
+
+/* Attribution */
+.ol-attribution {
+    background: rgba(22, 33, 62, 0.9);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+}
+
+/* Loading */
+.loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 500;
+    display: none;
+}
+
+.loading-indicator.visible {
+    display: block;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+/* Status dock: escala + zoom + coordenadas (estilo PGO) */
+.status-dock {
+    position: absolute;
+    left: 2px;
+    bottom: 2px;
+    z-index: 140;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    max-width: calc(100% - 8px);
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+.status-dock,
+.status-dock *,
+.status-pill,
+.status-pill * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+}
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 18px;
+    padding: 1px 4px;
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.72);
+    color: #111111;
+    font-size: 11px;
+    line-height: 1.1;
+    white-space: nowrap;
+    box-shadow: none;
+    border: 1px solid #7b7b7b;
+    pointer-events: none;
+}
+
+.zoom-display {
+    font-weight: 400;
+}
+
+.coords-display {
+    max-width: min(60vw, 360px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.scale-slot {
+    pointer-events: none;
+    display: inline-flex;
+    align-items: flex-end;
+}
+
+.scale-slot .ol-scale-line {
+    position: static;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    margin: 0;
+}
+
+.scale-slot .ol-scale-line-inner {
+    border: 2px solid #111111;
+    border-top: none;
+    background: rgba(255, 255, 255, 0.72);
+    color: #111111;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1;
+    margin: 0;
+    padding: 1px 4px;
+}
+
+/* Capas base en sidebar */
+.basemap-selector {
+    display: none;
+}
+
+.basemap-group-content {
+    padding-left: 0;
+    margin-top: 6px;
+}
+
+.basemap-traffic-global {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(148, 23, 58, 0.10);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.96);
+    color: #4b5563;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.basemap-traffic-global:hover {
+    border-color: rgba(148, 23, 58, 0.16);
+    background: rgba(252,249,250,0.98);
+}
+
+.basemap-traffic-global.active {
+    border-color: rgba(148, 23, 58, 0.18);
+    background: rgba(251,246,248,0.98);
+    box-shadow: 0 3px 10px rgba(148, 23, 58, 0.05);
+}
+
+.basemap-traffic-global-check {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    border-radius: 5px;
+    box-shadow: inset 0 0 0 1.6px rgba(122, 24, 51, 0.38);
+    background: #ffffff;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.basemap-traffic-global.active .basemap-traffic-global-check {
+    background: rgba(148, 23, 58, 0.92);
+    box-shadow: inset 0 0 0 1px rgba(148, 23, 58, 0.92);
+}
+
+.basemap-traffic-global.active .basemap-traffic-global-check::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.basemap-traffic-global-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.basemap-traffic-global-title {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #7a1833;
+    line-height: 1.05;
+}
+
+.basemap-traffic-global-subtitle {
+    margin-top: 1px;
+    font-size: 0.67rem;
+    color: #8b94a4;
+    line-height: 1.18;
+}
+
+.basemap-traffic-global-legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 5px;
+    font-size: 0.60rem;
+    color: #9aa2af;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.basemap-traffic-global-legend-bar {
+    display: inline-flex;
+    align-items: stretch;
+    width: 62px;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.05);
+}
+
+.basemap-traffic-global-legend-bar i {
+    display: block;
+    flex: 1 1 0;
+    height: 100%;
+}
+
+.basemap-traffic-global-legend-bar i:nth-child(1) { background: #22c55e; }
+.basemap-traffic-global-legend-bar i:nth-child(2) { background: #84cc16; }
+.basemap-traffic-global-legend-bar i:nth-child(3) { background: #facc15; }
+.basemap-traffic-global-legend-bar i:nth-child(4) { background: #fb923c; }
+.basemap-traffic-global-legend-bar i:nth-child(5) { background: #ef4444; }
+
+.streetview-coverage-toggle {
+    position: fixed;
+    top: calc(var(--header-h) + 74px);
+    left: calc(var(--sidebar-width) + 10px);
+    z-index: 650;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    min-height: 28px;
+    max-width: min(248px, calc(100vw - var(--sidebar-width) - 24px));
+    padding: 4px 8px;
+    border: 1px solid rgba(15, 23, 42, 0.14);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.38);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    color: #e2e8f0;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 1px 6px rgba(15, 23, 42, 0.10);
+    transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.streetview-coverage-toggle.is-visible {
+    display: flex;
+}
+
+.streetview-coverage-toggle:hover {
+    border-color: rgba(15, 23, 42, 0.20);
+    background: rgba(15, 23, 42, 0.46);
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.12);
+}
+
+.streetview-coverage-toggle.active {
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(15, 23, 42, 0.42);
+}
+
+.streetview-coverage-toggle-check {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1.3px rgba(255, 255, 255, 0.55);
+    background: rgba(255,255,255,0.08);
+    transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.streetview-coverage-toggle.active .streetview-coverage-toggle-check {
+    background: rgba(248, 250, 252, 0.92);
+    box-shadow: inset 0 0 0 1px rgba(248, 250, 252, 0.92);
+}
+
+.streetview-coverage-toggle.active .streetview-coverage-toggle-check::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0f172a;
+    font-size: 0.68rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.streetview-coverage-toggle-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.streetview-coverage-toggle-title {
+    font-size: 0.70rem;
+    font-weight: 600;
+    color: #f8fafc;
+    line-height: 1.05;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.streetview-coverage-toggle-subtitle {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .streetview-coverage-toggle {
+        top: calc(var(--header-h) + 66px);
+        left: calc(var(--sidebar-width) + 8px);
+        max-width: min(220px, calc(100vw - var(--sidebar-width) - 16px));
+        padding: 4px 8px;
+    }
+}
+
+.basemap-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-top: 0;
+    background: #ffffff;
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.basemap-radio-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+    min-height: 82px;
+    padding: 16px 16px 11px;
+    background: #ffffff;
+    border: none;
+    border-bottom: 1px solid rgba(17, 24, 39, 0.10);
+    border-radius: 0;
+    cursor: pointer;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease;
+    user-select: none;
+    box-shadow: none;
+}
+
+.basemap-radio-item:last-child {
+    border-bottom: none;
+}
+
+.basemap-radio-item:hover {
+    background: #f8f8fb;
+}
+
+.basemap-radio-item.active {
+    background: #f4f3f6;
+    box-shadow: inset 5px 0 0 var(--primary);
+}
+
+.basemap-radio-item.traffic-enabled {
+    box-shadow: inset 5px 0 0 var(--primary), inset 0 0 0 1px rgba(148, 23, 58, 0.08);
+}
+
+.basemap-traffic-tab {
+    position: absolute;
+    top: 9px;
+    right: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 18px;
+    padding: 2px 8px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: rgba(122, 24, 51, 0.76);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, transform 0.18s ease;
+    opacity: 0.92;
+    z-index: 1;
+}
+
+.basemap-traffic-tab::before {
+    content: '';
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1.4px rgba(122, 24, 51, 0.42);
+    background: rgba(255, 255, 255, 0.55);
+    flex: 0 0 11px;
+    transition: box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+
+.basemap-traffic-tab:hover {
+    background: rgba(148, 23, 58, 0.07);
+    color: rgba(122, 24, 51, 0.9);
+}
+
+.basemap-traffic-tab:hover::before {
+    box-shadow: inset 0 0 0 1.4px rgba(122, 24, 51, 0.58);
+    background: rgba(255, 255, 255, 0.82);
+}
+
+.basemap-traffic-tab.active {
+    background: rgba(148, 23, 58, 0.10);
+    color: var(--primary);
+    box-shadow: inset 0 0 0 1px rgba(148, 23, 58, 0.12);
+}
+
+.basemap-traffic-tab.active::before {
+    content: '✓';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    font-weight: 900;
+    color: #fff;
+    background: rgba(148, 23, 58, 0.88);
+    box-shadow: inset 0 0 0 1px rgba(148, 23, 58, 0.88);
+}
+
+.basemap-traffic-tab i {
+    display: none;
+}
+
+.basemap-traffic-tab span {
+    line-height: 1;
+}
+
+.basemap-radio-item .basemap-radio-labels {
+    padding-top: 8px;
+}
+
+.basemap-thumb {
+    position: relative;
+    width: 104px;
+    height: 62px;
+    border-radius: 7px;
+    overflow: hidden;
+    border: 1px solid rgba(17, 24, 39, 0.12);
+    background-color: #e5e7eb;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 126% auto;
+    box-shadow: 0 2px 8px rgba(17, 24, 39, 0.08);
+}
+
+.basemap-thumb::before,
+.basemap-thumb::after,
+.basemap-thumb-chip,
+.basemap-active-badge,
+.basemap-radio {
+    display: none !important;
+    content: none !important;
+}
+
+.basemap-thumb--roadmap {
+    background-image: url("https://mt1.google.com/vt/lyrs=m&x=450&y=904&z=11");
+    background-position: 47% 66%;
+    filter: saturate(1.02) contrast(1.04);
+}
+
+.basemap-thumb--traffic {
+    background-image: url("../assets/images/basemaps/google-traffic-preview.png");
+    background-position: center center;
+    background-size: cover;
+    filter: saturate(1.06) contrast(1.08);
+}
+
+.basemap-thumb--hybrid {
+    background-image: url("https://mt1.google.com/vt/lyrs=y&x=450&y=904&z=11");
+    background-position: 47% 66%;
+    filter: saturate(1.04) contrast(1.06) brightness(0.98);
+}
+
+.basemap-thumb--satellite {
+    background-image: url("https://mt1.google.com/vt/lyrs=s&x=450&y=904&z=11");
+    background-position: 47% 66%;
+    filter: saturate(1.05) contrast(1.07) brightness(0.98);
+}
+
+.basemap-thumb--terrain {
+    background-image: url("https://mt1.google.com/vt/lyrs=p&x=450&y=904&z=11");
+    background-position: 47% 66%;
+    filter: saturate(1.03) contrast(1.05);
+}
+
+.basemap-radio-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    padding-right: 4px;
+}
+
+.basemap-radio-title {
+    color: #222831;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.05;
+}
+
+.basemap-radio-item.active .basemap-radio-title {
+    color: #111827;
+}
+
+.basemap-radio-subtitle {
+    color: #6b7280;
+    font-size: 0.82rem;
+    line-height: 1.2;
+}
+/* Responsive */
+@media (min-width: 1200px) {
+    body {
+        --sidebar-open-width: 332px;
+    }
+
+    .sidebar-header {
+        padding: 12px 12px 10px;
+    }
+
+    .layer-tree {
+        padding: 10px 10px 14px;
+    }
+}
+
+/* ============================================================
+   LAPTOP HEADER FIX  (769 – 1599 px)
+   Pantallas medianas: laptop ~1366/1440/1536 px.
+   Problema: logo-line1 + botones 40 px + padding de etiquetas
+   no dejan espacio suficiente al título y se trunca.
+   Solución: ocultar línea secundaria del logo, reducir botones
+   y eliminar etiquetas de grupos en este rango.
+   Archivo tocado: css/styles.css  (solo este bloque)
+   ============================================================ */
+@media (min-width: 769px) and (max-width: 1599px) {
+
+    body {
+        --header-h: 56px;
+    }
+
+    .header {
+        height: var(--header-h);
+    }
+
+    /* -- Logo: ocultar "PROTECCIÓN CIVIL Y BOMBEROS", reducir imagen -- */
+    .header-logo {
+        /* Make the logo block more compact on medium screens: tighter gap and padding */
+        gap: 4px;
+        padding: 0 8px 0 6px;
+    }
+    .header-logo img {
+        /* Use an even smaller emblem to free up horizontal space */
+        height: 34px;
+    }
+    .header-logo-line1 {
+        /* Keep the first line visible but scale it down further */
+        display: block;
+        font-size: 0.44rem;
+        letter-spacing: 0.09em;
+    }
+    .header-logo-line2 {
+        /* Scale down the “CELAYA” text further */
+        font-size: 0.68rem;
+        letter-spacing: 0.10em;
+    }
+
+    /* -- Título: más espacio, font ligeramente menor, sin ellipsis -- */
+    .header-brand {
+        /* Reduce horizontal padding to allocate more space for the title */
+        padding: 0 6px;
+    }
+    .header-title {
+        /* Permite 2 líneas en laptops angostos, 1 línea en monitores anchos */
+        font-size: clamp(0.78rem, 1.00vw, 1.00rem);
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        line-height: 1.18;
+        text-align: center;
+    }
+    /* Restaurar línea decorativa bajo el título */
+    .header-title::after {
+        display: block;
+    }
+
+    /* -- Toolbar: quitar etiquetas de grupo y reducir botones -- */
+    .toolbar-group[data-group-label]::after {
+        display: none;
+    }
+    .toolbar-group {
+        /* Condense the spacing between buttons and groups */
+        padding: 3px 4px;
+        gap: 2px;
+    }
+    .toolbar-group + .toolbar-group {
+        margin-left: 0;
+    }
+    .header-btn {
+        /* Make the toolbar buttons smaller */
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        min-height: 30px;
+    }
+    .header-btn i {
+        font-size: 0.75rem;
+    }
+    .header-btn-3d {
+        /* Slightly wider to fit the “3D” label */
+        width: 34px;
+        font-size: 0.70rem;
+    }
+    .header-tools {
+        /* Reduce horizontal padding around the toolbar block */
+        padding: 0 6px 0 4px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1199px) {
+    body {
+        --sidebar-open-width: 306px;
+    }
+
+    .sidebar-topbar {
+        height: 38px;
+        min-height: 38px;
+    }
+
+    .sidebar-panel-toggle,
+    .sidebar-reset-btn {
+        top: 8px;
+        width: 21px;
+        height: 21px;
+    }
+
+    .sidebar-reset-btn {
+        right: 34px;
+    }
+
+    .sidebar-header {
+        padding: 10px 10px 9px;
+    }
+
+    .search-box input {
+        min-height: 38px;
+        padding: 9px 12px 9px 36px;
+        font-size: 0.84rem;
+    }
+
+    .search-box i {
+        left: 12px;
+        font-size: 0.84rem;
+    }
+
+    .layer-tree {
+        padding: 9px 9px 12px;
+    }
+
+    .layer-group-header {
+        padding: 8px 10px;
+        border-radius: 8px;
+    }
+
+    .layer-group-header .group-title {
+        font-size: 0.82rem;
+    }
+
+    .layer-subgroup-header {
+        padding: 7px 9px;
+        font-size: 0.77rem;
+    }
+
+    .layer-item {
+        padding: 6px 8px;
+        min-height: 36px;
+    }
+
+    .layer-checkbox {
+        width: 15px;
+        height: 15px;
+        margin-right: 7px;
+    }
+
+    .layer-name {
+        font-size: 0.76rem;
+        line-height: 1.22;
+    }
+
+    .layer-actions {
+        gap: 2px;
+        margin-left: 4px;
+    }
+
+    .layer-action-btn {
+        opacity: 1;
+        padding: 2px;
+        font-size: 0.72rem;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        --sidebar-open-width: min(88vw, 320px);
+    }
+
+    .header {
+        height: auto;
+        flex-wrap: wrap;
+        padding: 6px 8px;
+    }
+
+    .header-logo { display: none; }
+
+    .header-brand {
+        width: 100%;
+        margin-bottom: 2px;
+        text-align: center;
+    }
+
+    .header-tools {
+        width: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        flex-wrap: nowrap;
+    }
+
+    .header-tools::-webkit-scrollbar { height: 4px; }
+    .header-tools::-webkit-scrollbar-thumb {
+        background-color: rgba(255,255,255,0.30);
+        border-radius: 3px;
+    }
+    .header-tools::-webkit-scrollbar-track { background: transparent; }
+
+    /* Ocultar tooltips en móvil */
+    .header-btn::after { display: none; }
+
+    /*
+     * Position the main container using the header height variable.  On
+     * mobile the header height is overridden, so this ensures the
+     * container remains perfectly aligned without hard‑coded values.
+     */
+    .main-container { top: var(--header-h); }
+
+    .basemap-radio-item {
+        grid-template-columns: 82px minmax(0, 1fr);
+        gap: 10px;
+        min-height: 68px;
+        padding: 9px 10px;
+    }
+
+    .basemap-thumb {
+        width: 82px;
+        height: 50px;
+        flex-basis: 82px;
+    }
+
+    .basemap-radio-title {
+        font-size: 0.94rem;
+    }
+
+    .sidebar-topbar {
+        height: 38px;
+        min-height: 38px;
+        padding-left: 12px;
+    }
+
+    .sidebar-brand-title {
+        font-size: 0.92rem;
+    }
+
+    .sidebar-panel-toggle,
+    .sidebar-reset-btn {
+        top: 8px;
+        width: 21px;
+        height: 21px;
+    }
+
+    .sidebar-reset-btn {
+        right: 34px;
+    }
+
+    .sidebar-header {
+        padding: 12px 10px 8px;
+    }
+
+    .search-box input {
+        min-height: 38px;
+        padding: 9px 12px 9px 36px;
+        font-size: 0.84rem;
+        border-radius: 10px;
+    }
+
+    .search-box i {
+        left: 12px;
+        font-size: 0.82rem;
+    }
+
+    #layer-search-clear {
+        right: 9px;
+        width: 18px;
+        height: 18px;
+    }
+
+    .layer-tree {
+        padding: 8px 8px 12px;
+    }
+
+    .layer-group {
+        margin-bottom: 5px;
+    }
+
+    .layer-group-header {
+        padding: 8px 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(122, 21, 50, 0.14);
+    }
+
+    .layer-group-header i.toggle,
+    .layer-group-header .icon {
+        margin-right: 7px;
+    }
+
+    .layer-group-header .group-title {
+        font-size: 0.8rem;
+    }
+
+    .layer-group-content {
+        padding-left: 10px;
+    }
+
+    .layer-subgroup {
+        margin: 2px 0;
+    }
+
+    .layer-subgroup-header {
+        padding: 6px 8px;
+        font-size: 0.75rem;
+        border-radius: 6px;
+    }
+
+    .layer-subgroup-header i.toggle {
+        margin-right: 6px;
+        font-size: 0.62rem;
+    }
+
+    .layer-subgroup-content {
+        padding-left: 10px;
+    }
+
+    .layer-item {
+        padding: 7px 8px;
+        min-height: 36px;
+        border-radius: 8px;
+    }
+
+    .layer-item.active {
+        border-left-width: 3px;
+        padding-left: 7px;
+    }
+
+    .layer-checkbox {
+        width: 16px;
+        height: 16px;
+        margin-right: 7px;
+    }
+
+    .layer-name {
+        font-size: 0.76rem;
+        line-height: 1.22;
+    }
+
+    .layer-actions {
+        gap: 2px;
+        margin-left: 4px;
+    }
+
+    .layer-action-btn {
+        opacity: 1;
+        padding: 2px;
+        font-size: 0.72rem;
+    }
+
+    .layer-opacity-panel {
+        margin-left: 22px;
+        padding: 6px 8px;
+    }
+    
+    .geocoder-container {
+        width: min(260px, calc(100vw - 72px));
+        left: 8px;
+        top: 8px;
+    }
+    
+    .geocoder-input {
+        width: 100%;
+    }
+    
+    .status-dock {
+        left: 2px;
+        bottom: 2px;
+        gap: 2px;
+        right: auto;
+        flex-wrap: nowrap;
+    }
+
+    .status-pill {
+        min-height: 17px;
+        padding: 1px 4px;
+        font-size: 10px;
+    }
+
+    .coords-display {
+        max-width: calc(100vw - 12px);
+    }
+
+    .scale-slot .ol-scale-line {
+        padding: 0;
+    }
+
+    .scale-slot .ol-scale-line-inner {
+        font-size: 10px;
+        padding: 1px 4px;
+    }
+    
+    .basemap-selector {
+        left: 20px;
+    }
+    
+    .map-brand {
+        right: 12px;
+        bottom: 54px;
+    }
+    
+    .map-brand img {
+        width: 180px;
+        max-width: 54vw;
+    }
+
+    .legend-panel {
+        top: 78px;
+        right: 8px;
+        bottom: auto;
+        width: min(222px, calc(100vw - 20px));
+        height: min(360px, calc(100vh - 248px));
+        max-height: calc(100vh - 248px);
+        max-width: calc(100vw - 20px);
+    }
+
+    .legend-panel.collapsed {
+        top: 50px;
+        right: 8px;
+        bottom: auto;
+        width: 36px;
+        min-width: 36px;
+        height: 36px;
+        min-height: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        --sidebar-open-width: min(90vw, 308px);
+    }
+
+    .sidebar-header {
+        padding: 9px 9px 8px;
+    }
+
+    .search-box input {
+        min-height: 37px;
+        padding: 9px 11px 9px 34px;
+        font-size: 0.82rem;
+    }
+
+    .search-box i {
+        left: 11px;
+    }
+
+    .layer-tree {
+        padding: 7px 7px 11px;
+    }
+
+    .layer-group-header {
+        padding: 7px 9px;
+    }
+
+    .layer-group-header .group-title {
+        font-size: 0.78rem;
+    }
+
+    .layer-subgroup-header {
+        padding: 6px 7px;
+        font-size: 0.73rem;
+    }
+
+    .layer-item {
+        padding: 7px 7px;
+        min-height: 36px;
+    }
+
+    .layer-name {
+        font-size: 0.74rem;
+    }
+}
+
+/* Opacity Slider */
+.opacity-control {
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    margin-top: 4px;
+}
+
+.opacity-slider {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    background: var(--bg-dark);
+    border-radius: 3px;
+    outline: none;
+}
+
+.opacity-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Notification Toast */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--bg-card);
+    padding: 14px 24px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    z-index: 3000;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.toast.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast.success {
+    border-left: 4px solid var(--primary);
+}
+
+.toast.error {
+    border-left: 4px solid var(--accent);
+}
+
+#btn-object-stats {
+    display: none !important;
+}
+
+
+/* Intro splash */
+.intro-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top, rgba(176, 65, 89, 0.22), transparent 32%),
+        linear-gradient(145deg, #2a0e17 0%, #4d1830 46%, #7a2142 100%);
+    transition: opacity 0.72s ease, visibility 0.72s ease;
+}
+
+.intro-splash--poster {
+    background:
+        radial-gradient(circle at top, rgba(176, 65, 89, 0.20), transparent 30%),
+        linear-gradient(145deg, #2b1016 0%, #4a1827 42%, #6e2232 100%);
+}
+
+.intro-splash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(120deg, rgba(255,255,255,0.06), transparent 28%, transparent 72%, rgba(255,255,255,0.05)),
+        radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 58%);
+    pointer-events: none;
+}
+
+.intro-splash.is-hiding {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.intro-splash__content {
+    position: relative;
+    z-index: 2;
+    width: min(92vw, 560px);
+    text-align: center;
+    padding: 28px 24px 34px;
+    animation: intro-splash-rise 0.9s cubic-bezier(.18,.89,.32,1.12) both;
+}
+
+.intro-splash__content--logo {
+    width: min(92vw, 420px);
+    padding: 20px 18px 24px;
+}
+
+.intro-splash__logo-wrap {
+    width: min(42vw, 210px);
+    aspect-ratio: 1 / 1;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.98), rgba(255,255,255,0.8) 60%, rgba(255,255,255,0.58) 100%);
+    box-shadow: 0 26px 70px rgba(0,0,0,0.26), 0 0 0 1px rgba(255,255,255,0.26) inset;
+    backdrop-filter: blur(8px);
+}
+
+.intro-splash__logo-wrap--poster {
+    width: min(68vw, 360px);
+    aspect-ratio: 216 / 260;
+    border-radius: 26px;
+    margin-bottom: 12px;
+    padding: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.9));
+    box-shadow: 0 28px 80px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.30) inset;
+}
+
+.intro-splash__logo-wrap--transparent {
+    width: min(74vw, 320px);
+    aspect-ratio: 1 / 1;
+    margin-bottom: 6px;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.intro-splash__logo {
+    width: 80%;
+    max-width: 150px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(70, 10, 25, 0.16));
+    animation: intro-logo-float 2.2s ease-in-out infinite;
+}
+
+.intro-splash__logo--poster {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 18px;
+    filter: drop-shadow(0 12px 24px rgba(70, 10, 25, 0.10));
+}
+
+.intro-splash__logo--transparent {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    object-fit: contain;
+    border-radius: 0;
+    filter: drop-shadow(0 20px 34px rgba(0,0,0,0.34));
+}
+
+.intro-splash__title {
+    color: #ffffff;
+    font-size: clamp(1.35rem, 2vw, 1.85rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-wrap: balance;
+    text-shadow: 0 3px 12px rgba(0,0,0,0.25);
+}
+
+.intro-splash__subtitle {
+    margin-top: 8px;
+    color: rgba(255,255,255,0.82);
+    font-size: clamp(0.92rem, 1.25vw, 1.05rem);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+
+.intro-splash--poster .intro-splash__loader {
+    margin-top: 12px;
+}
+
+/* ── Tagline ciudadano en splash ── */
+.intro-splash__tagline {
+    text-align: center;
+    margin-top: 18px;
+    padding: 0 24px;
+    animation: fadeInUp 0.6s ease 0.3s both;
+}
+.intro-splash__tagline-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.95);
+    letter-spacing: 0.04em;
+    margin: 0 0 6px;
+}
+.intro-splash__tagline-sub {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.62);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 320px;
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Tip de bienvenida en sidebar ── */
+.sidebar-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 8px 10px 4px;
+    padding: 10px 12px 12px;
+    background: rgba(138,26,55,0.08);
+    border: 1px solid rgba(138,26,55,0.18);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    color: var(--text-secondary, #555);
+    line-height: 1.45;
+    transition: opacity 0.3s, max-height 0.3s;
+    max-height: 132px;
+    overflow: hidden;
+}
+.sidebar-tip.hidden {
+    opacity: 0;
+    max-height: 0;
+    margin: 0 10px;
+    padding: 0 12px;
+    border: none;
+    pointer-events: none;
+}
+.sidebar-tip__body {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    flex: 1;
+}
+.sidebar-tip__text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+.sidebar-tip__body i {
+    color: #8a1a37;
+    font-size: 0.85rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+.sidebar-tip__guide-link {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(138,26,55,0.14);
+    background: #ffffff;
+    color: #8a1a37;
+    font-size: 0.70rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    margin-top: 3px;
+    border-radius: 999px;
+    cursor: pointer;
+    line-height: 1.05;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    opacity: 0.95;
+    transition: color 0.15s ease, opacity 0.15s ease, transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.sidebar-tip__guide-link::before {
+    content: '?';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: rgba(138,26,55,0.09);
+    color: #8a1a37;
+    font-size: 0.60rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+.sidebar-tip__guide-link:hover {
+    color: #6f1430;
+    background: #ffffff;
+    border-color: rgba(138,26,55,0.22);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    opacity: 1;
+    transform: translateY(-1px);
+}
+.sidebar-tip__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(0,0,0,0.30);
+    font-size: 0.70rem;
+    padding: 0;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 2px;
+    transition: color 0.15s;
+}
+.sidebar-tip__close:hover { color: #8a1a37; }
+
+/* ── Tooltips mejorados en botones del header ── */
+/* Tooltip de botones — manejado por JS (ver initHeaderTooltips) */
+
+.intro-splash__loader {
+    margin-top: 14px;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+.intro-splash__loader span {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.92);
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.08);
+    animation: intro-loader-bounce 1s infinite ease-in-out;
+}
+
+.intro-splash__loader span:nth-child(2) {
+    animation-delay: 0.12s;
+}
+
+.intro-splash__loader span:nth-child(3) {
+    animation-delay: 0.24s;
+}
+
+.intro-splash__halo {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.12);
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.intro-splash__halo--one {
+    width: min(92vw, 720px);
+    height: min(92vw, 720px);
+    animation: intro-halo-pulse 2.8s ease-in-out infinite;
+}
+
+.intro-splash__halo--two {
+    width: min(72vw, 520px);
+    height: min(72vw, 520px);
+    animation: intro-halo-pulse 2.8s ease-in-out infinite reverse;
+}
+
+@keyframes intro-splash-rise {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes intro-logo-float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-5px) scale(1.018); }
+}
+
+@keyframes intro-loader-bounce {
+    0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.52;
+    }
+    40% {
+        transform: translateY(-7px);
+        opacity: 1;
+    }
+}
+
+@keyframes intro-halo-pulse {
+    0%, 100% {
+        transform: scale(0.95);
+        opacity: 0.18;
+    }
+    50% {
+        transform: scale(1.03);
+        opacity: 0.5;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .intro-splash__content,
+    .intro-splash__logo,
+    .intro-splash__loader span,
+    .intro-splash__halo {
+        animation: none !important;
+    }
+
+    .intro-splash {
+        transition-duration: 0.3s;
+    }
+}
+
+
+/* Ajuste: cuando Street View está activo, la leyenda debe quedarse dentro del mapa
+   y no montarse sobre el panel panorámico superior. */
+#map {
+    position: relative;
+}
+
+body.ol-street-view--activated .legend-panel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    bottom: auto;
+    left: auto;
+    width: 238px;
+    height: min(220px, calc(100% - 20px));
+    max-height: calc(100% - 20px);
+    max-width: min(238px, calc(100% - 20px));
+}
+
+body.ol-street-view--activated .legend-content {
+    max-height: calc(min(64vh, 340px) - 44px);
+}
+
+body.ol-street-view--activated .legend-panel.collapsed {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+}
+
+
+/* Ajuste fino: evitar empalme entre el botón de leyenda colapsada y el control de pantalla completa en Street View. */
+body.ol-street-view--activated .legend-panel.collapsed {
+    top: 54px;
+    right: 10px;
+}
+
+
+/* Ajuste puntual: Full Screen y Expandir leyenda del mismo tamaño,
+   separados y sin tocar la entrada ni la lógica del visor. */
+.ol-full-screen {
+    position: fixed !important;
+    top: 78px !important;
+    right: 10px !important;
+    left: auto !important;
+    width: 30px !important;
+    height: 30px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 1302 !important;
+}
+
+.ol-full-screen button,
+.legend-panel.collapsed .legend-header .close-btn {
+    width: 30px !important;
+    min-width: 30px !important;
+    max-width: 30px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    border-radius: 6px !important;
+}
+
+.ol-full-screen button {
+    font-size: 15px !important;
+    line-height: 1 !important;
+}
+
+.legend-panel.collapsed {
+    top: 118px !important;
+    right: 10px !important;
+    width: 30px !important;
+    min-width: 30px !important;
+    max-width: 30px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.legend-panel.collapsed .legend-header {
+    width: 30px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.legend-panel.collapsed .legend-header .close-btn i {
+    font-size: 12px !important;
+    line-height: 1 !important;
+}
+
+body.ol-street-view--activated .ol-full-screen {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    left: auto !important;
+}
+
+body.ol-street-view--activated .legend-panel.collapsed {
+    position: absolute !important;
+    top: 50px !important;
+    right: 10px !important;
+}
+
+
+/* ===== Ajuste fino de leyenda: compacta, fija y más limpia ===== */
+.legend-panel {
+    width: 272px;
+    height: auto;
+    max-height: min(68vh, 520px);
+    max-width: min(272px, calc(100vw - 24px));
+    background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(251,249,250,0.96) 100%);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(123, 15, 40, 0.14);
+    border-top: 3px solid rgba(123, 15, 40, 0.78);
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(53, 19, 30, 0.14), 0 2px 6px rgba(0,0,0,0.07);
+    overflow: hidden;
+}
+
+.legend-header {
+    grid-template-columns: 24px 1fr 26px;
+    min-height: 34px;
+    padding: 3px 6px;
+    background: linear-gradient(180deg, rgba(248,248,248,0.98) 0%, rgba(239,239,239,0.96) 100%);
+    border-bottom: 1px solid rgba(123, 15, 40, 0.10);
+    font-size: 0.95rem;
+}
+
+.legend-header > span {
+    letter-spacing: 0.12px;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.65);
+}
+
+.legend-header .close-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    border: 1px solid rgba(123, 15, 40, 0.12);
+    background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(246,246,246,0.96) 100%);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.legend-content {
+    padding: 12px 12px 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.08) 100%);
+    flex: 0 1 auto;
+    max-height: calc(min(68vh, 520px) - 44px);
+    overflow-y: auto;
+}
+
+.legend-item {
+    margin-bottom: 14px;
+    padding: 0 0 10px;
+    border-bottom: 1px solid rgba(123, 15, 40, 0.08);
+}
+
+.legend-item:last-child {
+    margin-bottom: 2px;
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.legend-item-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #7b0f28;
+    margin-bottom: 8px;
+    line-height: 1.25;
+}
+
+.legend-item img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.legend-content p {
+    margin: 0;
+    color: #4a4a4a;
+}
+
+.legend-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.legend-content::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.06);
+    border-radius: 10px;
+}
+
+.legend-content::-webkit-scrollbar-thumb {
+    background: #7b0f28;
+    border-radius: 10px;
+}
+
+.legend-content {
+    scrollbar-color: #7b0f28 rgba(0,0,0,0.06);
+    scrollbar-width: thin;
+}
+
+@media (max-width: 768px) {
+    .legend-panel {
+        width: min(248px, calc(100vw - 18px));
+        max-width: calc(100vw - 18px);
+        height: auto;
+        max-height: min(60vh, 430px);
+        right: 8px;
+    }
+
+    .legend-content {
+        max-height: calc(min(60vh, 430px) - 44px);
+    }
+}
+
+body.ol-street-view--activated .legend-panel {
+    width: 272px;
+    max-width: min(272px, calc(100% - 20px));
+    height: auto;
+    max-height: min(64vh, 340px);
+}
+
+
+/* Cuando Street View y Tráfico están activos al mismo tiempo,
+   no se suaviza todo el mapa inferior. El ajuste se aplica únicamente
+   a la cobertura del plugin Street View desde JavaScript, para no lavar
+   la cartografía base ni las capas visibles del visor. */
+body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
+    position: relative;
+}
+
+
+/* ============================================================
+   RESPONSIVE MOBILE / TABLET OVERHAUL  (BB6-MOVIL Q1)
+   Breakpoints:
+     ≤ 480 px  — phone portrait
+     ≤ 768 px  — phone landscape / small tablet
+     ≤ 1024 px — tablet
+   ============================================================ */
+
+/* --- Hamburger button (hidden on desktop) --- */
+.header-hamburger {
+    display: none;
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid rgba(255,255,255,0.28);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.10);
+    color: #ffffff;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.header-hamburger:hover,
+.header-hamburger:active {
+    background: rgba(255,255,255,0.20);
+    border-color: rgba(255,255,255,0.42);
+}
+.header-hamburger i {
+    font-size: 1rem;
+    line-height: 1;
+}
+.header-hamburger[aria-expanded="true"] {
+    background: rgba(255,255,255,0.24);
+    border-color: rgba(255,255,255,0.50);
+}
+.header-hamburger[aria-expanded="true"] i::before {
+    content: "\f00d"; /* fa-times */
+}
+
+/* --- Sidebar backdrop (mobile overlay) --- */
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1199;
+    background: rgba(0,0,0,0.5);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.sidebar-backdrop.visible {
+    pointer-events: auto;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* =======================================================
+   TABLET  (≤ 1024px)
+   ======================================================= */
+@media (max-width: 1024px) {
+    .header-btn {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        min-height: 34px;
+    }
+    .header-btn i {
+        font-size: 0.88rem;
+    }
+    .header-btn-3d { width: 38px; }
+    .toolbar-group {
+        gap: 2px;
+        padding: 3px 4px;
+    }
+    .header-tools {
+        gap: 5px;
+        padding-top: 14px;  /* espacio para etiquetas data-group-label */
+        /* Si el toolbar desborda en laptop estrecho: scroll invisible */
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .header-tools::-webkit-scrollbar { display: none; }
+}
+
+/* ===================================================================
+   SMALL TABLET  (769 – 900 px)
+   Hamburger + overlay sidebar idéntico a móvil pero con tamaños
+   de tablet. El LAPTOP FIX (769-1599px) ya oculta header-logo-line1
+   y reduce el logo — aquí solo añadimos el comportamiento estructural.
+   =================================================================== */
+@media (min-width: 769px) and (max-width: 900px) {
+
+    /* ---- Variables ---- */
+    body {
+        --sidebar-open-width: min(80vw, 316px);
+        --header-h: 50px;
+    }
+
+    /* ---- Header: anchura completa, ignora offset del sidebar ---- */
+    .header {
+        left: 0 !important;
+        height: var(--header-h);
+        padding: 0 10px;
+        gap: 6px;
+        flex-wrap: nowrap;
+        transition: none;
+    }
+    body.sidebar-collapsed .header { left: 0 !important; }
+
+    /* ---- Logo: aún más compacto (line1 ya oculto por LAPTOP FIX) ---- */
+    .header-logo-line2 { display: none; }
+    .header-logo img { height: 40px; }
+    .header-logo { gap: 6px; padding: 0 10px 0 8px; }
+
+    /* ---- Brand / título ---- */
+    .header-brand { flex: 1 1 0; min-width: 0; padding: 0 8px; }
+    .header-title {
+        font-size: clamp(0.78rem, 2.5vw, 0.96rem);
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        line-height: 1.18;
+        text-align: center;
+    }
+
+    /* ---- Hamburger: visible en tablet ---- */
+    .header-hamburger { display: inline-flex; order: 3; width: 38px; height: 38px; }
+
+    /* ---- Sidebar toggle (reapertura) ---- */
+    body.sidebar-collapsed .header-sidebar-toggle { display: inline-flex; }
+
+    /* ---- Toolbar → dropdown panel ---- */
+    .header-tools {
+        display: none;
+        position: fixed;
+        top: var(--header-h);
+        left: 0; right: 0;
+        z-index: 1399;
+        background: var(--primary-dark, #7d1735);
+        padding: 10px 12px 12px;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.30);
+        border-bottom: 2px solid rgba(255,255,255,0.08);
+        overflow-x: hidden;
+        max-width: 100%;
+    }
+    .header-tools.mobile-open {
+        display: flex;
+        max-height: calc(100vh - var(--header-h) - 24px);
+        overflow-y: auto;
+    }
+    .toolbar-group { gap: 3px; padding: 3px 5px; }
+    .toolbar-group + .toolbar-group { margin-left: 0; }
+    .header-btn {
+        width: 40px; height: 40px;
+        min-width: 40px; min-height: 40px;
+        border-radius: 8px;
+    }
+    .header-btn i { font-size: 0.94rem; }
+    .header-btn-3d { width: 46px; font-size: 0.80rem; }
+
+    /* ---- Main container: ancho completo bajo el header ---- */
+    .main-container {
+        top: var(--header-h);
+        left: 0 !important;
+        transition: none;
+    }
+
+    /* ---- Sidebar: modo overlay ---- */
+    .sidebar-shell {
+        position: fixed;
+        top: var(--header-h); left: 0; bottom: 0;
+        width: var(--sidebar-open-width);
+        z-index: 9999;
+        transition: transform 0.28s cubic-bezier(.4,0,.2,1),
+                    box-shadow 0.28s cubic-bezier(.4,0,.2,1);
+        transform: translateX(0);
+        box-shadow: 0 0 0 200vmax rgba(0,0,0,0.50),
+                    4px 0 24px rgba(0,0,0,0.30);
+    }
+    .sidebar-shell.collapsed {
+        transform: translateX(calc(-1 * var(--sidebar-open-width) - 10px));
+        box-shadow: none;
+        pointer-events: none;
+    }
+    .sidebar-shell.collapsed .sidebar { transform: none; }
+    .sidebar { width: 100%; transform: none; }
+
+    /* ---- OL controls ---- */
+    .ol-zoom { top: 58px !important; left: 8px !important; }
+    .ol-zoom button { width: 36px !important; height: 36px !important; font-size: 1.1rem !important; }
+    .ol-zoom-general-control { top: 144px !important; left: 8px !important; }
+    .ol-full-screen { top: 8px !important; right: 8px !important; }
+    .ol-full-screen button { width: 36px !important; height: 36px !important; }
+
+    /* ---- Geocoder ---- */
+    .geocoder-container {
+        top: 6px; left: 6px;
+        width: calc(100vw - 64px);
+        max-width: 360px;
+    }
+
+    /* ---- Legend ---- */
+    .legend-panel {
+        position: fixed;
+        top: auto !important; bottom: 8px !important; right: 8px !important; left: auto;
+        width: min(270px, calc(100vw - 16px));
+        max-width: calc(100vw - 16px);
+        height: min(45vh, 360px);
+        max-height: min(45vh, 360px);
+        z-index: 1350;
+    }
+    .legend-panel.collapsed {
+        top: auto !important; bottom: 8px !important; right: 8px !important;
+        width: 36px !important; min-width: 36px !important;
+        height: 36px !important; min-height: 36px !important;
+    }
+}
+
+/* =======================================================
+   MOBILE  (≤ 768px)
+   ======================================================= */
+@media (max-width: 768px) {
+
+    /* ---- Variables ---- */
+    body {
+        --sidebar-open-width: min(82vw, 310px);
+        --header-h: 52px;
+    }
+
+    /* ---- Header ---- */
+    .header {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: var(--header-h);
+        padding: 4px 8px;
+        gap: 6px;
+        flex-wrap: nowrap;
+        z-index: 1400;
+        align-items: center;
+    }
+    body.sidebar-collapsed .header {
+        left: 0;
+    }
+
+    .header-sidebar-toggle {
+        order: 0;
+    }
+
+    .header-brand {
+        flex: 1 1 0;
+        min-width: 0;
+        margin-bottom: 0;
+        padding-right: 0;
+        overflow: visible;
+    }
+    .header-title {
+        font-size: clamp(0.68rem, 2.8vw, 0.86rem);
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        line-height: 1.18;
+        text-align: center;
+    }
+
+    .header-hamburger {
+        display: inline-flex;
+        order: 3;
+    }
+
+    /* ---- Toolbar as dropdown panel ---- */
+    .header-tools {
+        display: none;
+        position: fixed;
+        top: var(--header-h);
+        left: 0;
+        right: 0;
+        z-index: 1399;
+        background: var(--primary-dark);
+        padding: 8px 10px 10px;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+        border-bottom: 2px solid rgba(255,255,255,0.08);
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    .header-tools.mobile-open {
+        display: flex;
+        /*
+         * When the toolbar dropdown is open on mobile, there may be more
+         * icons than can fit vertically on short screens.  Limit its
+         * height to the available viewport space beneath the header and
+         * enable a vertical scrollbar to prevent content from spilling
+         * off screen.
+         */
+        max-height: calc(100vh - var(--header-h) - 20px);
+        overflow-y: auto;
+    }
+
+    .toolbar-group {
+        padding: 3px 4px;
+        gap: 3px;
+    }
+    .toolbar-group + .toolbar-group {
+        margin-left: 0;
+    }
+    /* En dropdown móvil las etiquetas de grupo sobran — se ocultan */
+    .toolbar-group[data-group-label]::after { display: none; }
+
+    .header-btn {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+        border-radius: 10px;
+    }
+    .header-btn i {
+        font-size: 0.92rem;
+    }
+    .header-btn-3d {
+        width: 44px;
+        font-size: 0.78rem;
+    }
+
+    /* ---- Main container ---- */
+    .main-container {
+        top: var(--header-h);
+        left: 0 !important;
+        transition: none;
+    }
+    .header {
+        left: 0 !important;
+        transition: none;
+    }
+
+    /* ---- Sidebar overlay mode ----
+         Use box-shadow as backdrop: no extra div, no z-index fights.
+         The huge spread creates a dark overlay covering the entire screen. */
+    .sidebar-shell {
+        position: fixed;
+        top: var(--header-h);
+        left: 0;
+        bottom: 0;
+        width: var(--sidebar-open-width);
+        z-index: 9999;
+        transition: transform 0.28s cubic-bezier(.4,0,.2,1),
+                    box-shadow 0.28s cubic-bezier(.4,0,.2,1);
+        transform: translateX(0);
+        box-shadow: 0 0 0 200vmax rgba(0,0,0,0.50),
+                    4px 0 24px rgba(0,0,0,0.30);
+    }
+    .sidebar-shell.collapsed {
+        transform: translateX(calc(-1 * var(--sidebar-open-width) - 10px));
+        width: var(--sidebar-open-width);
+        box-shadow: none;
+        pointer-events: none;
+    }
+    .sidebar-shell.collapsed .sidebar {
+        transform: none;
+    }
+    .sidebar {
+        width: 100%;
+        transform: none;
+    }
+
+    /* Better sidebar topbar touch */
+    .sidebar-topbar {
+        height: 32px;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 6px;
+        gap: 4px;
+    }
+    .sidebar-panel-toggle {
+        position: static;
+        order: 2;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.45);
+        background: rgba(255,255,255,0.16);
+    }
+    .sidebar-panel-toggle i {
+        font-size: 0.78rem;
+    }
+    .sidebar-reset-btn {
+        position: static;
+        order: 1;
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Touch-friendly layer items */
+    .layer-item {
+        padding: 9px 10px;
+        min-height: 40px;
+        border-radius: 8px;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .layer-checkbox {
+        width: 18px;
+        height: 18px;
+    }
+    .layer-name {
+        font-size: 0.78rem;
+    }
+    .layer-action-btn {
+        opacity: 1;
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.76rem;
+    }
+
+    .layer-group-header {
+        padding: 10px 12px;
+        min-height: 40px;
+    }
+    .layer-subgroup-header {
+        padding: 8px 10px;
+        min-height: 36px;
+    }
+
+    /* ---- OL controls positioning ---- */
+    /* El geocoder se ubica en top:8px y mide ~34px de alto,
+       por eso el botón + quedaba tapado. Lo bajamos para que
+       ambos botones (+/-) sean visibles debajo del geocoder. */
+    .ol-zoom {
+        top: 56px !important;
+        left: 8px !important;
+    }
+    .ol-zoom button {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 1.1rem !important;
+    }
+    /* Ajustar zoom-general-control en consecuencia:
+       56 (ol-zoom top) + ~74px (2 botones 34px + padding OL) + 8 gap = ~138px */
+    .ol-zoom-general-control {
+        top: 138px !important;
+        left: 8px !important;
+    }
+
+    .ol-full-screen {
+        top: 8px !important;
+        right: 8px !important;
+    }
+    .ol-full-screen button {
+        width: 34px !important;
+        height: 34px !important;
+    }
+
+    /* ---- Legend on mobile ---- */
+    .legend-panel {
+        position: fixed;
+        top: auto !important;
+        bottom: 8px !important;
+        right: 8px !important;
+        left: auto;
+        width: min(260px, calc(100vw - 16px));
+        max-width: calc(100vw - 16px);
+        height: min(45vh, 340px);
+        max-height: min(45vh, 340px);
+        z-index: 1350;
+    }
+    .legend-panel.collapsed {
+        top: auto !important;
+        bottom: 8px !important;
+        right: 8px !important;
+        width: 34px !important;
+        min-width: 34px !important;
+        max-width: 34px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        max-height: 34px !important;
+    }
+
+    /* ---- Geocoder on mobile ---- */
+    .geocoder-container {
+        top: 6px;
+        left: 6px;
+        width: calc(100vw - 60px);
+        max-width: 320px;
+    }
+
+    /* ---- Coords container on mobile ---- */
+    .coords-container {
+        left: 6px;
+        right: 6px;
+        width: auto;
+        max-width: calc(100vw - 12px);
+    }
+
+    /* ---- Status dock ---- */
+    .status-dock {
+        left: 2px;
+        bottom: 2px;
+    }
+    .status-pill {
+        font-size: 9.5px;
+        padding: 1px 3px;
+    }
+    .coords-display {
+        max-width: calc(100vw - 16px);
+    }
+
+    /* ---- Map brand (logo) ---- */
+    .map-brand {
+        right: 8px;
+        bottom: 46px;
+    }
+    .map-brand img {
+        width: 140px;
+        max-width: 40vw;
+        opacity: 0.85;
+    }
+
+    /* ---- Modal on mobile ---- */
+    .modal {
+        width: 96%;
+        max-width: none;
+        max-height: 88vh;
+        border-radius: 12px;
+        margin: 0 2%;
+    }
+    .modal-header {
+        padding: 14px 16px;
+    }
+    .modal-header h3 {
+        font-size: 0.95rem;
+    }
+    .modal-body {
+        padding: 14px 16px;
+        max-height: 70vh;
+    }
+    .modal.modal-wide {
+        width: 98%;
+        max-width: none;
+    }
+
+    /* ---- Toast ---- */
+    .toast {
+        bottom: 20px;
+        max-width: calc(100vw - 32px);
+        padding: 12px 18px;
+        font-size: 0.85rem;
+    }
+
+    /* ---- Basemap selector compact ---- */
+    .basemap-radio-item {
+        grid-template-columns: 72px minmax(0, 1fr);
+        gap: 10px;
+        min-height: 62px;
+        padding: 8px 10px;
+    }
+    .basemap-thumb {
+        width: 72px;
+        height: 44px;
+    }
+    .basemap-radio-title {
+        font-size: 0.88rem;
+    }
+    .basemap-radio-subtitle {
+        font-size: 0.76rem;
+    }
+
+    /* ---- Splash screen mobile ---- */
+    .intro-splash__logo-wrap--transparent {
+        width: min(60vw, 240px);
+    }
+}
+
+/* =======================================================
+   PHONE PORTRAIT  (≤ 480px)
+   ======================================================= */
+@media (max-width: 480px) {
+    body {
+        --sidebar-open-width: min(88vw, 300px);
+        --header-h: 50px;
+    }
+
+    .header {
+        height: var(--header-h);
+        padding: 4px 6px;
+        gap: 4px;
+        align-items: center;
+    }
+
+    /* Logo ultra-compacto en teléfono pequeño */
+    .header-logo-line2 { display: none; }
+    .header-logo img { height: 30px; }
+    .header-logo { gap: 4px; padding: 0 8px 0 6px; }
+
+    .header-title {
+        font-size: clamp(0.60rem, 2.8vw, 0.72rem);
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        line-height: 1.16;
+        text-align: center;
+    }
+
+    .header-hamburger {
+        width: 32px;
+        height: 32px;
+    }
+
+    .header-tools {
+        padding: 6px 8px 8px;
+        gap: 4px;
+    }
+    .header-btn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+        border-radius: 8px;
+    }
+    .header-btn i {
+        font-size: 0.86rem;
+    }
+    .header-btn-3d {
+        width: 42px;
+    }
+
+    .toolbar-group {
+        gap: 2px;
+        padding: 2px 3px;
+    }
+
+    .sidebar-topbar {
+        height: 42px;
+        min-height: 42px;
+    }
+
+    .layer-item {
+        padding: 8px 8px;
+        min-height: 38px;
+    }
+    .layer-name {
+        font-size: 0.74rem;
+    }
+    .layer-group-header .group-title {
+        font-size: 0.78rem;
+    }
+    .layer-subgroup-header {
+        font-size: 0.73rem;
+    }
+
+    .geocoder-container {
+        width: calc(100vw - 52px);
+    }
+
+    .legend-panel {
+        width: min(240px, calc(100vw - 16px));
+        height: min(40vh, 300px);
+        max-height: min(40vh, 300px);
+    }
+
+    .map-brand img {
+        width: 110px;
+        max-width: 34vw;
+    }
+
+    .status-pill {
+        font-size: 9px;
+    }
+
+    .modal-header {
+        padding: 12px 14px;
+    }
+    .modal-body {
+        padding: 12px 14px;
+    }
+}
+
+/* =======================================================
+   LANDSCAPE PHONE  (short viewport)
+   ======================================================= */
+@media (max-height: 500px) and (max-width: 900px) {
+    body {
+        --header-h: 38px;
+    }
+    .header-title {
+        font-size: 0.76rem;
+    }
+    .header-hamburger {
+        width: 30px;
+        height: 30px;
+    }
+    .header-btn {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        min-height: 32px;
+    }
+    .header-tools {
+        padding: 4px 8px 6px;
+    }
+
+    .legend-panel {
+        height: min(50vh, 200px);
+        max-height: min(50vh, 200px);
+    }
+
+    .modal {
+        max-height: 92vh;
+    }
+    .modal-body {
+        max-height: 75vh;
+    }
+}
+
+/* =======================================================
+   WHEN TOOLBAR IS OPEN – push legend/geocoder down
+   ======================================================= */
+@media (max-width: 768px) {
+    body.toolbar-open .legend-panel:not(.collapsed) {
+        /* Legend stays at bottom, no conflict */
+    }
+
+    /* Close toolbar when tapping map */
+    body.toolbar-open .map-container {
+        /* visual hint: slight dim behind toolbar */
+    }
+}
+
+/* =======================================================
+   SAFE AREA (notch) support for modern phones
+   ======================================================= */
+@supports (padding-top: env(safe-area-inset-top)) {
+    @media (max-width: 768px) {
+        .header {
+            padding-left: max(8px, env(safe-area-inset-left));
+            padding-right: max(8px, env(safe-area-inset-right));
+        }
+        .sidebar-shell {
+            padding-top: env(safe-area-inset-top);
+        }
+        .status-dock {
+            bottom: max(2px, env(safe-area-inset-bottom));
+        }
+    }
+}
+
+/* =======================================================
+   PANEL DE CONSULTA FLOTANTE — v5 Responsive
+   Desktop · Tablet · Móvil
+   ======================================================= */
+
+/* ── Variables de diseño del panel ───────────────────── */
+#q9-info-panel {
+    --q9-primary: #931D3D;
+    --q9-primary-dk: #781634;
+    --q9-radius: 14px;
+    --q9-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 8px 28px rgba(0,0,0,0.14);
+
+    position: fixed;
+    z-index: 2100;
+    background: #fff;
+    border-radius: var(--q9-radius);
+    box-shadow: var(--q9-shadow);
+    width: 340px;
+    max-width: calc(100vw - 16px);
+    display: none;
+    flex-direction: column;
+    font-family: system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 13px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+#q9-info-panel.visible { display: flex; }
+
+/* ── Cabecera ─────────────────────────────────────────── */
+#q9-info-head {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0;
+    background: var(--q9-primary);
+    cursor: default;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+/* Zona central: título + badge de capa */
+#q9-head-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 8px 4px;
+    overflow: hidden;
+    gap: 2px;
+    cursor: move;
+}
+#q9-head-center * { cursor: move; }
+
+#q9-info-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.96);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    line-height: 1.2;
+}
+#q9-layer-badge {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 0.04em;
+}
+#q9-layer-badge.hidden { display: none; }
+
+/* Botones ◀ ▶ de capas en el header — transparentes, no sólidos */
+.q9-layer-nav {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    align-self: stretch;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.70);
+    font-size: 22px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+    line-height: 1;
+    padding: 0;
+}
+.q9-layer-nav:hover    { color: #fff; background: rgba(255,255,255,0.10); }
+.q9-layer-nav:disabled { color: rgba(255,255,255,0.22); cursor: default; }
+#q9-layer-prev { border-right: 1px solid rgba(255,255,255,0.08); }
+#q9-layer-next { border-left:  1px solid rgba(255,255,255,0.08); }
+
+/* Botón cerrar */
+#q9-info-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    align-self: stretch;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.60);
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+    border-left: 1px solid rgba(255,255,255,0.08);
+}
+#q9-info-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+/* ── Cuerpo de atributos ─────────────────────────────── */
+#q9-info-body {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 44vh;
+    padding: 6px 0 2px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(147,29,61,0.20) transparent;
+}
+#q9-info-body::-webkit-scrollbar { width: 3px; }
+#q9-info-body::-webkit-scrollbar-thumb {
+    background: rgba(147,29,61,0.22);
+    border-radius: 3px;
+}
+
+/* ── Atributos: label guinda arriba + valor abajo, filas resaltables ── */
+.q9-info-grid {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 6px 6px;
+    gap: 0;
+}
+
+/* Fila completa — label + valor — resaltable */
+.q9-row {
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    padding: 0;
+    cursor: default;
+    transition: background 0.12s;
+    border-bottom: 1px solid #f3f3f3;
+}
+.q9-row:last-child { border-bottom: none; }
+
+/* Hover — resaltado guinda suave */
+.q9-row:hover {
+    background: rgba(147,29,61,0.06);
+}
+
+/* Seleccionado al click — más visible */
+.q9-row.q9-selected {
+    background: rgba(147,29,61,0.11);
+    border-left: 3px solid var(--q9-primary);
+    border-radius: 0 8px 8px 0;
+    padding-left: 0;
+}
+.q9-row.q9-selected .q9-info-label {
+    padding-left: 11px !important;
+}
+.q9-row.q9-selected .q9-info-value {
+    padding-left: 11px !important;
+}
+
+.q9-info-label {
+    padding: 10px 14px 2px 14px;
+    font-size: 9.5px;
+    font-weight: 900;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--q9-primary);
+    background: transparent;
+    border: none;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.q9-info-value {
+    padding: 2px 14px 10px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #111;
+    background: transparent;
+    border: none;
+    line-height: 1.4;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+/* Hover/selected ya no necesitan clases separadas */
+.q9-info-label.q9-row-hover,
+.q9-info-value.q9-row-hover { background: transparent; }
+
+/* ── Footer ──────────────────────────────────────────── */
+#q9-info-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px 10px;
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
+    flex-shrink: 0;
+}
+
+/* Botón zoom — círculo limpio */
+#q9-btn-zoom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1.5px solid #ddd;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--q9-primary);
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.13s, border-color 0.13s, color 0.13s, transform 0.1s;
+    flex-shrink: 0;
+}
+#q9-btn-zoom:hover {
+    background: var(--q9-primary);
+    border-color: var(--q9-primary);
+    color: #fff;
+    transform: scale(1.10);
+}
+#q9-btn-zoom:active { transform: scale(0.92); }
+
+/* Paginación de features */
+#q9-info-nav {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+}
+#q9-info-nav.hidden { display: none; }
+.q9-nav-btn {
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    border-radius: 6px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--q9-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s, border-color 0.1s;
+    line-height: 1;
+    padding: 0;
+}
+.q9-nav-btn:hover    { background: rgba(147,29,61,0.07); border-color: var(--q9-primary); }
+.q9-nav-btn:disabled { opacity: 0.28; cursor: default; }
+#q9-info-count {
+    font-size: 10.5px;
+    color: #aaa;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Mensaje sin datos */
+.q9-empty-msg {
+    padding: 20px 14px;
+    color: #bbb;
+    font-size: 12px;
+    text-align: center;
+    font-style: italic;
+}
+
+
+/* ══════════════════════════════════════════════════════
+   EXTRA — Animaciones + Copy
+   ══════════════════════════════════════════════════════ */
+
+/* 1 — Entrada del panel: escala + fade con rebote suave */
+@keyframes q9-panel-in {
+    from { opacity: 0; transform: scale(0.94) translateY(10px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+#q9-info-panel.visible {
+    animation: q9-panel-in 0.26s cubic-bezier(0.34,1.4,0.64,1) both;
+}
+
+/* 2 — Stagger de filas: aparecen en cascada */
+@keyframes q9-row-in {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+.q9-row { animation: q9-row-in 0.22s ease both; }
+.q9-row:nth-child(1)  { animation-delay: 0.06s; }
+.q9-row:nth-child(2)  { animation-delay: 0.10s; }
+.q9-row:nth-child(3)  { animation-delay: 0.14s; }
+.q9-row:nth-child(4)  { animation-delay: 0.18s; }
+.q9-row:nth-child(5)  { animation-delay: 0.22s; }
+.q9-row:nth-child(6)  { animation-delay: 0.26s; }
+.q9-row:nth-child(7)  { animation-delay: 0.30s; }
+.q9-row:nth-child(8)  { animation-delay: 0.34s; }
+.q9-row:nth-child(9)  { animation-delay: 0.38s; }
+.q9-row:nth-child(10) { animation-delay: 0.42s; }
+.q9-row:nth-child(n+11) { animation-delay: 0.46s; }
+
+/* 3 — Icono de copia en el valor */
+.q9-info-value {
+    display: block;
+}
+.q9-copy-icon {
+    margin-left: auto;
+    font-size: 10px;
+    color: #ddd;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 3px;
+    border-radius: 4px;
+}
+.q9-row:hover .q9-copy-icon { opacity: 1; }
+.q9-copy-icon:hover { color: var(--q9-primary) !important; background: rgba(147,29,61,0.08); }
+
+/* 4 — Flash al copiar */
+@keyframes q9-copy-flash {
+    0%   { background: rgba(147,29,61,0.14); }
+    100% { background: transparent; }
+}
+.q9-copy-flash { animation: q9-copy-flash 0.45s ease; }
+
+/* 5 — Mini-toast "Copiado" */
+#q9-copy-toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 6px 16px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.18s, transform 0.18s;
+    z-index: 9999;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+#q9-copy-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE — TABLET (601px – 900px)
+   Panel flotante más compacto
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 900px) and (min-width: 601px) {
+    #q9-info-panel {
+        width: min(320px, calc(100vw - 16px));
+    }
+    #q9-info-body  { max-height: 36vh; }
+    .q9-layer-nav  { width: 32px; font-size: 20px; }
+    #q9-info-close { width: 34px; }
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE — MÓVIL (≤ 600px)
+   Mini-card inferior: peek state + expanded state
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+
+    /* ── Panel anclado al fondo ── */
+    #q9-info-panel {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        top: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 60vh;
+        border-radius: 18px 18px 0 0;
+        box-shadow: 0 -3px 20px rgba(0,0,0,0.14);
+        overflow: hidden;
+        transition: max-height 0.30s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* Estado peek — solo header + footer visible con datos truncados */
+    #q9-info-panel.visible:not(.q9-expanded) {
+        max-height: 50px;       /* solo la cabecera */
+    }
+
+    /* Estado expandido */
+    #q9-info-panel.q9-expanded {
+        max-height: 60vh;
+    }
+
+    /* Cabecera en móvil */
+    #q9-info-head {
+        border-radius: 18px 18px 0 0;
+        cursor: pointer;        /* tap = expand/collapse */
+        min-height: 50px;
+    }
+
+    /* Drag handle visual en la parte superior del header */
+    #q9-info-head::before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 36px;
+        height: 4px;
+        background: rgba(255,255,255,0.35);
+        border-radius: 2px;
+    }
+    #q9-info-head { position: relative; }
+
+    /* Chevron en el título indica estado */
+    #q9-info-title::after {
+        content: ' ⌃';
+        font-size: 12px;
+        opacity: 0.60;
+        transition: transform 0.25s;
+        display: inline-block;
+    }
+    #q9-info-panel.q9-expanded #q9-info-title::after {
+        transform: rotate(180deg);
+    }
+
+    /* Body y footer solo visibles expandidos */
+    #q9-info-panel:not(.q9-expanded) #q9-info-body  { display: none; }
+    #q9-info-panel:not(.q9-expanded) #q9-info-footer { display: none; }
+
+    #q9-info-body {
+        max-height: calc(60vh - 50px - 46px);
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Labels y valores más grandes en móvil */
+    .q9-info-label { font-size: 10px; margin-top: 9px; }
+    .q9-info-value { font-size: 13.5px; padding-bottom: 9px; }
+
+    /* Footer en móvil con safe-area */
+    #q9-info-footer {
+        padding: 8px 14px 18px;
+        border-top: 1px solid #e8e8e8;
+    }
+
+    /* Botones de navegación de capa en móvil */
+    .q9-layer-nav { width: 40px; font-size: 24px; }
+    #q9-info-close { width: 42px; font-size: 16px; }
+
+    /* Zoom y nav más grandes para touch */
+    #q9-btn-zoom { width: 32px; height: 32px; font-size: 13px; }
+    .q9-nav-btn  { width: 28px; height: 28px; font-size: 17px; }
+}
+
+
+
+/* Evita que el navegador intente arrastrar tiles/canvas del mapa y muestre el cursor bloqueado al panear. */
+#map .ol-viewport,
+#map .ol-viewport *,
+#map .ol-layer img,
+#map .ol-layer canvas,
+#map .ol-viewport img,
+#map .ol-viewport canvas {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-drag: none;
+}
+
+#map .ol-layer img,
+#map .ol-layer canvas,
+#map .ol-viewport img,
+#map .ol-viewport canvas {
+    -webkit-user-drag: none;
+}
+
+#ol-street-view--pegman-draggable,
+#ol-street-view--pegman-draggable::before,
+.ol-street-view--draggable {
+    -webkit-user-drag: auto;
+}
+
+/* ── Tooltip flotante de botones (posicionado por JS) ── */
+#header-tooltip {
+    position: fixed;
+    background: rgba(20,5,10,0.92);
+    color: #fff;
+    font-size: 0.70rem;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 4px 10px;
+    border-radius: 5px;
+    pointer-events: none;
+    z-index: 99999;
+    letter-spacing: 0.02em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    opacity: 0;
+    transition: opacity 0.12s;
+}
+#header-tooltip.visible { opacity: 1; }
+#header-tooltip::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: var(--arrow-left, 50%);
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: rgba(20,5,10,0.92);
+}
+
+
+/* ============================================================
+   A9 · Pulido visual del área de trabajo (desktop)
+   Objetivo: dar más jerarquía al visor sin tocar la lógica.
+   ============================================================ */
+@media (min-width: 1025px) {
+    /* Barra superior: más respiración y mejor lectura por grupos */
+    .header-tools {
+        padding: 14px 14px 0 10px;   /* top: espacio para etiquetas flotantes */
+        gap: 7px;
+        background: linear-gradient(180deg, rgba(44, 6, 19, 0.14) 0%, rgba(19, 2, 8, 0.18) 100%);
+    }
+
+    /* Pill ligeramente más generoso en desktop */
+    .toolbar-group {
+        gap: 3px;
+        padding: 4px 6px;
+        border-radius: 11px;
+    }
+
+    /* Etiqueta sobre el pill en desktop */
+    .toolbar-group[data-group-label]::after {
+        top: -13px;
+        font-size: 7px;
+        letter-spacing: 0.14em;
+        color: rgba(255,255,255,0.30);
+    }
+
+    /* Botones más grandes en desktop */
+    .header-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 7px;
+    }
+
+    .header-btn-3d {
+        width: 42px;
+    }
+
+    /* Esquina superior izquierda: buscador y controles más integrados */
+    .geocoder-container {
+        top: 10px;
+        left: 10px;
+        width: 276px;
+        gap: 8px;
+    }
+
+    .geocoder-input,
+    .geocoder-close {
+        border-radius: 10px;
+        border-color: rgba(123, 15, 40, 0.16);
+        box-shadow: 0 8px 18px rgba(72, 10, 28, 0.10);
+        backdrop-filter: blur(4px);
+    }
+
+    .geocoder-input {
+        height: 36px;
+        padding-left: 36px;
+    }
+
+    .ol-zoom {
+        top: 54px !important;
+        left: 10px !important;
+    }
+
+    .ol-zoom-general-control {
+        top: 115px;
+        left: 10px;
+    }
+
+    .ol-zoom button,
+    .ol-zoom-general-control button {
+        border-radius: 10px !important;
+        border: 1px solid rgba(123, 15, 40, 0.14) !important;
+        background: rgba(255,255,255,0.94) !important;
+        color: #7b1532 !important;
+        box-shadow: 0 8px 18px rgba(72, 10, 28, 0.10) !important;
+    }
+
+    .ol-zoom button:hover,
+    .ol-zoom-general-control button:hover {
+        background: #ffffff !important;
+        color: #641128 !important;
+    }
+
+    /* Panel lateral: inicio más limpio */
+    .sidebar {
+        background: linear-gradient(180deg, #ffffff 0%, #fcfbfb 100%);
+        border-right-color: rgba(91, 12, 33, 0.10);
+        box-shadow: 6px 0 18px rgba(54, 8, 21, 0.06);
+    }
+
+    .sidebar-topbar {
+        height: 42px;
+        min-height: 42px;
+        background: linear-gradient(180deg, #8d1738 0%, #73132f 100%);
+        border-right: 1px solid rgba(255,255,255,0.08);
+        border-bottom: 1px solid rgba(84, 11, 30, 0.26);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .sidebar-header {
+        padding: 20px 12px 8px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbf8f9 100%);
+        border-bottom: 1px solid rgba(91, 12, 33, 0.08);
+    }
+
+    #layer-search-box {
+        border-radius: 12px;
+    }
+
+    .search-box input {
+        height: 40px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
+        border-color: rgba(91, 12, 33, 0.10);
+        box-shadow: 0 4px 14px rgba(72, 10, 28, 0.05);
+    }
+
+    .search-box i,
+    #layer-search-clear {
+        color: rgba(93, 25, 42, 0.62);
+    }
+
+    .sidebar-tip {
+        margin: 8px 12px 6px;
+        padding: 9px 11px 10px;
+        background: linear-gradient(180deg, rgba(147, 29, 61, 0.045) 0%, rgba(147, 29, 61, 0.028) 100%);
+        border-color: rgba(147, 29, 61, 0.12);
+        border-radius: 10px;
+        max-height: 118px;
+        box-shadow: 0 4px 12px rgba(72, 10, 28, 0.04);
+    }
+
+    .sidebar-tip__text {
+        gap: 6px;
+    }
+
+    .sidebar-tip__body i {
+        margin-top: 1px;
+        font-size: 0.82rem;
+    }
+
+    .sidebar-tip__guide-link {
+        padding: 3px 9px;
+        font-size: 0.68rem;
+    }
+
+    .layer-tree {
+        padding: 6px 10px 10px;
+        background:
+            linear-gradient(180deg, rgba(255,255,255,0.00) 0%, rgba(147,29,61,0.012) 100%);
+    }
+
+    /* Jerarquía: tema / categoría / subgrupo / capa */
+    .layer-group {
+        margin-bottom: 8px;
+    }
+
+    .layer-group-header {
+        padding: 10px 12px;
+        border-radius: 10px;
+        box-shadow: 0 5px 14px rgba(122, 21, 50, 0.14);
+    }
+
+    .layer-group-header .group-title {
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+    }
+
+    .layer-active-badge {
+        height: 23px;
+        padding: 0 8px 0 7px;
+        font-size: 0.68rem;
+        white-space: nowrap;
+    }
+
+    .layer-group-content {
+        position: relative;
+        padding-left: 12px;
+        margin-top: 6px;
+    }
+
+    .layer-group-content::before {
+        content: '';
+        position: absolute;
+        top: 2px;
+        bottom: 2px;
+        left: 4px;
+        width: 1px;
+        background: linear-gradient(180deg, rgba(147,29,61,0.12) 0%, rgba(147,29,61,0.03) 100%);
+        pointer-events: none;
+    }
+
+    .layer-subgroup {
+        margin: 4px 0;
+    }
+
+    .layer-category-header {
+        padding: 8px 10px;
+        border-radius: 9px;
+        background: linear-gradient(180deg, rgba(147,29,61,0.055) 0%, rgba(147,29,61,0.025) 100%);
+        border: 1px solid rgba(147,29,61,0.11);
+        box-shadow: 0 2px 8px rgba(72, 10, 28, 0.03);
+    }
+
+    .layer-category-header .group-title {
+        font-size: 0.79rem;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        color: #251f22;
+        text-shadow: none;
+    }
+
+    .layer-subgroup-header:not(.layer-category-header) {
+        margin-left: 6px;
+        padding: 7px 10px;
+        border-radius: 8px;
+        background: rgba(147, 29, 61, 0.032);
+        border-color: rgba(147, 29, 61, 0.08);
+    }
+
+    .layer-subgroup-header:not(.layer-category-header) .group-title {
+        font-size: 0.73rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        color: #6f3a4b;
+    }
+
+    .layer-subgroup-content {
+        padding: 2px 0 0 10px;
+        gap: 3px;
+    }
+
+    .layer-item {
+        position: relative;
+        padding: 8px 10px 8px 11px;
+        border-radius: 9px;
+        border: 1px solid transparent;
+        margin: 1px 0;
+    }
+
+    .layer-item:hover {
+        background: rgba(147, 29, 61, 0.055);
+        border-color: rgba(147, 29, 61, 0.08);
+    }
+
+    .layer-item.active {
+        background: linear-gradient(180deg, rgba(147, 29, 61, 0.13) 0%, rgba(147, 29, 61, 0.09) 100%);
+        box-shadow: inset 0 0 0 1px rgba(147, 29, 61, 0.12), 0 2px 6px rgba(72, 10, 28, 0.03);
+        border-left-width: 3px;
+        padding-left: 10px;
+    }
+
+    .layer-name {
+        font-size: 0.77rem;
+        color: #5b5b5b;
+    }
+
+    .layer-item.active .layer-name {
+        color: #4c1727;
+        font-weight: 700;
+    }
+
+    .layer-action-btn {
+        border-radius: 6px;
+    }
+
+    .layer-opacity-panel {
+        margin-left: 22px;
+        border-radius: 9px;
+        background: rgba(147, 29, 61, 0.065);
+        border-color: rgba(147, 29, 61, 0.10);
+    }
+
+    /* El mapa gana un poco más de protagonismo */
+    .map-brand {
+        right: 16px;
+        bottom: 54px;
+    }
+
+    .map-brand img {
+        width: 208px;
+        max-width: 30vw;
+        opacity: 0.82;
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.18));
+    }
+
+    .status-dock {
+        left: 6px;
+        bottom: 6px;
+        gap: 3px;
+    }
+
+    .status-pill {
+        min-height: 17px;
+        padding: 1px 5px;
+        background: rgba(255,255,255,0.66);
+        border-color: rgba(71, 71, 71, 0.52);
+        color: #222222;
+        font-size: 10.5px;
+        border-radius: 2px;
+    }
+
+    .zoom-display {
+        opacity: 0.88;
+    }
+}
+
+
+/* ============================================================
+   A9 · Segunda pasada visual (desktop)
+   Enfoque: compactar barra, afinar árbol y unificar flotantes.
+   ============================================================ */
+@media (min-width: 1025px) {
+    /* Barra superior: más compacta, con mejor lectura y estados más finos */
+    .header-tools {
+        padding: 0 11px 0 8px;
+        gap: 5px;
+        background: linear-gradient(180deg, rgba(40, 5, 17, 0.13) 0%, rgba(17, 2, 7, 0.16) 100%);
+    }
+
+    .toolbar-group {
+        gap: 3px;
+        padding: 4px 6px;
+        margin: 0;
+        border-radius: 11px;
+    }
+
+    .toolbar-group + .toolbar-group {
+        margin-left: 0;
+    }
+
+    .toolbar-group[data-group-label]::after {
+        top: -10px;
+        font-size: 6.5px;
+        letter-spacing: 0.16em;
+        color: rgba(255,255,255,0.24);
+    }
+
+
+
+    .header-btn-3d {
+        width: 40px;
+    }
+
+    /* hover/active states: usa los definidos en el bloque base (transparent→tint) */
+    .header-btn:hover { transform: translateY(-1px); }
+    .header-btn:active { transform: translateY(0); }
+
+    /* Árbol: más jerarquía real entre tema / subtema / capa */
+    .layer-tree {
+        padding: 6px 9px 12px;
+    }
+
+    .layer-group {
+        margin-bottom: 9px;
+    }
+
+    .layer-group-header {
+        padding: 10px 12px;
+        border-radius: 11px;
+        box-shadow: 0 6px 16px rgba(122, 21, 50, 0.13);
+    }
+
+    .layer-group-header .group-title {
+        font-size: 0.86rem;
+        font-weight: 800;
+        letter-spacing: 0.008em;
+    }
+
+    .layer-group-content {
+        padding-left: 14px;
+        margin-top: 7px;
+    }
+
+    .layer-group-content::before {
+        left: 5px;
+        width: 1px;
+        background: linear-gradient(180deg, rgba(147,29,61,0.15) 0%, rgba(147,29,61,0.04) 100%);
+    }
+
+    .layer-category-header {
+        padding: 8px 10px;
+        border-radius: 9px;
+        background: linear-gradient(180deg, rgba(147,29,61,0.060) 0%, rgba(147,29,61,0.024) 100%);
+        border-color: rgba(147,29,61,0.10);
+        box-shadow: 0 2px 8px rgba(72, 10, 28, 0.026);
+    }
+
+    .layer-category-header .group-title {
+        font-size: 0.79rem;
+        font-weight: 800;
+        color: #2d2528;
+    }
+
+    .layer-subgroup-header:not(.layer-category-header) {
+        margin: 4px 0 0 8px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, rgba(147, 29, 61, 0.038) 0%, rgba(147, 29, 61, 0.020) 100%);
+        border-color: rgba(147, 29, 61, 0.075);
+    }
+
+    .layer-subgroup-header:not(.layer-category-header) .group-title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.045em;
+        color: #724351;
+    }
+
+    .layer-subgroup-content {
+        padding: 3px 0 1px 12px;
+        gap: 2px;
+    }
+
+    .layer-item {
+        padding: 7px 10px 7px 12px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        background: linear-gradient(180deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.28) 100%);
+        transition: background 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
+    }
+
+    .layer-item:hover {
+        transform: translateX(1px);
+        background: linear-gradient(180deg, rgba(147,29,61,0.060) 0%, rgba(147,29,61,0.038) 100%);
+        border-color: rgba(147,29,61,0.075);
+        box-shadow: 0 2px 6px rgba(72, 10, 28, 0.03);
+    }
+
+    .layer-item.active {
+        background: linear-gradient(180deg, rgba(147, 29, 61, 0.14) 0%, rgba(147, 29, 61, 0.085) 100%);
+        border-color: rgba(147, 29, 61, 0.10);
+        box-shadow: inset 3px 0 0 rgba(147, 29, 61, 0.48), 0 3px 8px rgba(72, 10, 28, 0.04);
+        padding-left: 12px;
+        border-left-width: 1px;
+    }
+
+    .layer-item.active:hover {
+        transform: translateX(0);
+    }
+
+    .layer-name {
+        font-size: 0.765rem;
+        line-height: 1.22;
+        color: #58565a;
+    }
+
+    .layer-item.active .layer-name {
+        color: #4d1728;
+        font-weight: 700;
+    }
+
+    .layer-actions {
+        gap: 5px;
+    }
+
+    .layer-action-btn {
+        width: 24px;
+        height: 24px;
+        border-radius: 7px;
+        background: rgba(147, 29, 61, 0.048);
+        border: 1px solid rgba(147, 29, 61, 0.06);
+    }
+
+    .layer-action-btn:hover {
+        background: rgba(147, 29, 61, 0.09);
+        border-color: rgba(147, 29, 61, 0.10);
+    }
+
+    .layer-opacity-panel {
+        margin-top: 4px;
+        margin-left: 24px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, rgba(147,29,61,0.070) 0%, rgba(147,29,61,0.045) 100%);
+        border-color: rgba(147,29,61,0.10);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+
+    /* Flotantes: se integran más al visor y dejan respirar el mapa */
+    .geocoder-container {
+        top: 10px;
+        left: 10px;
+        width: 270px;
+    }
+
+    .geocoder-input,
+    .geocoder-close,
+    .ol-zoom button,
+    .ol-zoom-general-control button {
+        box-shadow: 0 10px 22px rgba(72, 10, 28, 0.11) !important;
+        border-color: rgba(123, 15, 40, 0.12) !important;
+    }
+
+    .map-brand {
+        right: 14px;
+        bottom: 44px;
+    }
+
+    .map-brand img {
+        width: 184px;
+        max-width: 27vw;
+        opacity: 0.72;
+        filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+    }
+
+    .status-dock {
+        left: 8px;
+        bottom: 8px;
+        gap: 2px;
+    }
+
+    .status-pill {
+        min-height: 16px;
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-size: 10px;
+        background: rgba(255,255,255,0.56);
+        border-color: rgba(60, 60, 60, 0.34);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .zoom-display {
+        opacity: 0.80;
+    }
+}
+
+
+/* ============================================================
+   A9 · Tercera pasada visual (desktop)
+   Enfoque: remate fino en barra + panel + árbol.
+   Nota: logo conservado como en la pasada anterior al refinamiento 2.
+   ============================================================ */
+@media (min-width: 1025px) {
+    /* Barra superior: grupos más finos y mejor jerarquía */
+    .header-tools {
+        padding: 0 10px 0 8px;
+        gap: 4px;
+        background: linear-gradient(180deg, rgba(38, 5, 16, 0.11) 0%, rgba(16, 2, 7, 0.15) 100%);
+        backdrop-filter: blur(6px);
+    }
+
+    .toolbar-group { gap: 3px; padding: 4px 6px; border-radius: 11px; }
+
+    .toolbar-group + .toolbar-group {
+        margin-left: 0;
+    }
+
+    .toolbar-group[data-group-label]::after {
+        top: -9px;
+        font-size: 6px;
+        letter-spacing: 0.18em;
+        color: rgba(255,255,255,0.22);
+    }
+
+    .header-btn,
+    .toolbar-group:not(:first-child) .header-btn,
+    .toolbar-group:first-child .header-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 7px;
+    }
+    .header-btn:hover { transform: translateY(-1px); }
+
+    /* Panel lateral: arranque más ligero */
+    .sidebar-header {
+        padding: 11px 12px 7px;
+    }
+
+    #layer-search-box {
+        margin-bottom: 8px;
+    }
+
+    .search-box input {
+        height: 39px;
+        border-radius: 11px;
+        box-shadow: 0 3px 10px rgba(72, 10, 28, 0.04);
+    }
+
+    .sidebar-tip {
+        margin: 7px 12px 5px;
+        padding: 8px 10px 9px;
+        max-height: 108px;
+        border-radius: 9px;
+        background: linear-gradient(180deg, rgba(147, 29, 61, 0.036) 0%, rgba(147, 29, 61, 0.020) 100%);
+        box-shadow: 0 3px 10px rgba(72, 10, 28, 0.03);
+    }
+
+    .sidebar-tip__eyebrow {
+        letter-spacing: 0.12em;
+    }
+
+    .sidebar-tip__body {
+        font-size: 0.75rem;
+        line-height: 1.35;
+    }
+
+    .sidebar-tip__guide-link {
+        padding: 2px 8px;
+        border-radius: 999px;
+    }
+
+    /* Árbol: lectura más clara entre niveles */
+    .layer-tree {
+        padding: 5px 9px 12px;
+    }
+
+    .layer-group {
+        margin-bottom: 10px;
+    }
+
+    .layer-group-header {
+        padding: 10px 12px;
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(122, 21, 50, 0.12);
+    }
+
+    .layer-group-header .group-title {
+        font-size: 0.85rem;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+    }
+
+    .layer-group-content {
+        padding-left: 15px;
+        margin-top: 7px;
+    }
+
+    .layer-group-content::before {
+        left: 6px;
+        background: linear-gradient(180deg, rgba(147,29,61,0.13) 0%, rgba(147,29,61,0.025) 100%);
+    }
+
+    .layer-category-header {
+        padding: 8px 10px;
+        border-radius: 10px;
+        background: linear-gradient(180deg, rgba(147,29,61,0.052) 0%, rgba(147,29,61,0.022) 100%);
+        box-shadow: 0 2px 7px rgba(72, 10, 28, 0.025);
+    }
+
+    .layer-category-header .group-title {
+        font-size: 0.785rem;
+        font-weight: 800;
+        color: #2b2125;
+    }
+
+    .layer-subgroup-header:not(.layer-category-header) {
+        margin-left: 8px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, rgba(147,29,61,0.032) 0%, rgba(147,29,61,0.017) 100%);
+    }
+
+    .layer-subgroup-header:not(.layer-category-header) .group-title {
+        font-size: 0.71rem;
+        letter-spacing: 0.05em;
+        color: #775060;
+    }
+
+    .layer-subgroup-content {
+        padding: 3px 0 1px 12px;
+        gap: 2px;
+    }
+
+    .layer-item {
+        padding: 7px 10px 7px 12px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.54) 0%, rgba(255,255,255,0.24) 100%);
+        border-color: rgba(147,29,61,0.00);
+    }
+
+    .layer-item:hover {
+        background: linear-gradient(180deg, rgba(147,29,61,0.050) 0%, rgba(147,29,61,0.032) 100%);
+        border-color: rgba(147,29,61,0.065);
+        box-shadow: 0 2px 5px rgba(72, 10, 28, 0.025);
+    }
+
+    .layer-item.active {
+        background: linear-gradient(180deg, rgba(147,29,61,0.12) 0%, rgba(147,29,61,0.075) 100%);
+        border-color: rgba(147,29,61,0.09);
+        box-shadow: inset 2px 0 0 rgba(147,29,61,0.42), 0 2px 6px rgba(72, 10, 28, 0.03);
+    }
+
+    .layer-name {
+        font-size: 0.755rem;
+        line-height: 1.2;
+        color: #5f5b60;
+    }
+
+    .layer-item.active .layer-name {
+        color: #4c1727;
+        font-weight: 700;
+    }
+
+    .layer-actions {
+        gap: 4px;
+    }
+
+    .layer-action-btn {
+        width: 23px;
+        height: 23px;
+        border-radius: 7px;
+        background: rgba(147, 29, 61, 0.042);
+        border-color: rgba(147, 29, 61, 0.055);
+    }
+
+    .layer-opacity-panel {
+        margin-top: 4px;
+        margin-left: 24px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, rgba(147,29,61,0.060) 0%, rgba(147,29,61,0.038) 100%);
+    }
+
+    /* Flotantes: un poco menos protagonistas */
+    .geocoder-container {
+        width: 266px;
+    }
+
+    .geocoder-input,
+    .geocoder-close,
+    .ol-zoom button,
+    .ol-zoom-general-control button {
+        box-shadow: 0 8px 18px rgba(72, 10, 28, 0.10) !important;
+    }
+
+    .status-dock {
+        left: 7px;
+        bottom: 7px;
+        gap: 2px;
+    }
+
+    .status-pill {
+        min-height: 16px;
+        padding: 1px 5px;
+        border-radius: 3px;
+        background: rgba(255,255,255,0.60);
+        border-color: rgba(66, 66, 66, 0.36);
+        font-size: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.045);
+    }
+
+    .zoom-display {
+        opacity: 0.82;
+    }
+
+    /* Logo: conservar como en la pasada anterior (pulido) */
+    .map-brand {
+        right: 16px;
+        bottom: 54px;
+    }
+
+    .map-brand img {
+        width: 208px;
+        max-width: 30vw;
+        opacity: 0.82;
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.18));
+    }
+}
+
+
+/* ============================================================
+   A9 · Ajuste puntual: etiquetas de grupos de controles más legibles
+   ============================================================ */
+/* Block L5472 normalizado: labels visibles en desktop con estilo canonical */
+@media (min-width: 1025px) {
+    .toolbar-group[data-group-label]::after {
+        top: -13px;
+        font-size: 7px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: rgba(255,255,255,0.30);
+        text-shadow: none;
+        opacity: 1;
+    }
+}
+
+
+/* A18 ajuste puntual: ocultar mensajes/etiquetas superiores de la barra de controles */
+/* Etiquetas de grupo: visibles en desktop (ver bloque canonical en L4673) */
+
+
+/* ===== Igualar estilo visual de controles flotantes con zoom/home ===== */
+/* btn-legend: hereda el estilo pill (transparente), sin override blanco */
+.legend-panel.collapsed .legend-header .close-btn {
+    border: 1px solid rgba(123, 15, 40, 0.14);
+    background: rgba(255,255,255,0.94);
+    color: #7b1532;
+    box-shadow: 0 8px 18px rgba(72, 10, 28, 0.10);
+}
+.legend-panel.collapsed .legend-header .close-btn:hover {
+    background: #ffffff;
+    color: #641128;
+}
+
+#btn-geocoder-close.locating {
+    box-shadow: 0 0 0 2px rgba(125, 86, 6, 0.18), 0 8px 18px rgba(72, 10, 28, 0.10) !important;
+}
+
+
+/* --- Legend panel v3 tweak (non-invasive) --- */
+.ol-legend, .legend, .leyenda, #legend, #leyenda {
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.ol-legend .header, .legend .header, .leyenda .header, #legend .header, #leyenda .header {
+  background: linear-gradient(180deg,#7a0019,#5a0012);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: .3px;
+  border-bottom: 1px solid rgba(255,255,255,.15);
+}
+.ol-legend .content, .legend .content, .leyenda .content, #legend .content, #leyenda .content {
+  padding: 10px 12px;
+}
+.ol-legend .item, .legend .item, .leyenda .item, #legend .item, #leyenda .item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 6px;
+}
+.ol-legend .item:hover, .legend .item:hover, .leyenda .item:hover, #legend .item:hover, #leyenda .item:hover {
+  background: rgba(122,0,25,.06);
+}
+.ol-legend img, .legend img, .leyenda img, #legend img, #leyenda img {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+
+/* ===== Legend panel v4: subtle open/close animation only ===== */
+.legend-panel {
+    display: flex !important;
+    flex-direction: column;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px) scale(0.985);
+    transform-origin: top right;
+    transition:
+        opacity 180ms ease,
+        transform 220ms ease,
+        visibility 0s linear 220ms,
+        width 220ms ease,
+        height 220ms ease,
+        box-shadow 220ms ease,
+        border-color 220ms ease;
+    will-change: opacity, transform, width, height;
+}
+
+.legend-panel.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    transition:
+        opacity 180ms ease,
+        transform 220ms ease,
+        width 220ms ease,
+        height 220ms ease,
+        box-shadow 220ms ease,
+        border-color 220ms ease;
+}
+
+.legend-content {
+    display: block;
+    max-height: 1000px;
+    opacity: 1;
+    transition: max-height 220ms ease, opacity 160ms ease, padding 220ms ease;
+}
+
+.legend-panel.collapsed .legend-content {
+    display: block;
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+}
+
+.legend-header .close-btn {
+    transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.legend-header .close-btn:hover {
+    transform: translateY(-1px);
+}
+
+.legend-panel.collapsed .legend-header .close-btn:hover {
+    transform: scale(1.03);
+}
+
+/* Botón 3D: igual que los demás — sin acento de color */
+.header-btn-3d {
+    background: transparent !important;
+    border: none !important;
+    color: rgba(255,255,255,0.82) !important;
+    box-shadow: none !important;
+    border-radius: 7px;
+}
+.header-btn-3d:hover {
+    background: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.header-btn-3d span {
+    display: inline-block;
+    color: inherit !important;
+}
+.header-btn-3d.active,
+.header-btn-3d.active:hover {
+    background: rgba(255,255,255,0.96) !important;
+    color: #8a1a37 !important;
+    border-radius: 6px;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.22) !important;
+}
+
+/* AJUSTE PUNTUAL: ocultar etiquetas superiores de grupos en la barra */
+.toolbar-group[data-group-label]::after {
+    display: none !important;
+    content: none !important;
+}
+
+.header-tools {
+    padding-top: 0 !important;
+}
+
+@media (min-width: 1025px) {
+    .header-tools {
+        padding: 0 14px 0 10px !important;
+    }
+}
+
+/* === Ajuste solicitado: igualar Mi ubicación + Buscar ubicación al estilo zoom/home === */
+.geocoder-close,
+.geocoder-input {
+    border: 1px solid rgba(123, 15, 40, 0.14) !important;
+    background: rgba(255,255,255,0.94) !important;
+    box-shadow: 0 8px 18px rgba(72, 10, 28, 0.10) !important;
+    border-radius: 10px !important;
+    backdrop-filter: blur(4px);
+}
+
+.geocoder-close {
+    width: 34px !important;
+    height: 34px !important;
+    color: #7b1532 !important;
+}
+
+.geocoder-close:hover {
+    background: #ffffff !important;
+    color: #641128 !important;
+}
+
+.geocoder-field > i {
+    color: #7b1532 !important;
+}
+
+.geocoder-input {
+    height: 34px !important;
+    color: #374151 !important;
+}
+
+.geocoder-input::placeholder {
+    color: #6b7280;
+}
+
+.geocoder-input:focus {
+    border-color: rgba(123, 15, 40, 0.26) !important;
+    box-shadow: 0 0 0 2px rgba(123, 15, 40, 0.10), 0 8px 18px rgba(72, 10, 28, 0.10) !important;
+    background: #ffffff !important;
+}
+
+#btn-geocoder-close.locating {
+    box-shadow: 0 0 0 2px rgba(123, 15, 40, 0.12), 0 8px 18px rgba(72, 10, 28, 0.10) !important;
+}
+
+/* ==============================================================
+   RESPONSIVE MOBILE / TABLET v2  (L11-MOVIL)
+   Mejoras tactiles, header compacto, sidebar-tip y guia rapida.
+   Breakpoints:
+     <= 360px  — telefono muy pequeno (portrait extremo)
+     <= 480px  — telefono portrait
+     <= 768px  — telefono landscape / tablet pequena
+     769-900px — tablet pequena (ya cubierta en bloque anterior)
+   ============================================================== */
+
+/* ---------------------------------------------------------------
+   TOUCH: todos los botones de cabecera tienen al menos 44x44 px
+   de area tactil en movil (WCAG 2.5.5 Target Size)
+   --------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .header-btn,
+    .header-hamburger,
+    .sidebar-panel-toggle,
+    .sidebar-reset-btn,
+    .sidebar-tip__close {
+        min-width:  44px;
+        min-height: 44px;
+    }
+
+    /* Sidebar-tip: mas compacta y legible en movil */
+    .sidebar-tip {
+        margin: 6px 10px 4px;
+        padding: 9px 11px 10px;
+    }
+    .sidebar-tip__body {
+        font-size: 0.76rem;
+        line-height: 1.42;
+    }
+    .sidebar-tip__text span {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+    }
+    /* Boton "Guia rapida" — target tactil comodo */
+    .sidebar-tip__guide-link {
+        padding: 6px 14px;
+        font-size: 0.72rem;
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Header-logo: ocultar texto en movil pequeno para ganar espacio */
+    .header-logo-text {
+        display: none;
+    }
+
+    /* Titulo del sistema: permite 2 líneas en móvil */
+    .header-title {
+        font-size: clamp(0.68rem, 2.8vw, 0.86rem);
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        line-height: 1.18;
+        text-align: center;
+    }
+
+    /* Status dock: ocultar zoom-display en portrait < 420 px */
+    .zoom-display {
+        display: none;
+    }
+
+    /* Lightbox de imagenes: cerrar mas facil en movil */
+    #atlas-lightbox > button {
+        top: max(18px, env(safe-area-inset-top, 18px)) !important;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Modal feature-info: ajuste fino para pantallas muy cortas */
+    .modal-body {
+        max-height: 60vh;
+    }
+
+    /* Coords container: no puede tapar la toolbar hamburguer */
+    .coords-container {
+        top: calc(var(--header-h) + 6px);
+    }
+
+    /* Leyenda: no puede tapar el status-dock */
+    .legend-panel:not(.collapsed) {
+        bottom: 28px !important;
+    }
+}
+
+/* ---------------------------------------------------------------
+   iPhone con notch / Dynamic Island — safe areas completas
+   --------------------------------------------------------------- */
+@supports (padding-top: env(safe-area-inset-top)) {
+    @media (max-width: 768px) {
+        .header {
+            padding-top:    env(safe-area-inset-top, 0px);
+            padding-left:   max(8px, env(safe-area-inset-left, 0px));
+            padding-right:  max(8px, env(safe-area-inset-right, 0px));
+        }
+        body {
+            /* Ajusta --header-h si hay notch para que el main container no quede tapado */
+            --header-h-notch: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+        }
+        .main-container {
+            top: var(--header-h);
+        }
+        .sidebar-shell {
+            padding-top:   env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        .status-dock {
+            bottom: max(4px, env(safe-area-inset-bottom, 0px));
+            left:   max(4px, env(safe-area-inset-left,   0px));
+        }
+        #uig-foot {
+            height: max(env(safe-area-inset-bottom, 12px), 16px);
+        }
+    }
+}
+
+/* ---------------------------------------------------------------
+   Telefono muy pequeno  (<= 360 px  — ej. iPhone SE 1gen, mini)
+   --------------------------------------------------------------- */
+@media (max-width: 360px) {
+    body {
+        --header-h: 40px;
+        --sidebar-open-width: min(92vw, 296px);
+    }
+    .header {
+        padding: 0 4px;
+        gap: 3px;
+    }
+    .header-logo img { height: 28px; }
+    .header-logo { padding: 0 6px 0 4px; gap: 4px; }
+    .header-title {
+        font-size: clamp(0.58rem, 3.6vw, 0.72rem);
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        line-height: 1.16;
+        text-align: center;
+    }
+    .header-hamburger {
+        width: 30px;
+        height: 30px;
+    }
+    /* Coordenadas y status: solo coords, sin zoom-level */
+    .zoom-display { display: none; }
+    .coords-display { font-size: 8.5px; }
+}
+
+/* ---------------------------------------------------------------
+   Orientacion landscape en movil  (altura < 500 px)
+   Extra: subir zoom controls para que no queden tapados
+   --------------------------------------------------------------- */
+@media (max-height: 500px) and (max-width: 900px) {
+    /* Tour mobile-sheet: no puede ser mas alto que el viewport */
+    #uig-sheet { max-height: 94vh; }
+
+    /* Sidebar-tip: ocultarla completamente en landscape muy corto
+       para dejar el maximo espacio al arbol de capas              */
+    .sidebar-tip { display: none; }
+
+    /* Botones de zoom: mas pequenos */
+    .ol-zoom button {
+        width: 30px !important;
+        height: 30px !important;
+    }
+    .ol-zoom { top: 46px !important; }
+    .ol-zoom-general-control { top: 118px !important; }
+}
+
+/* ---------------------------------------------------------------
+   Tablet  (769 – 1024 px): sidebar-tip ligeramente mas pequena
+   --------------------------------------------------------------- */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .sidebar-tip {
+        margin: 7px 12px 5px;
+        padding: 8px 11px 9px;
+    }
+    .sidebar-tip__guide-link {
+        min-height: 30px;
+        padding: 5px 12px;
+    }
+}
+
+/* Ajuste quirúrgico: títulos de categorías más marcados */
+.layer-category-header[data-group-id="medio-fisico"] .group-title,
+.layer-category-header[data-group-id="medio-sociodemografico"] .group-title,
+.layer-category-header[data-group-id="peligros"] .group-title,
+.layer-category-header[data-group-id="riesgos"] .group-title,
+.layer-category-header[data-group-id="obras"] .group-title {
+    font-weight: 900 !important;
+    color: #111111 !important;
+    letter-spacing: 0 !important;
+    text-shadow: 0 0 0.01px rgba(0,0,0,0.95) !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+}
+
+
+/* ===== Cesium 3D: mover leyenda debajo de la barra de controles ===== */
+body.atlas-cesium-active .legend-panel:not(.collapsed) {
+    top: var(--atlas-cesium-legend-top, 132px) !important;
+    right: 10px !important;
+    left: auto !important;
+    bottom: auto !important;
+    height: auto !important;
+    max-height: var(--atlas-cesium-legend-max-height, calc(100vh - 146px)) !important;
+}
+
+body.atlas-cesium-active .legend-panel.collapsed {
+    top: var(--atlas-cesium-legend-top, 132px) !important;
+    right: 10px !important;
+    left: auto !important;
+    bottom: auto !important;
+}
+
+body.atlas-cesium-exporting #atlas-cesium-view .cesium-viewer-toolbar,
+body.atlas-cesium-exporting #atlas-cesium-view .atlas-cesium-coords,
+body.atlas-cesium-exporting #atlas-cesium-view .atlas-cesium-compass,
+body.atlas-cesium-exporting #atlas-cesium-view .cesium-viewer-bottom {
+    opacity: 0 !important;
+    visibility: hidden !important;
+}

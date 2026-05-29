@@ -1,0 +1,216 @@
+/* Ocultar el botón nativo del control de impresión; el visor usa el de la barra superior */
+#map .atlas-print-control {
+  display: none !important;
+}
+
+/* Ajustes visuales para que el diálogo se parezca al flujo de PGO */
+.ol-ext-print-dialog .ol-saveas,
+.ol-ext-print-dialog .ol-savelegend {
+  display: none !important;
+}
+
+.ol-ext-print-dialog .ol-dialog {
+  width: min(1180px, calc(100vw - 32px));
+  max-width: min(1180px, calc(100vw - 32px));
+}
+
+.ol-ext-print-dialog .ol-content {
+  background: #ececec;
+}
+
+.ol-ext-print-dialog .ol-print-param {
+  min-width: 292px;
+  background: #ececec;
+  color: #2a2a2a;
+  border-right: 1px solid #d5d5d5;
+}
+
+.ol-ext-print-dialog .ol-print-param h2 {
+  color: #3f73b5;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.ol-ext-print-dialog .ol-print-param label,
+.ol-ext-print-dialog .ol-print-param li,
+.ol-ext-print-dialog .ol-print-param input,
+.ol-ext-print-dialog .ol-print-param select,
+.ol-ext-print-dialog .ol-print-param span {
+  color: #2a2a2a;
+  font-size: 13px;
+}
+
+.ol-ext-print-dialog .ol-print-param select,
+.ol-ext-print-dialog .ol-print-param input[type="text"] {
+  width: 100%;
+  border: 1px solid #a8a8a8;
+  background: #fff;
+  border-radius: 2px;
+  min-height: 28px;
+}
+
+.ol-ext-print-dialog .ol-print-param input[type="text"] {
+  padding: 5px 8px;
+}
+
+.ol-ext-print-dialog .ol-print-param ul > li {
+  margin-bottom: 8px;
+}
+
+.ol-ext-print-dialog .ol-print-map {
+  background: #d9d9d9;
+}
+
+.ol-ext-print-dialog .ol-page {
+  background: #fff;
+}
+
+.ol-ext-print-dialog .ol-ext-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  margin-top: 12px;
+}
+
+.ol-ext-print-dialog .ol-ext-buttons button {
+  min-width: 96px;
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+.ol-ext-print-dialog .ol-ext-buttons button[type="submit"] {
+  background: #3f73b5;
+  border-color: #3f73b5;
+  color: #fff;
+}
+
+.ol-ext-print-dialog .ol-ext-buttons button[type="button"] {
+  background: #fff;
+  border: 1px solid #a8a8a8;
+  color: #2a2a2a;
+}
+
+@media (max-width: 980px) {
+  .ol-ext-print-dialog .ol-dialog {
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+  }
+
+  .ol-ext-print-dialog .ol-print-param {
+    min-width: 250px;
+  }
+}
+
+/* Título del mapa: mismo look que los switches nativos y campo oculto hasta activar */
+.ol-ext-print-dialog .ol-print-param .ol-print-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ol-ext-print-dialog .ol-print-param .ol-print-title input[type="checkbox"] {
+  display: none !important;
+}
+
+.ol-ext-print-dialog .ol-print-param .ol-print-title input[type="text"] {
+  display: none;
+  width: 100% !important;
+  margin: 6px 0 0 0 !important;
+  box-sizing: border-box;
+}
+
+.ol-ext-print-dialog .ol-print-param .ol-print-title label {
+  width: auto;
+  margin: 0;
+}
+
+.ol-ext-print-dialog .ol-print-param .ol-print-title .ol-ext-toggle-switch {
+  margin-left: auto;
+}
+
+.ol-ext-print-dialog .ol-print-param .ol-print-title .ol-ext-toggle-switch span {
+  position: relative;
+  right: auto;
+}
+
+
+/* Leyenda embebida en la hoja de impresión */
+.ol-ext-print-dialog .ol-page {
+  position: relative;
+}
+
+.ol-ext-print-dialog .ol-page .atlas-print-legend {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  max-width: 240px;
+  max-height: calc(100% - 28px);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 6px;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.18);
+  padding: 10px 12px;
+  z-index: 30;
+}
+
+.ol-ext-print-dialog .ol-page .atlas-print-legend-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #7b0f28;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.ol-ext-print-dialog .ol-page .atlas-print-legend-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ol-ext-print-dialog .ol-page .atlas-print-legend-item-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2a2a2a;
+  margin-bottom: 4px;
+}
+
+.ol-ext-print-dialog .ol-page .atlas-print-legend img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+
+/* --- Legend panel v3 tweak (non-invasive) --- */
+.ol-legend, .legend, .leyenda, #legend, #leyenda {
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.ol-legend .header, .legend .header, .leyenda .header, #legend .header, #leyenda .header {
+  background: linear-gradient(180deg,#7a0019,#5a0012);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: .3px;
+  border-bottom: 1px solid rgba(255,255,255,.15);
+}
+.ol-legend .content, .legend .content, .leyenda .content, #legend .content, #leyenda .content {
+  padding: 10px 12px;
+}
+.ol-legend .item, .legend .item, .leyenda .item, #legend .item, #leyenda .item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 6px;
+}
+.ol-legend .item:hover, .legend .item:hover, .leyenda .item:hover, #legend .item:hover, #leyenda .item:hover {
+  background: rgba(122,0,25,.06);
+}
+.ol-legend img, .legend img, .leyenda img, #legend img, #leyenda img {
+  image-rendering: -webkit-optimize-contrast;
+}
+

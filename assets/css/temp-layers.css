@@ -1,0 +1,128 @@
+
+.temp-layers-group .layer-group-header .group-title {
+  color: #ffffff;
+  font-weight: 900;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.42), 0 0 1px rgba(0, 0, 0, 0.28);
+}
+
+.temp-layers-group .icon {
+  color: #f6b2c2;
+  filter: none;
+}
+
+.temp-layers-group .temp-count {
+
+  min-width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: 4px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.temp-empty {
+  padding: 12px;
+  margin-top: 4px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  color: var(--text-secondary);
+  font-size: 0.83rem;
+  line-height: 1.35;
+}
+
+.temp-layer-item {
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.layer-item-left {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.temp-layer-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255,255,255,0.18);
+}
+
+.temp-layer-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.temp-layer-action {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.temp-layer-action:hover {
+  background: rgba(255,255,255,0.16);
+  color: var(--text-primary);
+}
+
+.temp-layer-item .layer-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.temp-layers-group .temp-count.is-hidden {
+  display: none;
+}
+
+
+/* --- Legend panel v3 tweak (non-invasive) --- */
+.ol-legend, .legend, .leyenda, #legend, #leyenda {
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.ol-legend .header, .legend .header, .leyenda .header, #legend .header, #leyenda .header {
+  background: linear-gradient(180deg,#7a0019,#5a0012);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: .3px;
+  border-bottom: 1px solid rgba(255,255,255,.15);
+}
+.ol-legend .content, .legend .content, .leyenda .content, #legend .content, #leyenda .content {
+  padding: 10px 12px;
+}
+.ol-legend .item, .legend .item, .leyenda .item, #legend .item, #leyenda .item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 6px;
+}
+.ol-legend .item:hover, .legend .item:hover, .leyenda .item:hover, #legend .item:hover, #leyenda .item:hover {
+  background: rgba(122,0,25,.06);
+}
+.ol-legend img, .legend img, .leyenda img, #legend img, #leyenda img {
+  image-rendering: -webkit-optimize-contrast;
+}
+

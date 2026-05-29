@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas Municipal de Peligros y Riesgos de Celaya</title>
+    <meta name="description" content="Consulta los peligros y riesgos del territorio del municipio de Celaya, Guanajuato. Sistema de información geográfica de Protección Civil y Bomberos.">
+    <meta property="og:title" content="Atlas Municipal de Peligros y Riesgos de Celaya">
+    <meta property="og:description" content="Conoce los peligros y riesgos de tu colonia en Celaya, Guanajuato.">
+    <meta property="og:image" content="assets/images/branding/logo-pcb.png">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#931D3D">
+    <link rel="icon" type="image/png" href="assets/images/branding/favicon.png">
+    <link rel="apple-touch-icon" href="assets/images/branding/favicon.png">
+    
+    <!-- OpenLayers 10.x -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.2.1/ol.css">
+    <script src="https://cdn.jsdelivr.net/npm/ol@10.2.1/dist/ol.js"></script>
+    
+    <!-- ol-ext para controles avanzados -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol-ext@4.0.24/dist/ol-ext.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/ol-ext@4.0.24/dist/ol-ext.min.js"></script>
+
+    <!-- jsPDF (para exportar a PDF en el cuadro de impresión) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Raleway:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos principales -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="assets/css/toolbar-direct.css">
+    
+    <!-- Estilos de módulos -->
+    <!-- Eliminado streetview.css; el visor de Street View se integrará mediante el plugin ol-street-view -->
+    <link rel="stylesheet" href="assets/css/print.css">
+    <link rel="stylesheet" href="assets/css/temp-layers.css">
+    <link rel="stylesheet" href="assets/css/coords-tool.css">
+    <link rel="stylesheet" href="assets/css/route-tool.css">
+    <link rel="stylesheet" href="assets/css/clima-widget.css">
+    <link rel="stylesheet" href="assets/css/analisis-demografico.css">
+    <!-- Estilos del plugin ol-street-view -->
+    <link rel="stylesheet" href="assets/ol-street-view/css/ol-street-view.css">
+</head>
+<body>
+    <div class="intro-splash" id="intro-splash" aria-hidden="true">
+        <div class="intro-splash__halo intro-splash__halo--one"></div>
+        <div class="intro-splash__halo intro-splash__halo--two"></div>
+        <div class="intro-splash__content intro-splash__content--logo">
+            <div class="intro-splash__logo-wrap intro-splash__logo-wrap--transparent">
+                <img class="intro-splash__logo intro-splash__logo--transparent" src="assets/images/branding/logo-pcb.png" alt="Protección Civil y Bomberos Celaya">
+            </div>
+            <div class="intro-splash__tagline">
+                <p class="intro-splash__tagline-title">Atlas Municipal de Peligros y Riesgos</p>
+                <p class="intro-splash__tagline-sub">Conoce los peligros y riesgos del territorio en el municipio de Celaya, Guanajuato</p>
+            </div>
+            <div class="intro-splash__loader" aria-hidden="true">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+    <!-- Header -->
+    <header class="header">
+        <button class="header-sidebar-toggle" id="btn-sidebar-reopen" title="Mostrar panel" aria-label="Mostrar panel">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <!-- Logo municipal -->
+        <div class="header-logo">
+            <img src="assets/images/branding/logo-pcb-escudo.png" alt="Protección Civil y Bomberos Celaya">
+            <div class="header-logo-text">
+                <span class="header-logo-line1">PROTECCIÓN CIVIL Y BOMBEROS</span>
+                <span class="header-logo-line2">CELAYA</span>
+            </div>
+        </div>
+
+        <div class="header-brand">
+            <div class="header-title">Atlas Municipal de Peligros y Riesgos de Celaya</div>
+        </div>
+
+        <button class="header-hamburger" id="btn-hamburger" title="Herramientas" aria-label="Herramientas" aria-expanded="false">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="header-tools" id="header-tools">
+
+            <!-- ══ ANÁLISIS ══ -->
+            <div class="tb-group" aria-label="Análisis">
+                <button class="tb-btn" id="btn-measure-distance" data-tip="Medir distancia">
+                    <i class="fas fa-ruler"></i>
+                </button>
+                <button class="tb-btn" id="btn-measure-area" data-tip="Área y perímetro">
+                    <i class="fas fa-draw-polygon"></i>
+                </button>
+                <button class="tb-btn" id="btn-object-stats" data-tip="Estadísticas de objeto">
+                    <i class="fas fa-vector-square"></i>
+                </button>
+                <button class="tb-btn" id="btn-elevation-profile" data-tip="Perfil de elevación">
+                    <i class="fas fa-chart-line"></i>
+                </button>
+                <button class="tb-btn" id="btn-terrain-3d" data-tip="Vista 3D del terreno">
+                    <i class="fas fa-cube"></i>
+                </button>
+                <button class="tb-btn tb-btn-3d" id="btn-cesium-3d" data-tip="3D avanzado · Vuelo">
+                    <span>3D</span>
+                </button>
+            </div>
+
+            <div class="tb-sep"></div>
+
+            <!-- ══ VISTA ══ -->
+            <div class="tb-group" aria-label="Vista">
+                <button class="tb-btn" id="btn-location" data-tip="Mi ubicación">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+                <button class="tb-btn" id="btn-view-prev" data-tip="Vista anterior" disabled>
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <button class="tb-btn" id="btn-view-next" data-tip="Vista siguiente" disabled>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="tb-sep"></div>
+
+            <!-- ══ MAPA ══ -->
+            <div class="tb-group" aria-label="Mapa">
+                <button class="tb-btn" id="btn-upload-layer" data-tip="Cargar capa KML / SHP">
+                    <i class="fas fa-upload"></i>
+                </button>
+                <button class="tb-btn" id="btn-print" data-tip="Imprimir / Exportar">
+                    <i class="fas fa-print"></i>
+                </button>
+                <button class="tb-btn geocoder-launch" id="btn-geocoder-launch" data-tip="Buscar dirección">
+                    <i class="fas fa-map-marker-alt"></i>
+                </button>
+            </div>
+
+            <div class="tb-sep"></div>
+
+            <!-- ══ APOYO ══ -->
+            <div class="tb-group" aria-label="Apoyo">
+                <button class="tb-btn coords-toolbar-btn" id="btn-coords-launch" data-tip="Ir a coordenadas">
+                    <i class="fas fa-thumbtack coords-pin-icon"></i>
+                </button>
+                <button class="tb-btn" id="btn-route-launch" data-tip="Calcular ruta">
+                    <i class="fas fa-route"></i>
+                </button>
+                <button class="tb-btn" id="btn-legend" data-tip="Leyenda de capas">
+                    <i class="fas fa-list-alt"></i>
+                    <span id="toolbar-active-badge" class="toolbar-active-badge is-hidden" aria-label="Capas activas"></span>
+                </button>
+                <button class="tb-btn" id="btn-fullscreen" data-tip="Pantalla completa">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="tb-btn" id="btn-guia" data-tip="Guía del visor">
+                    <i class="fas fa-book-open"></i>
+                </button>
+                <button class="tb-btn" id="btn-info" data-tip="Información">
+                    <i class="fas fa-file-lines"></i>
+                </button>
+            </div>
+
+        </div>
+    </header>
+    
+    <!-- Mobile sidebar backdrop -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar-shell" id="sidebar-shell">
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-topbar">
+                    <button class="sidebar-reset-btn" id="btn-page-reload" title="Restablecer" aria-label="Restablecer">
+                        <i class="fas fa-rotate-right"></i>
+                    </button>
+                    <button class="sidebar-panel-toggle" id="btn-sidebar-handle" title="Ocultar panel" aria-label="Ocultar panel">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                </div>
+                <div class="sidebar-header">
+                    <div class="search-box" id="layer-search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="layer-search" placeholder="Buscar capas...">
+                        <button type="button" class="search-clear-btn" id="layer-search-clear" title="Borrar búsqueda" aria-label="Borrar búsqueda">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="sidebar-tip" id="sidebar-tip">
+                    <div class="sidebar-tip__body">
+                        <i class="fas fa-circle-info"></i>
+                        <div class="sidebar-tip__text">
+                            <span>Selecciona un tema para consultar información en el mapa. Haz clic sobre cualquier elemento para ver sus detalles.</span>
+                            <button type="button" class="sidebar-tip__guide-link" id="btn-sidebar-quick-guide">Guía rápida</button>
+                        </div>
+                    </div>
+                    <button class="sidebar-tip__close" id="btn-sidebar-tip-close" title="Cerrar"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="layer-tree" id="layer-tree">
+                    <!-- Layer tree will be generated by JS -->
+                </div>
+            </aside>        </div>
+        <!-- Map Container -->
+        <div class="map-container">
+            <div class="geocoder-container" id="geocoder-container">
+                <div class="geocoder-header">
+                    <div class="geocoder-title">Buscar dirección</div>
+                    <button class="geocoder-close" id="btn-geocoder-close" title="Mi ubicación">
+                        <i class="fas fa-crosshairs"></i>
+                    </button>
+                </div>
+                <div class="geocoder-field" id="geocoder-field">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" class="geocoder-input" id="geocoder-input" placeholder="Buscar una ubicación...">
+                    <button type="button" class="geocoder-clear" id="geocoder-clear" title="Borrar búsqueda" aria-label="Borrar búsqueda">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="geocoder-results" id="geocoder-results"></div>
+            </div>
+
+            <div class="coords-container" id="coords-container">
+                <div class="coords-header" id="coords-header">
+                    <div class="coords-title">Ir a coordenadas</div>
+                    <div class="coords-header-actions">
+                        <button class="coords-toggle" id="btn-coords-toggle" title="Contraer panel" aria-label="Contraer panel" aria-expanded="true">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button class="coords-close" id="btn-coords-close" title="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="coords-body">
+                    <div class="coords-row">
+                        <label class="coords-label" for="coords-system">Sistema</label>
+                        <select class="coords-select" id="coords-system">
+                            <option value="EPSG:4326">WGS84 (Latitud / Longitud)</option>
+                            <option value="EPSG:32614">EPSG:32614 (UTM 14N)</option>
+                        </select>
+                    </div>
+                    <div class="coords-grid">
+                        <div class="coords-row">
+                            <label class="coords-label" id="coords-label-a" for="coords-input-a">Latitud</label>
+                            <input class="coords-input" id="coords-input-a" type="text" placeholder="20.523456" autocomplete="off">
+                        </div>
+                        <div class="coords-row">
+                            <label class="coords-label" id="coords-label-b" for="coords-input-b">Longitud</label>
+                            <input class="coords-input" id="coords-input-b" type="text" placeholder="-100.812345" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="coords-help" id="coords-help">Captura latitud y longitud en WGS84 o cambia al sistema EPSG:32614.</div>
+                    <div class="coords-actions">
+                        <button class="coords-btn primary" id="btn-coords-go">Ir al punto</button>
+                        <button class="coords-btn" id="btn-coords-clear">Limpiar</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="route-container" id="route-container">
+                <div class="route-header" id="route-header">
+                    <div class="route-title"><i class="fas fa-route"></i> Ruta</div>
+                    <div class="route-header-actions">
+                        <button class="route-toggle" id="btn-route-toggle" title="Contraer panel" aria-label="Contraer panel" aria-expanded="true">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button class="route-close" id="btn-route-close" title="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="route-body">
+                    <div class="route-help compact" id="route-help">
+                        <div class="route-help-kicker">Ruta en auto</div>
+                        <div class="route-help-title">Traza tu ruta</div>
+                        <div class="route-help-text">Define origen y destino. Luego presiona <strong>Calcular ruta</strong>.</div>
+                    </div>
+                    <div class="route-journey">
+                        <div class="route-journey-rail" aria-hidden="true">
+                            <span class="route-journey-point route-journey-point-origin"></span>
+                            <span class="route-journey-line"></span>
+                            <span class="route-journey-point route-journey-point-destination"></span>
+                        </div>
+                        <div class="route-journey-fields">
+                            <div class="route-field-group" id="route-origin-group">
+                                <div class="route-field-head">
+                                    <span class="route-label"><span class="route-step">1</span><span class="route-label-copy"><span class="route-label-eyebrow">Paso 1</span><strong>Origen</strong></span></span>
+                                    <span class="route-status" id="route-origin-status">Pendiente</span>
+                                </div>
+                                <div class="route-value is-empty" id="route-origin-value">Aún no definido.</div>
+                                <div class="route-actions compact">
+                                    <button class="route-btn primary" id="btn-route-origin-location">Mi ubicación</button>
+                                    <button class="route-btn" id="btn-route-origin-map">Elegir en mapa</button>
+                                </div>
+                            </div>
+                            <div class="route-field-group" id="route-destination-group">
+                                <div class="route-field-head">
+                                    <span class="route-label"><span class="route-step route-step-destination">2</span><span class="route-label-copy"><span class="route-label-eyebrow">Paso 2</span><strong>Destino</strong></span></span>
+                                    <span class="route-status" id="route-destination-status">Pendiente</span>
+                                </div>
+                                <div class="route-value is-empty" id="route-destination-value">Aún no definido.</div>
+                                <div class="route-actions compact">
+                                    <button class="route-btn" id="btn-route-destination-map">Elegir en mapa</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="route-swap" id="btn-route-swap" title="Intercambiar origen y destino" aria-label="Intercambiar origen y destino">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                    </div>
+                    <div class="route-pick-hint is-hidden" id="route-pick-hint">
+                        <i class="fas fa-crosshairs"></i>
+                        <span id="route-pick-hint-text">Haz clic en el mapa para definir el punto.</span>
+                    </div>
+                    <div class="route-summary" id="route-summary"></div>
+                    <div class="route-actions route-main-actions">
+                        <button class="route-btn primary" id="btn-route-calc">Calcular ruta</button>
+                        <button class="route-btn" id="btn-route-clear">Limpiar</button>
+                    </div>
+                    <div class="route-report-wrap" id="route-report-wrap">
+                        <button class="route-btn route-report-btn" id="btn-route-report" disabled>
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Ficha ciudadana PDF</span>
+                        </button>
+                        <div class="route-report-note" id="route-report-note">Incluye distancia, tiempo estimado y el mapa del trayecto para compartir o imprimir.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Eliminada la shell de Street View personalizada. El visor de Street View se controlará mediante el plugin ol-street-view -->
+
+            <!-- Map -->
+            <div id="map"></div>
+            <div class="atlas-cesium-shell" id="atlas-cesium-shell" hidden>
+                <div id="atlas-cesium-view"></div>
+            </div>
+            <div class="map-brand" aria-hidden="true">
+                <img src="assets/images/branding/celaya-logo-horizontal.png" alt="Celaya es la esperanza">
+            </div>
+            
+            <!-- Loading -->
+            <div class="loading-indicator" id="loading">
+                <div class="spinner"></div>
+            </div>
+            
+            <!-- Status dock -->
+            <div class="status-dock" id="status-dock" aria-hidden="true">
+                <div class="status-pill zoom-display" id="zoom-display">Nivel de zoom: 12</div>
+                <div class="scale-slot" id="scale-slot"></div>
+                <div class="status-pill coords-display" id="coords-display">Lat: 0.000000 | Lon: 0.000000</div>
+            </div>
+            
+            <!-- Legend Panel -->
+            <div class="legend-panel visible collapsed" id="legend-panel">
+                <div class="legend-header">
+                    <span>Leyenda</span>
+                    <button class="close-btn" id="close-legend" title="Colapsar leyenda" aria-label="Colapsar leyenda"><i class="fas fa-minus"></i></button>
+                </div>
+                <div class="legend-content" id="legend-content">
+                    <p style="color: var(--text-secondary); text-align: center; padding: 20px;">
+                        Active capas para ver su leyenda
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Feature Info Modal -->
+    <div class="modal-overlay" id="feature-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title"><i class="fas fa-info-circle"></i> Información del elemento</h3>
+                <button class="modal-close" id="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Feature info will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    
+    
+    <!-- Librerías externas -->
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/shpjs@3.6.3/dist/shp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/proj4@2.11.0/dist/proj4.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    
+    <!-- Módulos auxiliares -->
+    <!-- Scripts del plugin ol-street-view -->
+    <script src="assets/ol-street-view/interact.min.js"></script>
+    <script src="assets/ol-street-view/ol-street-view.js"></script>
+    <script src="assets/js/coords-tool.js"></script>
+    <script src="assets/js/route-tool.js"></script>
+    <script src="assets/js/print.js"></script>
+    <script src="assets/js/temp-layers.js"></script>
+    <script src="assets/js/view-history.js"></script>
+    
+    <!-- Animación de entrada -->
+    <script src="assets/js/splash.js"></script>
+    <script src="assets/js/ui-intro-labels.js"></script>
+
+    <!-- Aplicación principal -->
+    <script src="js/app.js"></script>
+    <script src="assets/js/clima-widget.js"></script>
+    <script src="assets/js/cesium-3d.js"></script>
+    <script src="assets/js/analisis-demografico.js"></script>
+
+<!-- Lightbox de imágenes del panel de consulta -->
+<div id="atlas-lightbox" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;flex-direction:column;" onclick="_atlasLightboxClose()">
+  <button onclick="event.stopPropagation();_atlasLightboxClose()" style="position:absolute;top:14px;right:18px;background:none;border:none;color:#fff;font-size:32px;line-height:1;cursor:pointer;z-index:2;">&#x2715;</button>
+  <img id="atlas-lightbox-img" src="" alt="" draggable="false" style="max-width:90vw;max-height:82vh;object-fit:contain;border-radius:8px;box-shadow:0 8px 40px #000;display:block;user-select:none;-webkit-user-drag:none;" onclick="event.stopPropagation()">
+  <div id="atlas-lightbox-caption" style="color:#fff;font-size:13px;margin-top:12px;opacity:0.8;text-align:center;max-width:80vw;"></div>
+</div>
+<script>
+/* ── Tooltip flotante para tb-btn ── */
+(function () {
+  'use strict';
+  var tip = document.createElement('div');
+  tip.id = 'tb-tooltip';
+  tip.setAttribute('role','tooltip');
+  tip.setAttribute('aria-hidden','true');
+  document.body.appendChild(tip);
+
+  var showTimer, hideTimer;
+
+  document.querySelectorAll('.tb-btn[data-tip]').forEach(function(btn){
+    btn.addEventListener('mouseenter', function(){
+      clearTimeout(hideTimer);
+      showTimer = setTimeout(function(){
+        var rect = btn.getBoundingClientRect();
+        tip.textContent = btn.getAttribute('data-tip');
+        tip.classList.add('is-visible');
+        var tw = tip.offsetWidth;
+        var left = rect.left + rect.width/2 - tw/2;
+        left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+        tip.style.left = left + 'px';
+        tip.style.top  = (rect.bottom + 8) + 'px';
+      }, 120);
+    });
+    btn.addEventListener('mouseleave', function(){
+      clearTimeout(showTimer);
+      hideTimer = setTimeout(function(){ tip.classList.remove('is-visible'); }, 80);
+    });
+    btn.addEventListener('click', function(){
+      clearTimeout(showTimer);
+      tip.classList.remove('is-visible');
+    });
+  });
+})();
+</script>
+<script>
+/* ── Sincroniza --header-h con la altura real del header (móvil wrap) ── */
+(function(){
+  var hdr = document.querySelector('.header');
+  if(!hdr) return;
+  function syncH(){
+    var h = hdr.getBoundingClientRect().height;
+    if(h > 0) document.body.style.setProperty('--header-h', h + 'px');
+  }
+  if(window.ResizeObserver){
+    new ResizeObserver(syncH).observe(hdr);
+  } else {
+    window.addEventListener('load', syncH);
+    window.addEventListener('resize', syncH);
+  }
+})();
+</script>
+</body>
+</html>
