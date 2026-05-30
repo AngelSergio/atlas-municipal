@@ -30,6 +30,10 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Raleway:wght@500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Configuración del municipio — carga primero para aplicar colores antes del primer paint -->
+    <script src="municipio.config.js"></script>
+    <script src="assets/js/municipio-theme.js"></script>
+
     <!-- Estilos principales -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="assets/css/toolbar-direct.css">
@@ -51,7 +55,7 @@
         <div class="intro-splash__halo intro-splash__halo--two"></div>
         <div class="intro-splash__content intro-splash__content--logo">
             <div class="intro-splash__logo-wrap intro-splash__logo-wrap--transparent">
-                <img class="intro-splash__logo intro-splash__logo--transparent" src="assets/images/branding/logo-pcb.png" alt="Protección Civil y Bomberos Celaya">
+                <img id="splash-logo" class="intro-splash__logo intro-splash__logo--transparent" src="assets/images/branding/logo-pcb.png" alt="Protección Civil y Bomberos Celaya">
             </div>
             <div class="intro-splash__tagline">
                 <p class="intro-splash__tagline-title">Atlas Municipal de Peligros y Riesgos</p>
@@ -70,7 +74,7 @@
 
         <!-- Logo municipal -->
         <div class="header-logo">
-            <img src="assets/images/branding/logo-pcb-escudo.png" alt="Protección Civil y Bomberos Celaya">
+            <img id="header-logo-escudo" src="assets/images/branding/logo-pcb-escudo.png" alt="Protección Civil y Bomberos Celaya">
             <div class="header-logo-text">
                 <span class="header-logo-line1">PROTECCIÓN CIVIL Y BOMBEROS</span>
                 <span class="header-logo-line2">CELAYA</span>
@@ -342,7 +346,7 @@
                 <div id="atlas-cesium-view"></div>
             </div>
             <div class="map-brand" aria-hidden="true">
-                <img src="assets/images/branding/celaya-logo-horizontal.png" alt="Celaya es la esperanza">
+                <img id="map-brand-logo" src="assets/images/branding/celaya-logo-horizontal.png" alt="Celaya es la esperanza">
             </div>
             
             <!-- Loading -->

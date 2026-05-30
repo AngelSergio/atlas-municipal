@@ -11,6 +11,15 @@ const CONFIG = {
     maxZoom: 28
 };
 
+function mcfg(key, fallback) {
+    const C = window.MUNICIPIO_CONFIG;
+    return (C && C[key] !== undefined) ? C[key] : fallback;
+}
+function mcfgContacto(key, fallback) {
+    const C = window.MUNICIPIO_CONFIG;
+    return (C && C.contacto && C.contacto[key] !== undefined) ? C.contacto[key] : fallback;
+}
+
 function fetchWithTimeout(url, options = {}, ms = 20000) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), ms);
@@ -826,7 +835,7 @@ function initMap() {
             new ol.control.ScaleLine({ target: document.getElementById('scale-slot') }),
             new ZoomGeneralControl(),
             new ol.control.CanvasTitle({
-                title: 'Atlas Municipal de Peligros y Riesgos de Celaya',
+                title: `Atlas Municipal de Peligros y Riesgos de ${mcfg('municipio', 'Celaya')}`,
                 visible: false
             })
         ])
@@ -902,7 +911,7 @@ function initMap() {
             map,
             ol,
             showToast,
-            title: 'Atlas Municipal de Peligros y Riesgos de Celaya'
+            title: `Atlas Municipal de Peligros y Riesgos de ${mcfg('municipio', 'Celaya')}`
         });
     }
 
@@ -2719,7 +2728,7 @@ function setupEventListeners() {
         try {
             await ensureGoogleGeocoder();
             const request = {
-                input: `${query}, Celaya, Guanajuato, México`,
+                input: `${query}, ${mcfg('municipio', 'Celaya')}, ${mcfg('estado', 'Guanajuato')}, México`,
                 componentRestrictions: { country: 'mx' },
                 language: 'es',
                 sessionToken: geocoderSessionToken,
@@ -3142,8 +3151,8 @@ function setupEventListeners() {
         setFeatureModalWide(false);
         document.getElementById('modal-title').innerHTML = '<i class="fas fa-file-lines"></i> Atlas de Peligros y Riesgos';
         document.getElementById('modal-body').innerHTML = `
-            <div style="text-align: center; margin-bottom: 16px;"><img src="assets/images/branding/PC.jpg" alt="Dirección de Protección Civil y Bomberos Celaya" style="max-width: 180px; width: 100%; height: auto; display: inline-block;"></div>
-            <p style="margin-bottom: 16px;">Sistema de información geográfica para la consulta del Atlas Municipal de Peligros y Riesgos de Celaya, Guanajuato.</p>
+            <div style="text-align: center; margin-bottom: 16px;"><img src="${mcfg('logo', 'assets/images/branding/logo-pcb.png')}" alt="${mcfg('dependencia', 'Protección Civil y Bomberos')} ${mcfg('municipio', 'Celaya')}" style="max-width: 180px; width: 100%; height: auto; display: inline-block;"></div>
+            <p style="margin-bottom: 16px;">Sistema de información geográfica para la consulta del Atlas Municipal de Peligros y Riesgos de ${mcfg('municipio', 'Celaya')}, ${mcfg('estado', 'Guanajuato')}.</p>
             <p style="margin-bottom: 16px; color: var(--text-secondary);">Desarrollado con OpenLayers 10.x</p>
             <h4 style="margin: 16px 0 8px;">Recursos:</h4>
             <ul style="list-style: none; padding: 0;">
@@ -3157,17 +3166,17 @@ function setupEventListeners() {
                         <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(139, 0, 48, 0.10); display: flex; align-items: center; justify-content: center; color: var(--accent); flex: 0 0 34px;"><i class="fas fa-building-shield"></i></div>
                         <div>
                             <h4 style="margin: 0; color: var(--text-primary);">Contacto</h4>
-                            <p style="margin: 2px 0 0; font-size: 13px; color: var(--text-secondary);">Dirección de Protección Civil y Bomberos de Celaya</p>
+                            <p style="margin: 2px 0 0; font-size: 13px; color: var(--text-secondary);">${mcfg('dependencia', 'Protección Civil y Bomberos')} de ${mcfg('municipio', 'Celaya')}</p>
                         </div>
                     </div>
                     <div style="display: grid; gap: 10px;">
-                        <a href="tel:+524616150911" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.72); color: inherit; text-decoration: none; border: 1px solid rgba(0,0,0,0.05);">
+                        <a href="${mcfgContacto('telefonoHref', 'tel:+524616150911')}" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.72); color: inherit; text-decoration: none; border: 1px solid rgba(0,0,0,0.05);">
                             <i class="fas fa-phone" style="color: var(--accent); width: 16px; flex: 0 0 16px;"></i>
-                            <span style="color: var(--text-secondary);"><strong style="color: var(--text-primary);">Teléfono:</strong> (461) 615-0911</span>
+                            <span style="color: var(--text-secondary);"><strong style="color: var(--text-primary);">Teléfono:</strong> ${mcfgContacto('telefono', '(461) 615-0911')}</span>
                         </a>
-                        <a href="https://www.google.com/maps/search/?api=1&query=Orquídeas+123,+Col.+Rosalinda+I,+Celaya,+Gto." target="_blank" rel="noopener noreferrer" style="display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.72); color: inherit; text-decoration: none; border: 1px solid rgba(0,0,0,0.05);">
+                        <a href="${mcfgContacto('mapsUrl', '#')}" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.72); color: inherit; text-decoration: none; border: 1px solid rgba(0,0,0,0.05);">
                             <i class="fas fa-map-marker-alt" style="color: var(--accent); width: 16px; flex: 0 0 16px; margin-top: 3px;"></i>
-                            <span style="color: var(--text-secondary);"><strong style="color: var(--text-primary);">Dirección:</strong> Orquídeas #123, Col. Rosalinda I, C.P. 38060, Celaya, Gto.</span>
+                            <span style="color: var(--text-secondary);"><strong style="color: var(--text-primary);">Dirección:</strong> ${mcfgContacto('direccion', '')}</span>
                         </a>
                     </div>
                 </div>
@@ -5068,7 +5077,7 @@ async function exportElevationProfileToExcel() {
     const now = new Date();
     const pad = (n) => String(n).padStart(2, '0');
     const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    const filename = `Atlas_Celaya_Perfil_de_Elevacion_${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.xlsx`;
+    const filename = `Atlas_${mcfg('municipio', 'Celaya')}_Perfil_de_Elevacion_${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.xlsx`;
 
     const excelRows = [
         buildExcelRow(1, ['Perfil de elevación'], { 0: 1 }),
@@ -5447,7 +5456,7 @@ async function exportTerrain3DToExcel() {
 
     const now = new Date();
     const pad = (n) => String(n).padStart(2, '0');
-    const filename = `Atlas_Celaya_Vista_3D_del_Terreno_${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.xlsx`;
+    const filename = `Atlas_${mcfg('municipio', 'Celaya')}_Vista_3D_del_Terreno_${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.xlsx`;
 
     const excelRows = [
         buildExcelRow(1, ['Vista 3D básica del terreno'], { 0: 1 }),

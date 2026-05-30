@@ -1932,7 +1932,7 @@
     const isPolygon = report.selectionMode === 'polygon';
     const riskItems = report.nearby.filter(item => item.kind === 'risk');
     const supportItems = report.nearby.filter(item => item.kind === 'support');
-    const logoSrc = 'assets/images/branding/logo-pcb.png';
+    const logoSrc = window.MUNICIPIO_CONFIG?.logo || 'assets/images/branding/logo-pcb.png';
 
     try {
       const pdfBlob = await buildReportPdfBlob({ report, riskItems, supportItems, isPolygon, logoSrc });
@@ -1988,7 +1988,7 @@
 
     ctx.fillStyle = '#4d4d56';
     ctx.font = '400 18px Arial, Helvetica, sans-serif';
-    ctx.fillText('Protección Civil y Bomberos · Atlas Municipal de Peligros y Riesgos de Celaya', page.margin + 116, y + 48);
+    ctx.fillText(`${window.MUNICIPIO_CONFIG?.dependencia || 'Protección Civil y Bomberos'} · Atlas Municipal de Peligros y Riesgos de ${window.MUNICIPIO_CONFIG?.municipio || 'Celaya'}`, page.margin + 116, y + 48);
     ctx.fillText(`Generado: ${report.generatedAt.toLocaleString('es-MX')}`, page.margin + 116, y + 74);
     y += 114;
 
