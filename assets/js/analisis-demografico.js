@@ -1757,8 +1757,8 @@
     ];
     host.innerHTML = items.map(item => `
       <div class="analisis-kpi-card">
-        <div class="analisis-kpi-value">${item.value}</div>
-        <div class="analisis-kpi-label">${item.label}</div>
+        <div class="analisis-kpi-value">${escapeHtml(item.value)}</div>
+        <div class="analisis-kpi-label">${escapeHtml(item.label)}</div>
       </div>
     `).join('');
   }
