@@ -11,6 +11,13 @@ const CONFIG = {
     maxZoom: 28
 };
 
+function fetchWithTimeout(url, options = {}, ms = 20000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    return fetch(url, { ...options, signal: controller.signal })
+        .finally(() => clearTimeout(timer));
+}
+
 // ========================================
 // LAYER EXTENTS (EPSG:3857)
 // Extensiones predefinidas para zoom rápido
@@ -1121,7 +1128,7 @@ function ensureRioLajaAnimationData() {
     return (async () => {
         for (const url of candidates) {
             try {
-                const response = await fetch(url);
+                const response = await fetchWithTimeout(url);
                 if (!response.ok) continue;
                 const data = await response.json();
                 const features = new ol.format.GeoJSON().readFeatures(data, {
@@ -1335,7 +1342,7 @@ function ensureGasolinerasStyledData() {
     return (async () => {
         for (const url of candidates) {
             try {
-                const response = await fetch(url);
+                const response = await fetchWithTimeout(url);
                 if (!response.ok) continue;
                 const data = await response.json();
                 const features = new ol.format.GeoJSON().readFeatures(data, {
@@ -2127,7 +2134,7 @@ async function ensureWMSLayerExtents() {
     wmsCapabilitiesPromise = (async () => {
         for (const capabilitiesUrl of capabilitiesUrls) {
             try {
-                const response = await fetch(capabilitiesUrl);
+                const response = await fetchWithTimeout(capabilitiesUrl);
                 if (!response.ok) continue;
                 const xmlText = await response.text();
 
@@ -2176,7 +2183,7 @@ async function fetchLayerExtentFromWFS(layerKey) {
     for (const typeName of typeNames) {
         const wfsUrl = `${CONFIG.geoserverUrl}/${CONFIG.workspace}/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=${encodeURIComponent(typeName)}&outputFormat=application/json&srsName=EPSG:3857`;
         try {
-            const response = await fetch(wfsUrl);
+            const response = await fetchWithTimeout(wfsUrl);
             if (!response.ok) continue;
             const data = await response.json();
             const features = new ol.format.GeoJSON().readFeatures(data, {
@@ -2256,7 +2263,7 @@ async function getLegendUrl(legendBaseUrl, legendLayerName) {
     const base = `${legendBaseUrl}?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&TRANSPARENT=true&LAYER=${encodeURIComponent(legendLayerName)}&LEGEND_OPTIONS=fontAntiAliasing:true;fontSize:10;dpi:90`;
     try {
         const jsonUrl = `${legendBaseUrl}?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=application/json&LAYER=${encodeURIComponent(legendLayerName)}`;
-        const resp = await fetch(jsonUrl);
+        const resp = await fetchWithTimeout(jsonUrl, {}, 15000);
         const data = await resp.json();
         const rules = data?.Legend?.[0]?.rules || [];
         const isSingleSymbol = rules.length <= 1 &&
@@ -3853,7 +3860,7 @@ function _probeLayer(evt, layerKey) {
                 { 'INFO_FORMAT': 'application/json', 'FEATURE_COUNT': '5' }
             );
             if (!url) return resolve(null);
-            fetch(url)
+            fetchWithTimeout(url, {}, 15000)
                 .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
                 .then(function(data) {
                     if (data && data.features && data.features.length) {

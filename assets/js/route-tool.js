@@ -1,5 +1,12 @@
 
 (function () {
+  function fetchWithTimeout(url, options = {}, ms = 15000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    return fetch(url, { ...options, signal: controller.signal })
+      .finally(() => clearTimeout(timer));
+  }
+
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
   }
@@ -439,7 +446,7 @@
 
   function requestOsrmRoute(origin, destination) {
     const url = `https://router.project-osrm.org/route/v1/driving/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?overview=full&geometries=geojson&steps=false`;
-    return fetch(url)
+    return fetchWithTimeout(url)
       .then((response) => {
         if (!response.ok) throw new Error('No se pudo consultar la ruta');
         return response.json();

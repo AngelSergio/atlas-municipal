@@ -1,4 +1,11 @@
 (function () {
+  function fetchWithTimeout(url, options = {}, ms = 10000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    return fetch(url, { ...options, signal: controller.signal })
+      .finally(() => clearTimeout(timer));
+  }
+
   const DEFAULT_COORDS = { lat: 20.5235, lon: -100.8157, label: 'Centro de Celaya' };
 
   /* Descripciones completas para el ciudadano */
@@ -177,12 +184,12 @@
       daily:  'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max,precipitation_sum',
       forecast_days: '5', timezone: 'auto'
     }).toString();
-    const r = await fetch(url); if (!r.ok) throw new Error('wx'); return r.json();
+    const r = await fetchWithTimeout(url); if (!r.ok) throw new Error('wx'); return r.json();
   }
   async function fetchAir({ lat, lon }) {
     const url = new URL('https://air-quality-api.open-meteo.com/v1/air-quality');
     url.search = new URLSearchParams({ latitude: String(lat), longitude: String(lon), current: 'european_aqi', timezone: 'auto' }).toString();
-    const r = await fetch(url); if (!r.ok) throw new Error('air'); return r.json();
+    const r = await fetchWithTimeout(url); if (!r.ok) throw new Error('air'); return r.json();
   }
 
   /* ── Render ── */
