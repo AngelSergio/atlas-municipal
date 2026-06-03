@@ -7,6 +7,11 @@ window.MUNICIPIO_CONFIG = {
   estado:        'Guanajuato',
   dependencia:   'Protección Civil y Bomberos',
 
+  geoserver: {
+    url:       '/geoserver',
+    workspace: 'pc'
+  },
+
   logo:          'assets/images/branding/logo-pcb.png',
   logoEscudo:    'assets/images/branding/logo-pcb-escudo.png',
   logoMunicipio: 'assets/images/branding/celaya-logo-horizontal.png',

@@ -2311,7 +2311,7 @@
 
         try {
             const provider = new Cesium.WebMapServiceImageryProvider({
-                url: '/geoserver/pc/wms',
+                url: (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.geoserver && window.MUNICIPIO_CONFIG.geoserver.url ? `${window.MUNICIPIO_CONFIG.geoserver.url}/${window.MUNICIPIO_CONFIG.geoserver.workspace}/wms` : '/geoserver/pc/wms'),
                 layers: 'Mpio',
                 parameters: {
                     service: 'WMS',

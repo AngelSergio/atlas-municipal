@@ -2,8 +2,8 @@
 // CONFIGURATION
 // ========================================
 const CONFIG = {
-    geoserverUrl: '/geoserver',
-    workspace: 'pc',
+    geoserverUrl: (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.geoserver && window.MUNICIPIO_CONFIG.geoserver.url) || '/geoserver',
+    workspace:    (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.geoserver && window.MUNICIPIO_CONFIG.geoserver.workspace) || 'pc',
     center: [-100.8167, 20.5289], // Celaya lon, lat
     zoom: 12,
     homeExtent3857: [-11233767.3321, 2315094.3382, -11204184.5071, 2356006.2018],
@@ -279,7 +279,6 @@ const LAYER_GROUPS = (window.MUNICIPIO_LAYERS && window.MUNICIPIO_LAYERS.groups)
                         name: 'Límite Municipal',
                         layer: 'Mpio',
                         visible: true,
-                        wmsUrl: '/geoserver/pc/wms',
                         wmsLayer: 'Mpio'
                     },
                     { name: 'Códigos Postales', layer: 'CP_CYA' },
@@ -424,7 +423,7 @@ const LAYER_GROUPS = (window.MUNICIPIO_LAYERS && window.MUNICIPIO_LAYERS.groups)
                             { name: 'Ríos y arroyos', layer: 'Rios_Arroyos' },
                             { name: 'Pozos, cárcamos y tanques', layer: 'Pozos_carcamos_tanques' },
                             { name: 'Panteones', layer: 'PANTEONES_MPIO_CELAYA' },
-                            { name: 'Balnearios', layer: 'Balnerios', wmsUrl: '/geoserver/pc/wms', wmsLayer: 'Balnerios' },
+                            { name: 'Balnearios', layer: 'Balnerios', wmsLayer: 'Balnerios' },
                             { name: 'Densidad incidentes socio-organizativos', layer: 'Densidad_incidentes_socio_organizativos' }
                         ]
                     }
