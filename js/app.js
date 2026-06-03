@@ -28,10 +28,9 @@ function fetchWithTimeout(url, options = {}, ms = 20000) {
 }
 
 // ========================================
-// LAYER EXTENTS (EPSG:3857)
-// Extensiones predefinidas para zoom rápido
+// LAYER EXTENTS — cargados desde municipio.layers.js
 // ========================================
-const LAYER_EXTENTS = {
+const LAYER_EXTENTS = (window.MUNICIPIO_LAYERS && window.MUNICIPIO_LAYERS.extents) || {
     "Estado": [-11365506.9429,2261235.3742,-11094348.4660,2492413.1658],
     "Manzanas_INEGI_2020": [-11231812.8316,2321893.9467,-11214292.7322,2349109.2308],
     "manzanas_densidad_poblacion": [-11231812.8316,2321893.9467,-11214292.7322,2349109.2308],
@@ -208,9 +207,9 @@ function loadGooglePlacesApi() {
 }
 
 // ========================================
-// LAYER DEFINITIONS
+// LAYER DEFINITIONS — cargados desde municipio.layers.js
 // ========================================
-const LAYER_GROUPS = [
+const LAYER_GROUPS = (window.MUNICIPIO_LAYERS && window.MUNICIPIO_LAYERS.groups) || [
     {
         id: 'temas',
         name: 'TEMAS',
