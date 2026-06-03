@@ -4,9 +4,9 @@
 const CONFIG = {
     geoserverUrl: (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.geoserver && window.MUNICIPIO_CONFIG.geoserver.url) || '/geoserver',
     workspace:    (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.geoserver && window.MUNICIPIO_CONFIG.geoserver.workspace) || 'pc',
-    center: [-100.8167, 20.5289], // Celaya lon, lat
-    zoom: 12,
-    homeExtent3857: [-11233767.3321, 2315094.3382, -11204184.5071, 2356006.2018],
+    center: (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.mapa && window.MUNICIPIO_CONFIG.mapa.center) || [-100.8167, 20.5289],
+    zoom:   (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.mapa && window.MUNICIPIO_CONFIG.mapa.zoom)   || 12,
+    homeExtent3857: (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.mapa && window.MUNICIPIO_CONFIG.mapa.homeExtent3857) || [-11233767.3321, 2315094.3382, -11204184.5071, 2356006.2018],
     minZoom: 8,
     maxZoom: 28
 };

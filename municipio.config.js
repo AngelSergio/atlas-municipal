@@ -12,6 +12,12 @@ window.MUNICIPIO_CONFIG = {
     workspace: 'pc'
   },
 
+  mapa: {
+    center:         [-100.8167, 20.5289], // [longitud, latitud] WGS84
+    zoom:           12,
+    homeExtent3857: [-11233767.3321, 2315094.3382, -11204184.5071, 2356006.2018]
+  },
+
   logo:          'assets/images/branding/logo-pcb.png',
   logoEscudo:    'assets/images/branding/logo-pcb-escudo.png',
   logoMunicipio: 'assets/images/branding/celaya-logo-horizontal.png',
