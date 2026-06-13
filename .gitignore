@@ -1,3 +1,14 @@
 tokens.txt
 CLAUDE.md
 00_CONTEXT.md
+
+# Configuración específica del municipio — cada instalación provee sus propios archivos.
+# Copiar los .example.js y renombrarlos para personalizar.
+municipio.config.js
+municipio.layers.js
+
+# Logos y branding específicos del municipio (no genéricos)
+assets/images/branding/apaseo-*.png
+
+# Archivos temporales de carga de capas/logos
+temporal/

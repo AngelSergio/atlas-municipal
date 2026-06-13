@@ -3,29 +3,37 @@
     const CESIUM_BASE_URL = `https://cesium.com/downloads/cesiumjs/releases/${CESIUM_VERSION}/Build/Cesium/`;
     const CESIUM_ION_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI2OTJhNDMyYS1mNzdhLTQ2MzItOGJlOS1iMGZiYmQzYTU1MWYiLCJpZCI6NDM4MDkyLCJzdWIiOiJhbmdlbHNlcmdpbyIsImlzcyI6Imh0dHBzOi8vYXBpLmNlc2l1bS5jb20iLCJhdWQiOiJhdGxhcy1tdW5pY2lwYWwtY2VzaXVtIiwiaWF0IjoxNzgwMDk3NTYyfQ.lk79bwoXbJKDWyQUVX3PE4MhEFH9ArcigrPB7KQ1m1k';
 
-    const CELAYA_HOME = {
-        west: -100.9146489266801,
-        south: 20.354671763536427,
-        east: -100.64890188823075,
-        north: 20.69885438724301,
-        centerLon: -100.8167,
-        centerLat: 20.5289,
-        height: 26000
+    // Vista 3D derivada del tema del municipio (window.MUNICIPIO_CONFIG.mapa).
+    const _mcfgMapa = (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.mapa) || {};
+    const _center  = _mcfgMapa.center || [-100.8167, 20.5289];
+    const _wgs     = _mcfgMapa.homeExtentWGS84 || [-100.9146, 20.3547, -100.6489, 20.6989];
+    const _vista3D = _mcfgMapa.vista3D || {};
+
+    const MUNICIPIO_HOME = {
+        west:      _wgs[0],
+        south:     _wgs[1],
+        east:      _wgs[2],
+        north:     _wgs[3],
+        centerLon: _center[0],
+        centerLat: _center[1],
+        height:    26000
     };
 
-    const CELAYA_START_VIEW = {
-        lon: -100.8167,
-        lat: 20.5289,
-        height: 42000,
+    const MUNICIPIO_START_VIEW = {
+        lon:     _center[0],
+        lat:     _center[1],
+        height:  _vista3D.height || 42000,
         heading: 0,
-        pitch: -55,
-        roll: 0
+        pitch:   _vista3D.pitch != null ? _vista3D.pitch : -55,
+        roll:    0
     };
+
+    const MUNICIPIO_NOMBRE = (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.municipio) || '';
 
     const atlasGooglePlacesConfig = window.AtlasGooglePlacesConfig || {};
     const GOOGLE_PLACES_API_KEY = atlasGooglePlacesConfig.apiKey || 'AIzaSyBuC0CL7cegUQk4ietLseI6LxePNOw2ld8';
-    const GOOGLE_CELAYA_BIAS = atlasGooglePlacesConfig.bias || { lat: 20.5235, lng: -100.8157 };
-    const GOOGLE_CELAYA_BIAS_RADIUS = Number(atlasGooglePlacesConfig.radius) || 25000;
+    const GOOGLE_PLACES_BIAS = atlasGooglePlacesConfig.bias || { lat: _center[1], lng: _center[0] };
+    const GOOGLE_PLACES_BIAS_RADIUS = Number(atlasGooglePlacesConfig.radius) || 25000;
 
     const state = {
         viewer: null,
@@ -485,8 +493,8 @@
             language: 'es',
             componentRestrictions: { country: 'mx' },
             sessionToken: state.googleSessionToken,
-            location: new google.maps.LatLng(GOOGLE_CELAYA_BIAS.lat, GOOGLE_CELAYA_BIAS.lng),
-            radius: GOOGLE_CELAYA_BIAS_RADIUS
+            location: new google.maps.LatLng(GOOGLE_PLACES_BIAS.lat, GOOGLE_PLACES_BIAS.lng),
+            radius: GOOGLE_PLACES_BIAS_RADIUS
         };
 
         return new Promise((resolve) => {
@@ -996,7 +1004,7 @@
             pad(value.getMinutes()),
             pad(value.getSeconds())
         ].join('');
-        return `Vista_3D_Celaya_${stamp}.pdf`;
+        return `Vista_3D_${(MUNICIPIO_NOMBRE || 'Municipio').replace(/\s+/g, '_')}_${stamp}.pdf`;
     }
 
     function getCesiumViewSummary(viewer, Cesium) {
@@ -1123,7 +1131,7 @@
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
 
-        ctx.strokeStyle = '#8b0f3b';
+        ctx.strokeStyle = '#0f518b';
         ctx.lineWidth = 7;
         ctx.beginPath();
         ctx.moveTo(32, 33);
@@ -1314,7 +1322,7 @@
         ctx.fill();
         ctx.stroke();
 
-        ctx.fillStyle = '#8b0f3b';
+        ctx.fillStyle = '#0f518b';
         ctx.font = `bold ${titleFont}px Arial, sans-serif`;
         ctx.fillText('Leyenda', padding, padding + 20);
 
@@ -1450,11 +1458,12 @@
             pdf.setTextColor(110, 101, 112);
             pdf.setFont('helvetica', 'italic');
             pdf.setFontSize(9.5);
+            const _atlasNombre = `Atlas Municipal de Peligros y Riesgos de ${MUNICIPIO_NOMBRE}`.trim();
             const footerText = legendSnapshot
-                ? 'Documento generado desde la vista 3D del Atlas Municipal de Peligros y Riesgos de Celaya, con la leyenda visible al momento de exportar.'
+                ? `Documento generado desde la vista 3D del ${_atlasNombre}, con la leyenda visible al momento de exportar.`
                 : includeLegend
-                    ? 'Documento generado desde la vista 3D del Atlas Municipal de Peligros y Riesgos de Celaya. La opción de leyenda estaba activada, pero no había una leyenda visible y expandida para incluir.'
-                    : 'Documento generado desde la vista 3D del Atlas Municipal de Peligros y Riesgos de Celaya.';
+                    ? `Documento generado desde la vista 3D del ${_atlasNombre}. La opción de leyenda estaba activada, pero no había una leyenda visible y expandida para incluir.`
+                    : `Documento generado desde la vista 3D del ${_atlasNombre}.`;
             pdf.text(footerText, margin, pageH - 12);
 
             pdf.save(buildCesiumPdfFilename(createdAt));
@@ -2151,16 +2160,16 @@
 
         try {
             Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(
-                CELAYA_HOME.west,
-                CELAYA_HOME.south,
-                CELAYA_HOME.east,
-                CELAYA_HOME.north
+                MUNICIPIO_HOME.west,
+                MUNICIPIO_HOME.south,
+                MUNICIPIO_HOME.east,
+                MUNICIPIO_HOME.north
             );
             if (typeof Cesium.Camera.DEFAULT_VIEW_FACTOR !== 'undefined') {
                 Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
             }
         } catch (error) {
-            console.warn('No se pudo configurar Home directo a Celaya', error);
+            console.warn('No se pudo configurar Home directo al municipio', error);
         }
     }
 
@@ -2178,13 +2187,13 @@
             if (event) {
                 event.cancel = true;
             }
-            flyToCelayaStartView(viewer, Cesium);
+            flyToMunicipioStartView(viewer, Cesium);
         });
 
         command.__atlasHomeOverrideBound = true;
     }
 
-    function flyToCelayaHome(viewer, Cesium) {
+    function flyToMunicipioHome(viewer, Cesium) {
         if (!viewer || !Cesium) return;
 
         try {
@@ -2196,10 +2205,10 @@
         try {
             viewer.camera.flyTo({
                 destination: Cesium.Rectangle.fromDegrees(
-                    CELAYA_HOME.west,
-                    CELAYA_HOME.south,
-                    CELAYA_HOME.east,
-                    CELAYA_HOME.north
+                    MUNICIPIO_HOME.west,
+                    MUNICIPIO_HOME.south,
+                    MUNICIPIO_HOME.east,
+                    MUNICIPIO_HOME.north
                 ),
                 orientation: {
                     heading: 0,
@@ -2214,15 +2223,15 @@
             }
             return;
         } catch (error) {
-            console.warn('No se pudo volar al rectángulo de Celaya, se usará centro', error);
+            console.warn('No se pudo volar al rectángulo del municipio, se usará centro', error);
         }
 
         try {
             viewer.camera.flyTo({
                 destination: Cesium.Cartesian3.fromDegrees(
-                    CELAYA_HOME.centerLon,
-                    CELAYA_HOME.centerLat,
-                    CELAYA_HOME.height
+                    MUNICIPIO_HOME.centerLon,
+                    MUNICIPIO_HOME.centerLat,
+                    MUNICIPIO_HOME.height
                 ),
                 orientation: {
                     heading: 0,
@@ -2235,12 +2244,12 @@
                 viewer.scene.requestRender();
             }
         } catch (error) {
-            console.warn('No se pudo aplicar Home directo a Celaya', error);
+            console.warn('No se pudo aplicar Home directo al municipio', error);
         }
     }
 
 
-    function flyToCelayaStartView(viewer, Cesium) {
+    function flyToMunicipioStartView(viewer, Cesium) {
         if (!viewer || !Cesium) return;
 
         try {
@@ -2251,10 +2260,10 @@
 
         try {
             const rectangle = Cesium.Rectangle.fromDegrees(
-                CELAYA_HOME.west,
-                CELAYA_HOME.south,
-                CELAYA_HOME.east,
-                CELAYA_HOME.north
+                MUNICIPIO_HOME.west,
+                MUNICIPIO_HOME.south,
+                MUNICIPIO_HOME.east,
+                MUNICIPIO_HOME.north
             );
             const sphere = Cesium.BoundingSphere.fromRectangle3D(rectangle, Cesium.Ellipsoid.WGS84, 1200);
             const range = Math.max(52000, sphere.radius * 2.35);
@@ -2272,12 +2281,12 @@
                 viewer.scene.requestRender();
             }
         } catch (error) {
-            console.warn('No se pudo aplicar la vista inicial 3D de Celaya', error);
+            console.warn('No se pudo aplicar la vista inicial 3D del municipio', error);
             try {
                 viewer.camera.flyTo({
                     destination: Cesium.Cartesian3.fromDegrees(
-                        CELAYA_START_VIEW.lon,
-                        CELAYA_START_VIEW.lat,
+                        MUNICIPIO_START_VIEW.lon,
+                        MUNICIPIO_START_VIEW.lat,
                         36000
                     ),
                     orientation: {
@@ -2292,7 +2301,7 @@
                 }
             } catch (fallbackError) {
                 console.warn('Tampoco se pudo aplicar la vista inicial 3D de respaldo', fallbackError);
-                flyToCelayaHome(viewer, Cesium);
+                flyToMunicipioHome(viewer, Cesium);
             }
         }
     }
@@ -2734,7 +2743,7 @@
             if (viewer && typeof viewer.resize === 'function') viewer.resize();
             updateLegendLayoutFor3D();
             if (window.Cesium) {
-                flyToCelayaStartView(viewer, window.Cesium);
+                flyToMunicipioStartView(viewer, window.Cesium);
             } else {
                 flyToCurrentView(viewer);
             }

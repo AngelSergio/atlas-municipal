@@ -48,9 +48,9 @@
       '    </filter>',
       '  </defs>',
       '  <g filter="url(#coords-pin-shadow)">',
-      '    <path d="M18 2C10.27 2 4 8.27 4 16c0 10.62 11.08 20.96 13.45 23.04a.9.9 0 0 0 1.1 0C20.92 36.96 32 26.62 32 16 32 8.27 25.73 2 18 2Z" fill="#b0183f" stroke="#ffffff" stroke-width="2"/>',
+      '    <path d="M18 2C10.27 2 4 8.27 4 16c0 10.62 11.08 20.96 13.45 23.04a.9.9 0 0 0 1.1 0C20.92 36.96 32 26.62 32 16 32 8.27 25.73 2 18 2Z" fill="#1e73be" stroke="#ffffff" stroke-width="2"/>',
       '    <circle cx="18" cy="16" r="5.3" fill="#ffffff" opacity=".97"/>',
-      '    <circle cx="18" cy="16" r="2.1" fill="#b0183f" opacity=".92"/>',
+      '    <circle cx="18" cy="16" r="2.1" fill="#1e73be" opacity=".92"/>',
       '  </g>',
       '</svg>'
     ].join('');

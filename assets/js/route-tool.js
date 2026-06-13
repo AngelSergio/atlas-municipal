@@ -508,7 +508,7 @@
               stroke: new ol.style.Stroke({ color: 'rgba(255,255,255,0.92)', width: 7, lineCap: 'round', lineJoin: 'round' })
             }),
             new ol.style.Style({
-              stroke: new ol.style.Stroke({ color: '#931D3D', width: 4.2, lineCap: 'round', lineJoin: 'round' })
+              stroke: new ol.style.Stroke({ color: '#1e73be', width: 4.2, lineCap: 'round', lineJoin: 'round' })
             })
           ];
         }
@@ -526,7 +526,7 @@
         }
         return new ol.style.Style({
           image: new ol.style.Icon({
-            src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(createPinSvg('#a11e44', '#a11e44', 'B')),
+            src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(createPinSvg('#1e64a1', '#1e64a1', 'B')),
             anchor: [0.5, 1],
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',

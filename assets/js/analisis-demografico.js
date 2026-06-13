@@ -5,6 +5,9 @@
 (function () {
   'use strict';
 
+  // Nombre del municipio tomado del tema (window.MUNICIPIO_CONFIG).
+  const MUNI = (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.municipio) || 'el municipio';
+
   const GEOM_CANDIDATES = ['geom', 'the_geom', 'geometry', 'GEOMETRY', 'GEOM'];
   const CONTEXT_LAYERS = ['Manzanas_INEGI_2020', 'manzanas_densidad_poblacion'];
   const COLONIA_LAYERS = ['COLONIAS_CYA'];
@@ -154,7 +157,7 @@
           const styles = [new ol.style.Style({
             fill: new ol.style.Fill({ color: getBufferFillColor() }),
             stroke: new ol.style.Stroke({
-              color: '#931D3D',
+              color: '#1e73be',
               width: 2.5,
               lineDash: [10, 8],
               lineDashOffset: bufferAnimationPhase,
@@ -174,7 +177,7 @@
                 textAlign: 'center',
                 textBaseline: 'bottom',
                 offsetY: -2,
-                fill: new ol.style.Fill({ color: '#931D3D' }),
+                fill: new ol.style.Fill({ color: '#1e73be' }),
                 stroke: new ol.style.Stroke({ color: 'rgba(255,255,255,0.98)', width: 3.5 })
               })
             }));
@@ -184,7 +187,7 @@
         return new ol.style.Style({
           image: new ol.style.Circle({
             radius: 7,
-            fill: new ol.style.Fill({ color: '#931D3D' }),
+            fill: new ol.style.Fill({ color: '#1e73be' }),
             stroke: new ol.style.Stroke({ color: '#ffffff', width: 2 })
           })
         });
@@ -328,7 +331,7 @@
           </div>
 
           <div class="analisis-section-card">
-            <div class="analisis-section-title"><i class="fas fa-house"></i> Refugios temporales de Celaya</div>
+            <div class="analisis-section-title"><i class="fas fa-house"></i> Refugios temporales de ${MUNI}</div>
             <div class="analisis-section-intro analisis-support-intro" id="analisis-support-intro"></div>
             <div class="analisis-list" id="analisis-support-nearby-list"></div>
           </div>
@@ -1412,16 +1415,16 @@
     return [{
       icon: 'fa-circle-info',
       title: 'Refugios temporales no disponibles',
-      detail: 'No fue posible cargar el catálogo de refugios temporales de Celaya para consulta.'
+      detail: `No fue posible cargar el catálogo de refugios temporales de ${MUNI} para consulta.`
     }];
   }
 
   function buildSupportIntroText(report) {
     const count = Array.isArray(report?.supportRegistry) ? report.supportRegistry.length : 0;
     if (count > 0) {
-      return `En Celaya se cuenta con ${count} refugios temporales. Pueden habilitarse en caso de emergencia, desastre o contingencia para brindar protección temporal a la población que no tenga acceso a una habitación segura.`;
+      return `En ${MUNI} se cuenta con ${count} refugios temporales. Pueden habilitarse en caso de emergencia, desastre o contingencia para brindar protección temporal a la población que no tenga acceso a una habitación segura.`;
     }
-    return 'En Celaya se cuenta con refugios temporales. Pueden habilitarse en caso de emergencia, desastre o contingencia para brindar protección temporal a la población que no tenga acceso a una habitación segura.';
+    return `En ${MUNI} se cuenta con refugios temporales. Pueden habilitarse en caso de emergencia, desastre o contingencia para brindar protección temporal a la población que no tenga acceso a una habitación segura.`;
   }
 
   function renderSupportIntro(report) {
@@ -1932,7 +1935,7 @@
     const isPolygon = report.selectionMode === 'polygon';
     const riskItems = report.nearby.filter(item => item.kind === 'risk');
     const supportItems = report.nearby.filter(item => item.kind === 'support');
-    const logoSrc = window.MUNICIPIO_CONFIG?.logo || 'assets/images/branding/logo-pcb.png';
+    const logoSrc = window.MUNICIPIO_CONFIG?.logo || 'assets/images/branding/apaseo-pc.png';
 
     try {
       const pdfBlob = await buildReportPdfBlob({ report, riskItems, supportItems, isPolygon, logoSrc });
@@ -1967,7 +1970,7 @@
 
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, page.width, page.height);
-    ctx.fillStyle = '#931D3D';
+    ctx.fillStyle = '#1e73be';
     ctx.fillRect(0, 0, page.width, 82);
 
     let y = 108;
@@ -1975,26 +1978,26 @@
     if (logo) {
       drawContainedImage(ctx, logo, page.margin, y - 8, 92, 92);
     } else {
-      ctx.fillStyle = '#f4dfe5';
+      ctx.fillStyle = '#dfeaf4';
       roundRect(ctx, page.margin, y - 8, 92, 92, 20, true, false);
-      ctx.fillStyle = '#931D3D';
+      ctx.fillStyle = '#1e73be';
       ctx.font = '700 24px Arial, Helvetica, sans-serif';
       ctx.fillText('PCB', page.margin + 20, y + 48);
     }
 
-    ctx.fillStyle = '#931D3D';
+    ctx.fillStyle = '#1e73be';
     ctx.font = '700 34px Arial, Helvetica, sans-serif';
     ctx.fillText('Análisis de riesgo por ubicación', page.margin + 116, y + 16);
 
     ctx.fillStyle = '#4d4d56';
     ctx.font = '400 18px Arial, Helvetica, sans-serif';
-    ctx.fillText(`${window.MUNICIPIO_CONFIG?.dependencia || 'Protección Civil y Bomberos'} · Atlas Municipal de Peligros y Riesgos de ${window.MUNICIPIO_CONFIG?.municipio || 'Celaya'}`, page.margin + 116, y + 48);
+    ctx.fillText(`${window.MUNICIPIO_CONFIG?.dependencia || 'Protección Civil y Bomberos'} · Atlas Municipal de Peligros y Riesgos de ${MUNI}`, page.margin + 116, y + 48);
     ctx.fillText(`Generado: ${report.generatedAt.toLocaleString('es-MX')}`, page.margin + 116, y + 74);
     y += 114;
 
-    ctx.fillStyle = '#f6e8ec';
+    ctx.fillStyle = '#e8eff6';
     roundRect(ctx, page.margin, y, 320, 42, 21, true, false);
-    ctx.fillStyle = '#931D3D';
+    ctx.fillStyle = '#1e73be';
     ctx.font = '700 22px Arial, Helvetica, sans-serif';
     ctx.fillText(`Nivel de atención: ${report.summary.level}`, page.margin + 18, y + 28);
     y += 62;
@@ -2024,10 +2027,10 @@
       const x = page.margin + (col * (colWidth + colGap));
       const yy = y + (row * (kpiHeight + 14));
       ctx.fillStyle = '#ffffff';
-      ctx.strokeStyle = '#ead7dd';
+      ctx.strokeStyle = '#dbe8f4';
       ctx.lineWidth = 2;
       roundRect(ctx, x, yy, colWidth, kpiHeight, 18, true, true);
-      ctx.fillStyle = '#931D3D';
+      ctx.fillStyle = '#1e73be';
       ctx.font = '700 30px Arial, Helvetica, sans-serif';
       fitText(ctx, kpis[i].value, x + 18, yy + 40, colWidth - 36, 30, 20);
       ctx.fillStyle = '#5a5a62';
@@ -2061,12 +2064,12 @@
       const detailTxt = item.detail ? ` · ${item.detail}` : '';
       return `${item.title}${detailTxt}`;
     }));
-    y = drawSectionList(ctx, 'Refugios temporales de Celaya', supportTextItems, page.margin, y, page.contentWidth);
+    y = drawSectionList(ctx, `Refugios temporales de ${MUNI}`, supportTextItems, page.margin, y, page.contentWidth);
 
     y = drawSectionList(ctx, 'Recomendaciones', report.recommendations, page.margin, y, page.contentWidth);
 
     if (y > page.height - 100) y = page.height - 100;
-    ctx.strokeStyle = '#e9e1e5';
+    ctx.strokeStyle = '#dbe8f4';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(page.margin, page.height - 66);
@@ -2168,11 +2171,11 @@
     const lineHeight = 28;
     const bodyHeight = Math.max(lineHeight, bodyLines.length * lineHeight);
     const height = padding + titleHeight + bodyHeight + padding;
-    ctx.fillStyle = '#fff7f9';
-    ctx.strokeStyle = '#ead7dd';
+    ctx.fillStyle = '#f7fbff';
+    ctx.strokeStyle = '#dbe8f4';
     ctx.lineWidth = 2;
     roundRect(ctx, x, y, width, height, 18, true, true);
-    ctx.fillStyle = '#931D3D';
+    ctx.fillStyle = '#1e73be';
     ctx.font = '700 22px Arial, Helvetica, sans-serif';
     ctx.fillText(title, x + padding, y + padding + 18);
     ctx.fillStyle = '#333333';
@@ -2182,13 +2185,13 @@
   }
 
   function drawSectionList(ctx, title, items, x, y, width) {
-    ctx.fillStyle = '#931D3D';
+    ctx.fillStyle = '#1e73be';
     ctx.font = '700 24px Arial, Helvetica, sans-serif';
     ctx.fillText(title, x, y + 22);
     y += 42;
 
     ctx.fillStyle = '#ffffff';
-    ctx.strokeStyle = '#ead7dd';
+    ctx.strokeStyle = '#dbe8f4';
     ctx.lineWidth = 2;
     const listY = y;
     let innerY = y + 22;
@@ -2197,7 +2200,7 @@
     const maxWidth = width - 60;
     items.forEach(item => {
       const lines = wrapTextLines(ctx, item, maxWidth, '400 18px Arial, Helvetica, sans-serif');
-      ctx.fillStyle = '#931D3D';
+      ctx.fillStyle = '#1e73be';
       ctx.beginPath();
       ctx.arc(bulletX, innerY - 7, 5, 0, Math.PI * 2);
       ctx.fill();
@@ -2208,13 +2211,13 @@
     });
     const height = Math.max(62, innerY - listY);
     ctx.fillStyle = 'rgba(255,255,255,0.96)';
-    ctx.strokeStyle = '#ead7dd';
+    ctx.strokeStyle = '#dbe8f4';
     roundRect(ctx, x, listY, width, height, 18, true, true);
 
     innerY = listY + 22;
     items.forEach(item => {
       const lines = wrapTextLines(ctx, item, maxWidth, '400 18px Arial, Helvetica, sans-serif');
-      ctx.fillStyle = '#931D3D';
+      ctx.fillStyle = '#1e73be';
       ctx.beginPath();
       ctx.arc(bulletX, innerY - 7, 5, 0, Math.PI * 2);
       ctx.fill();

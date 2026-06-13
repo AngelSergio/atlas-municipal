@@ -6,7 +6,7 @@
 }
 
 .temp-layers-group .icon {
-  color: #f6b2c2;
+  color: #b2d6f6;
   filter: none;
 }
 
@@ -103,7 +103,7 @@
   overflow: hidden;
 }
 .ol-legend .header, .legend .header, .leyenda .header, #legend .header, #leyenda .header {
-  background: linear-gradient(180deg,#7a0019,#5a0012);
+  background: linear-gradient(180deg,#00417a,#00305a);
   color: #fff;
   font-weight: 600;
   letter-spacing: .3px;

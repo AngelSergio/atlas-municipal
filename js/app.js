@@ -7,6 +7,8 @@ const CONFIG = {
     center: (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.mapa && window.MUNICIPIO_CONFIG.mapa.center) || [-100.8167, 20.5289],
     zoom:   (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.mapa && window.MUNICIPIO_CONFIG.mapa.zoom)   || 12,
     homeExtent3857: (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.mapa && window.MUNICIPIO_CONFIG.mapa.homeExtent3857) || [-11233767.3321, 2315094.3382, -11204184.5071, 2356006.2018],
+    // Nombre de la capa de límite municipal (se dibuja siempre encima y se protege del modo radio)
+    limiteMunicipalLayer: (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.limiteMunicipalLayer) || 'Mpio',
     minZoom: 8,
     maxZoom: 28
 };
@@ -18,6 +20,10 @@ function mcfg(key, fallback) {
 function mcfgContacto(key, fallback) {
     const C = window.MUNICIPIO_CONFIG;
     return (C && C.contacto && C.contacto[key] !== undefined) ? C.contacto[key] : fallback;
+}
+function mcfgRecurso(key, fallback = '') {
+    const C = window.MUNICIPIO_CONFIG;
+    return (C && C.recursos && C.recursos[key] !== undefined) ? C.recursos[key] : fallback;
 }
 
 function fetchWithTimeout(url, options = {}, ms = 20000) {
@@ -167,13 +173,14 @@ const LAYER_EXTENTS = (window.MUNICIPIO_LAYERS && window.MUNICIPIO_LAYERS.extent
 
 
 const GOOGLE_PLACES_API_KEY = 'AIzaSyBuC0CL7cegUQk4ietLseI6LxePNOw2ld8';
-const CELAYA_BIAS = { lat: 20.5235, lng: -100.8157 };
-const CELAYA_BIAS_RADIUS = 25000;
+// Sesgo del buscador derivado del centro del mapa configurado en el tema.
+const PLACES_BIAS = { lat: CONFIG.center[1], lng: CONFIG.center[0] };
+const PLACES_BIAS_RADIUS = (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.geocoder && window.MUNICIPIO_CONFIG.geocoder.radioMetros) || 25000;
 let googlePlacesPromise = null;
 window.AtlasGooglePlacesConfig = {
     apiKey: GOOGLE_PLACES_API_KEY,
-    bias: CELAYA_BIAS,
-    radius: CELAYA_BIAS_RADIUS
+    bias: PLACES_BIAS,
+    radius: PLACES_BIAS_RADIUS
 };
 
 function loadGooglePlacesApi() {
@@ -833,7 +840,7 @@ function initMap() {
             new ol.control.ScaleLine({ target: document.getElementById('scale-slot') }),
             new ZoomGeneralControl(),
             new ol.control.CanvasTitle({
-                title: `Atlas Municipal de Peligros y Riesgos de ${mcfg('municipio', 'Celaya')}`,
+                title: `Atlas Municipal de Peligros y Riesgos de ${mcfg('municipio', '')}`,
                 visible: false
             })
         ])
@@ -909,7 +916,7 @@ function initMap() {
             map,
             ol,
             showToast,
-            title: `Atlas Municipal de Peligros y Riesgos de ${mcfg('municipio', 'Celaya')}`
+            title: `Atlas Municipal de Peligros y Riesgos de ${mcfg('municipio', '')}`
         });
     }
 
@@ -1023,17 +1030,17 @@ function createWMSLayers() {
                 });
                 map.addLayer(wmsLayers[layerKey]);
                 wmsLayers[layerKey].setZIndex(100);
-                if (layerKey === 'Mpio') {
+                if (layerKey === CONFIG.limiteMunicipalLayer) {
                     wmsLayers[layerKey].setOpacity(1);
                     wmsLayers[layerKey].setZIndex(1200);
                 }
-                
+
                 if (layerDef.visible) {
                     activeLayers.push(layerKey);
                 }
             });
         }
-        
+
         if (group.subgroups) {
             group.subgroups.forEach(subgroup => {
                 subgroup.layers.forEach(layerDef => {
@@ -1058,7 +1065,7 @@ function createWMSLayers() {
                     });
                     map.addLayer(wmsLayers[layerKey]);
                     wmsLayers[layerKey].setZIndex(100);
-                    if (layerKey === 'Mpio') {
+                    if (layerKey === CONFIG.limiteMunicipalLayer) {
                         wmsLayers[layerKey].setOpacity(1);
                         wmsLayers[layerKey].setZIndex(1200);
                     }
@@ -1266,7 +1273,7 @@ function createGasolinerasStyles(feature, resolution) {
         const coreCircle = new ol.style.Circle({
             radius: 7.5,
             fill: new ol.style.Fill({ color: '#ffffff' }),
-            stroke: new ol.style.Stroke({ color: '#d6655b', width: 2.0 })
+            stroke: new ol.style.Stroke({ color: '#52aae9', width: 2.0 })
         });
         const innerCircle = new ol.style.Circle({
             radius: 2.0,
@@ -1274,7 +1281,7 @@ function createGasolinerasStyles(feature, resolution) {
             stroke: new ol.style.Stroke({ color: 'rgba(214, 101, 91, 0.32)', width: 0.55 })
         });
         const gasIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
-  <circle cx="22" cy="22" r="18" fill="#ffffff" stroke="#D6655B" stroke-width="2.7"/>
+  <circle cx="22" cy="22" r="18" fill="#ffffff" stroke="#52aae9" stroke-width="2.7"/>
   <g fill="none" stroke="#B63E35" stroke-linecap="round" stroke-linejoin="round">
     <path d="M15.2 28.6V15.2c0-1.5 1.2-2.7 2.7-2.7h7.3c1.5 0 2.7 1.2 2.7 2.7v13.4" stroke-width="2.9"/>
     <rect x="17.6" y="15.3" width="7.9" height="5.8" rx="1.2" stroke-width="2.2"/>
@@ -1298,7 +1305,7 @@ function createGasolinerasStyles(feature, resolution) {
             font: '600 12px "Segoe UI", Arial, sans-serif',
             offsetY: -18,
             padding: [4, 7, 4, 7],
-            fill: new ol.style.Fill({ color: '#7A1226' }),
+            fill: new ol.style.Fill({ color: '#12497a' }),
             stroke: new ol.style.Stroke({ color: '#ffffff', width: 3 }),
             backgroundFill: new ol.style.Fill({ color: 'rgba(255,255,255,0.96)' }),
             backgroundStroke: new ol.style.Stroke({ color: 'rgba(198,40,40,0.18)', width: 1.1 })
@@ -1911,7 +1918,7 @@ function restoreCesium2DLayerSnapshot() {
 }
 
 function isProtectedMunicipalLayer(layerKey, layer) {
-    if (layerKey === 'Mpio') return true;
+    if (layerKey === CONFIG.limiteMunicipalLayer) return true;
     const rawName = layer?.get?.('name') || layer?.get?.('title') || '';
     const normalizedName = String(rawName)
         .normalize('NFD')
@@ -1922,11 +1929,11 @@ function isProtectedMunicipalLayer(layerKey, layer) {
 }
 
 function ensureMunicipalLayerGuard() {
-    const municipalLayer = wmsLayers['Mpio'];
+    const municipalLayer = wmsLayers[CONFIG.limiteMunicipalLayer];
     if (municipalLayer) {
         municipalLayer.setZIndex(1200);
     }
-    const municipalItem = document.querySelector('.layer-item[data-layer="Mpio"]');
+    const municipalItem = document.querySelector(`.layer-item[data-layer="${CONFIG.limiteMunicipalLayer}"]`);
     if (municipalItem) {
         const activeSearch = document.getElementById('layer-search')?.value?.trim?.() || '';
         if (!activeSearch) {
@@ -2726,13 +2733,13 @@ function setupEventListeners() {
         try {
             await ensureGoogleGeocoder();
             const request = {
-                input: `${query}, ${mcfg('municipio', 'Celaya')}, ${mcfg('estado', 'Guanajuato')}, México`,
+                input: `${query}, ${mcfg('municipio', '')}, ${mcfg('estado', 'Guanajuato')}, México`,
                 componentRestrictions: { country: 'mx' },
                 language: 'es',
                 sessionToken: geocoderSessionToken,
                 locationBias: {
-                    center: CELAYA_BIAS,
-                    radius: CELAYA_BIAS_RADIUS
+                    center: PLACES_BIAS,
+                    radius: PLACES_BIAS_RADIUS
                 }
             };
             googleAutocompleteService.getPlacePredictions(request, (predictions, status) => {
@@ -2802,7 +2809,7 @@ function setupEventListeners() {
                     return new ol.style.Style({
                         image: new ol.style.Circle({
                             radius: 8.5,
-                            fill: new ol.style.Fill({ color: '#931D3D' }),
+                            fill: new ol.style.Fill({ color: '#1e73be' }),
                             stroke: new ol.style.Stroke({ color: '#ffffff', width: 3 })
                         })
                     });
@@ -3149,28 +3156,28 @@ function setupEventListeners() {
         setFeatureModalWide(false);
         document.getElementById('modal-title').innerHTML = '<i class="fas fa-file-lines"></i> Atlas de Peligros y Riesgos';
         document.getElementById('modal-body').innerHTML = `
-            <div style="text-align: center; margin-bottom: 16px;"><img src="${mcfg('logo', 'assets/images/branding/logo-pcb.png')}" alt="${mcfg('dependencia', 'Protección Civil y Bomberos')} ${mcfg('municipio', 'Celaya')}" style="max-width: 180px; width: 100%; height: auto; display: inline-block;"></div>
-            <p style="margin-bottom: 16px;">Sistema de información geográfica para la consulta del Atlas Municipal de Peligros y Riesgos de ${mcfg('municipio', 'Celaya')}, ${mcfg('estado', 'Guanajuato')}.</p>
+            <div style="text-align: center; margin-bottom: 16px;"><img src="${mcfg('logo', 'assets/images/branding/apaseo-pc.png')}" alt="${mcfg('dependencia', 'Protección Civil y Bomberos')} ${mcfg('municipio', '')}" style="max-width: 180px; width: 100%; height: auto; display: inline-block;"></div>
+            <p style="margin-bottom: 16px;">Sistema de información geográfica para la consulta del Atlas Municipal de Peligros y Riesgos de ${mcfg('municipio', '')}, ${mcfg('estado', 'Guanajuato')}.</p>
             <p style="margin-bottom: 16px; color: var(--text-secondary);">Desarrollado con OpenLayers 10.x</p>
             <h4 style="margin: 16px 0 8px;">Recursos:</h4>
             <ul style="list-style: none; padding: 0;">
-                <li style="margin: 8px 0;"><a href="/pdf/ATLAS_CELAYA.pdf" target="_blank" style="color: var(--accent);">📄 Atlas de Peligros y Riesgos (PDF)</a></li>
-                <li style="margin: 8px 0;"><a href="https://servicios-ssp.guanajuato.gob.mx/atlas/municipio/celaya/generalidades/menuini.html" target="_blank" style="color: var(--accent);">🔗 Programas Especiales de PC Celaya</a></li>
+                ${mcfgRecurso('atlasPdf') ? `<li style="margin: 8px 0;"><a href="${mcfgRecurso('atlasPdf')}" target="_blank" style="color: var(--accent);">📄 Atlas de Peligros y Riesgos (PDF)</a></li>` : ''}
+                ${mcfgRecurso('programasPcUrl') ? `<li style="margin: 8px 0;"><a href="${mcfgRecurso('programasPcUrl')}" target="_blank" style="color: var(--accent);">🔗 Programas Especiales de PC ${mcfg('municipio', '')}</a></li>` : ''}
                 <li style="margin: 8px 0;"><a href="https://seguridad.guanajuato.gob.mx/proteccion-civil/estado-del-tiempo-guanajuato/" target="_blank" style="color: var(--accent);">🌤 Estado del Tiempo Guanajuato</a></li>
             </ul>
             <div style="margin-top: 22px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.10);">
-                <div style="background: linear-gradient(180deg, rgba(139, 0, 48, 0.05), rgba(139, 0, 48, 0.02)); border: 1px solid rgba(139, 0, 48, 0.10); border-radius: 14px; padding: 14px 16px;">
+                <div style="background: linear-gradient(180deg, rgba(30, 115, 190, 0.05), rgba(30, 115, 190, 0.02)); border: 1px solid rgba(30, 115, 190, 0.10); border-radius: 14px; padding: 14px 16px;">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                        <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(139, 0, 48, 0.10); display: flex; align-items: center; justify-content: center; color: var(--accent); flex: 0 0 34px;"><i class="fas fa-building-shield"></i></div>
+                        <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(30, 115, 190, 0.10); display: flex; align-items: center; justify-content: center; color: var(--accent); flex: 0 0 34px;"><i class="fas fa-building-shield"></i></div>
                         <div>
                             <h4 style="margin: 0; color: var(--text-primary);">Contacto</h4>
-                            <p style="margin: 2px 0 0; font-size: 13px; color: var(--text-secondary);">${mcfg('dependencia', 'Protección Civil y Bomberos')} de ${mcfg('municipio', 'Celaya')}</p>
+                            <p style="margin: 2px 0 0; font-size: 13px; color: var(--text-secondary);">${mcfg('dependencia', 'Protección Civil y Bomberos')} de ${mcfg('municipio', '')}</p>
                         </div>
                     </div>
                     <div style="display: grid; gap: 10px;">
-                        <a href="${mcfgContacto('telefonoHref', 'tel:+524616150911')}" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.72); color: inherit; text-decoration: none; border: 1px solid rgba(0,0,0,0.05);">
+                        <a href="${mcfgContacto('telefonoHref', '#')}" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.72); color: inherit; text-decoration: none; border: 1px solid rgba(0,0,0,0.05);">
                             <i class="fas fa-phone" style="color: var(--accent); width: 16px; flex: 0 0 16px;"></i>
-                            <span style="color: var(--text-secondary);"><strong style="color: var(--text-primary);">Teléfono:</strong> ${mcfgContacto('telefono', '(461) 615-0911')}</span>
+                            <span style="color: var(--text-secondary);"><strong style="color: var(--text-primary);">Teléfono:</strong> ${mcfgContacto('telefono', '')}</span>
                         </a>
                         <a href="${mcfgContacto('mapsUrl', '#')}" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.72); color: inherit; text-decoration: none; border: 1px solid rgba(0,0,0,0.05);">
                             <i class="fas fa-map-marker-alt" style="color: var(--accent); width: 16px; flex: 0 0 16px; margin-top: 3px;"></i>
@@ -3706,12 +3713,12 @@ function _renderPanel() {
 
                     var btnPrev = document.createElement('button');
                     btnPrev.textContent = '‹';
-                    btnPrev.style.cssText = 'background:var(--primary,#931D3D);color:#fff;border:none;border-radius:4px;width:28px;height:28px;cursor:pointer;font-size:16px;line-height:1;';
+                    btnPrev.style.cssText = 'background:var(--primary,#1e73be);color:#fff;border:none;border-radius:4px;width:28px;height:28px;cursor:pointer;font-size:16px;line-height:1;';
                     btnPrev.disabled = true;
 
                     var btnNext = document.createElement('button');
                     btnNext.textContent = '›';
-                    btnNext.style.cssText = 'background:var(--primary,#931D3D);color:#fff;border:none;border-radius:4px;width:28px;height:28px;cursor:pointer;font-size:16px;line-height:1;';
+                    btnNext.style.cssText = 'background:var(--primary,#1e73be);color:#fff;border:none;border-radius:4px;width:28px;height:28px;cursor:pointer;font-size:16px;line-height:1;';
 
                     function goTo(idx) {
                         ci = idx;
@@ -4019,10 +4026,10 @@ function getMeasureDistanceStyles(feature) {
             stroke: new ol.style.Stroke({ color: 'rgba(147, 29, 61, 0.18)', width: 7, lineCap: 'round', lineJoin: 'round' })
         }),
         new ol.style.Style({
-            stroke: new ol.style.Stroke({ color: '#931D3D', width: 2.8, lineCap: 'round', lineJoin: 'round' }),
+            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.8, lineCap: 'round', lineJoin: 'round' }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#931D3D' }),
+                fill: new ol.style.Fill({ color: '#1e73be' }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         }),
@@ -4073,7 +4080,7 @@ function getMeasureDistanceStyles(feature) {
                 text: new ol.style.Text({
                     text: formatMeasureDistance(segmentLength),
                     font: '700 12px Arial, sans-serif',
-                    fill: new ol.style.Fill({ color: '#931D3D' }),
+                    fill: new ol.style.Fill({ color: '#1e73be' }),
                     stroke: new ol.style.Stroke({ color: '#ffffff', width: 3.5 }),
                     backgroundFill: new ol.style.Fill({ color: 'rgba(255,255,255,0.96)' }),
                     backgroundStroke: new ol.style.Stroke({ color: 'rgba(147,29,61,0.18)', width: 1.2 }),
@@ -4128,10 +4135,10 @@ function getMeasurePolygonStyles(feature) {
         }),
         new ol.style.Style({
             fill: new ol.style.Fill({ color: 'rgba(147, 29, 61, 0.18)' }),
-            stroke: new ol.style.Stroke({ color: '#931D3D', width: 2.6, lineCap: 'round', lineJoin: 'round' }),
+            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.6, lineCap: 'round', lineJoin: 'round' }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#931D3D' }),
+                fill: new ol.style.Fill({ color: '#1e73be' }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         }),
@@ -4182,7 +4189,7 @@ function getMeasurePolygonStyles(feature) {
             text: new ol.style.Text({
                 text: formatMeasureDistance(segmentLength),
                 font: '700 12px Arial, sans-serif',
-                fill: new ol.style.Fill({ color: '#931D3D' }),
+                fill: new ol.style.Fill({ color: '#1e73be' }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 3.5 }),
                 backgroundFill: new ol.style.Fill({ color: 'rgba(255,255,255,0.96)' }),
                 backgroundStroke: new ol.style.Stroke({ color: 'rgba(147,29,61,0.18)', width: 1.2 }),
@@ -4221,7 +4228,7 @@ function getMeasurePolygonStyles(feature) {
                 text: `Área: ${formatMeasureArea(area)}
 Perímetro: ${formatMeasureDistance(perimeter)}`,
                 font: '700 12px Arial, sans-serif',
-                fill: new ol.style.Fill({ color: '#931D3D' }),
+                fill: new ol.style.Fill({ color: '#1e73be' }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 3.2 }),
                 backgroundFill: new ol.style.Fill({ color: 'rgba(255,255,255,0.97)' }),
                 backgroundStroke: new ol.style.Stroke({ color: 'rgba(147,29,61,0.22)', width: 1.2 }),
@@ -4437,10 +4444,10 @@ function ensureObjectAnalysisLayer() {
         source: objectAnalysisSource,
         style: new ol.style.Style({
             fill: new ol.style.Fill({ color: 'rgba(147, 29, 61, 0.18)' }),
-            stroke: new ol.style.Stroke({ color: '#931D3D', width: 2.5 }),
+            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.5 }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#931D3D' }),
+                fill: new ol.style.Fill({ color: '#1e73be' }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         })
@@ -4540,16 +4547,16 @@ function showObjectAnalysisResult(area, perimeter, elevationText) {
     document.getElementById('modal-body').innerHTML = `
         <div style="margin-bottom: 12px; color: var(--text-secondary);">Medición realizada directamente sobre la cartografía visible.</div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
-            <div style="background:#f8f5f6; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
+            <div style="background:#f5f7f8; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Área</div>
                 <div style="font-weight:700; color:var(--primary);">${formatObjectArea(area)}</div>
             </div>
-            <div style="background:#f8f5f6; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
+            <div style="background:#f5f7f8; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Perímetro</div>
                 <div style="font-weight:700; color:var(--primary);">${formatObjectDistance(perimeter)}</div>
             </div>
         </div>
-        <div style="margin-top: 12px; background:#f8f5f6; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
+        <div style="margin-top: 12px; background:#f5f7f8; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
             <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Elevación aprox.</div>
             <div style="font-weight:700; color:var(--primary);">${elevationText}</div>
         </div>
@@ -4582,10 +4589,10 @@ function startObjectAnalysisDraw() {
         type: 'Polygon',
         style: new ol.style.Style({
             fill: new ol.style.Fill({ color: 'rgba(147, 29, 61, 0.18)' }),
-            stroke: new ol.style.Stroke({ color: '#931D3D', width: 2.5, lineDash: [10, 8] }),
+            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.5, lineDash: [10, 8] }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#931D3D' }),
+                fill: new ol.style.Fill({ color: '#1e73be' }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         })
@@ -4723,10 +4730,10 @@ function getProfileDirectionAngle(geometry, fraction) {
 
 function getProfileDrawSketchStyle() {
     return new ol.style.Style({
-        stroke: new ol.style.Stroke({ color: '#931D3D', width: 2.5, lineDash: [10, 8], lineCap: 'round', lineJoin: 'round' }),
+        stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.5, lineDash: [10, 8], lineCap: 'round', lineJoin: 'round' }),
         image: new ol.style.Circle({
             radius: 5,
-            fill: new ol.style.Fill({ color: '#931D3D' }),
+            fill: new ol.style.Fill({ color: '#1e73be' }),
             stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
         })
     });
@@ -4738,10 +4745,10 @@ function getProfileAnimatedStyles(feature) {
             stroke: new ol.style.Stroke({ color: 'rgba(147, 29, 61, 0.18)', width: 7, lineCap: 'round', lineJoin: 'round' })
         }),
         new ol.style.Style({
-            stroke: new ol.style.Stroke({ color: '#931D3D', width: 2.8, lineCap: 'round', lineJoin: 'round' }),
+            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.8, lineCap: 'round', lineJoin: 'round' }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#931D3D' }),
+                fill: new ol.style.Fill({ color: '#1e73be' }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         }),
@@ -4791,7 +4798,7 @@ function getProfileAnimatedStyles(feature) {
                 rotation: angle + (Math.PI / 2),
                 angle: 0,
                 fill: new ol.style.Fill({ color: index === 0 ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.72)' }),
-                stroke: new ol.style.Stroke({ color: '#931D3D', width: index === 0 ? 2.3 : 1.4 })
+                stroke: new ol.style.Stroke({ color: '#1e73be', width: index === 0 ? 2.3 : 1.4 })
             })
         }));
     });
@@ -4883,19 +4890,19 @@ function showElevationProfileResult(distancesKm, elevations) {
     document.getElementById('modal-body').innerHTML = `
         <div style="margin-bottom: 12px; color: var(--text-secondary);">Perfil calculado a partir de puntos muestreados sobre la línea dibujada.</div>
         <div style="display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px;">
-            <div style="background:#f8f5f6; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
+            <div style="background:#f5f7f8; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Elevación mínima</div>
                 <div style="font-weight:700; color:var(--primary);">${formatElevationValue(stats.min)}</div>
             </div>
-            <div style="background:#f8f5f6; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
+            <div style="background:#f5f7f8; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Elevación máxima</div>
                 <div style="font-weight:700; color:var(--primary);">${formatElevationValue(stats.max)}</div>
             </div>
-            <div style="background:#f8f5f6; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
+            <div style="background:#f5f7f8; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Subida acumulada</div>
                 <div style="font-weight:700; color:var(--primary);">${stats.gain == null ? 'No disponible' : `${stats.gain.toFixed(0)} m`}</div>
             </div>
-            <div style="background:#f8f5f6; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
+            <div style="background:#f5f7f8; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Bajada acumulada</div>
                 <div style="font-weight:700; color:var(--primary);">${stats.loss == null ? 'No disponible' : `${stats.loss.toFixed(0)} m`}</div>
             </div>
@@ -5075,7 +5082,7 @@ async function exportElevationProfileToExcel() {
     const now = new Date();
     const pad = (n) => String(n).padStart(2, '0');
     const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    const filename = `Atlas_${mcfg('municipio', 'Celaya')}_Perfil_de_Elevacion_${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.xlsx`;
+    const filename = `Atlas_${mcfg('municipio', '')}_Perfil_de_Elevacion_${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.xlsx`;
 
     const excelRows = [
         buildExcelRow(1, ['Perfil de elevación'], { 0: 1 }),
@@ -5267,10 +5274,10 @@ function ensureTerrain3DLayer() {
         source: terrain3DSource,
         style: new ol.style.Style({
             fill: new ol.style.Fill({ color: 'rgba(147, 29, 61, 0.12)' }),
-            stroke: new ol.style.Stroke({ color: '#931D3D', width: 2.5, lineDash: [8, 6] }),
+            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.5, lineDash: [8, 6] }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#931D3D' }),
+                fill: new ol.style.Fill({ color: '#1e73be' }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         })
@@ -5363,15 +5370,15 @@ function showTerrain3DResult(grid) {
     document.getElementById('modal-body').innerHTML = `
         <div style="margin-bottom: 12px; color: var(--text-secondary);">Superficie 3D aproximada construida con puntos de elevación muestreados dentro del polígono dibujado.</div>
         <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px;">
-            <div style="background:#f8f5f6; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
+            <div style="background:#f5f7f8; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Elevación mínima</div>
                 <div style="font-weight:700; color:var(--primary);">${formatElevationValue(minValue)}</div>
             </div>
-            <div style="background:#f8f5f6; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
+            <div style="background:#f5f7f8; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Elevación máxima</div>
                 <div style="font-weight:700; color:var(--primary);">${formatElevationValue(maxValue)}</div>
             </div>
-            <div style="background:#f8f5f6; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
+            <div style="background:#f5f7f8; border:1px solid rgba(147,29,61,0.12); border-radius:10px; padding:12px;">
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Rango altimétrico</div>
                 <div style="font-weight:700; color:var(--primary);">${rangeValue == null ? 'No disponible' : `${rangeValue.toFixed(0)} m`}</div>
             </div>
@@ -5454,7 +5461,7 @@ async function exportTerrain3DToExcel() {
 
     const now = new Date();
     const pad = (n) => String(n).padStart(2, '0');
-    const filename = `Atlas_${mcfg('municipio', 'Celaya')}_Vista_3D_del_Terreno_${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.xlsx`;
+    const filename = `Atlas_${mcfg('municipio', '')}_Vista_3D_del_Terreno_${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.xlsx`;
 
     const excelRows = [
         buildExcelRow(1, ['Vista 3D básica del terreno'], { 0: 1 }),
@@ -5575,10 +5582,10 @@ async function startTerrain3DDraw() {
         type: 'Polygon',
         style: new ol.style.Style({
             fill: new ol.style.Fill({ color: 'rgba(147, 29, 61, 0.12)' }),
-            stroke: new ol.style.Stroke({ color: '#931D3D', width: 2.5, lineDash: [10, 8] }),
+            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.5, lineDash: [10, 8] }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#931D3D' }),
+                fill: new ol.style.Fill({ color: '#1e73be' }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         })

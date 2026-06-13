@@ -24,7 +24,7 @@
     setMeta('meta[property="og:title"]',       'content', titulo);
     setMeta('meta[property="og:description"]', 'content', `Conoce los peligros y riesgos de tu colonia en ${C.municipio}, ${C.estado}.`);
     setMeta('meta[property="og:image"]',       'content', C.logo);
-    setMeta('meta[name="theme-color"]',        'content', C.colores?.primary || '#931D3D');
+    setMeta('meta[name="theme-color"]',        'content', C.colores?.primary || '#1e73be');
 
     // Logo splash
     const splashLogo = document.getElementById('splash-logo');

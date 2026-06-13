@@ -10,15 +10,15 @@
 #clima-sidebar-header {
     display: flex; align-items: center; gap: 10px;
     padding: 0 14px; height: 50px; cursor: pointer; user-select: none;
-    background: #fbf8f9;
-    color: #7b1532;
+    background: #f3f8fc;
+    color: #154b7b;
     transition: background 0.18s;
     border-radius: 0;
-    border-left: 3px solid #c98b9b;
+    border-left: 3px solid #8bacc9;
     border-top: 1px solid rgba(147,29,61,0.10);
     border-bottom: 1px solid rgba(147,29,61,0.12);
 }
-#clima-sidebar-header:hover { background: #f7f1f3; }
+#clima-sidebar-header:hover { background: #f1f4f7; }
 .csb-chevron { font-size: 0.76rem; transition: transform 0.22s; flex-shrink: 0; }
 #clima-sidebar-header.collapsed .csb-chevron { transform: rotate(-90deg); }
 .csb-icon   { font-size: 0.96rem; flex-shrink: 0; opacity: 0.9; }
@@ -48,7 +48,7 @@
 .csb-actions { display: flex !important; gap: 7px; margin-bottom: 10px; }
 .csb-btn {
     flex: 1; border: 1px solid rgba(147,29,61,0.22);
-    background: #fff; color: #931D3D; border-radius: 999px;
+    background: #fff; color: #1e73be; border-radius: 999px;
     padding: 7px 8px; font-size: 0.73rem; font-weight: 700;
     cursor: pointer; display: inline-block !important; text-align: center;
 }
@@ -59,12 +59,12 @@
     font-size: 0.69rem; color: #9a8086;
     margin-bottom: 10px; display: flex !important; align-items: center; gap: 4px;
 }
-.csb-location i { font-size: 0.62rem; color: #931D3D; }
+.csb-location i { font-size: 0.62rem; color: #1e73be; }
 
 /* ══ AHORA — full-width para sidebar angosto ══ */
 .csb-now-row {
     display: block !important;
-    background: #fbf8f9; border: 1px solid rgba(147,29,61,0.10);
+    background: #f3f8fc; border: 1px solid rgba(147,29,61,0.10);
     border-radius: 14px; padding: 12px; margin-bottom: 8px;
 }
 /* Fila top: icono + condición  ·  temperatura grande */
@@ -79,7 +79,7 @@
 .csb-cond-row {
     display: flex !important; align-items: center; gap: 6px;
 }
-.csb-wx-icon { font-size: 1.10rem; color: #931D3D; display: inline !important; }
+.csb-wx-icon { font-size: 1.10rem; color: #1e73be; display: inline !important; }
 .csb-condition { font-size: 0.84rem; font-weight: 700; color: #2e2025; display: block !important; }
 .csb-feels-sub { font-size: 0.67rem; color: #9a8086; display: block !important; }
 .csb-big-temp {
@@ -109,16 +109,16 @@
 /* Alerta ciudadana */
 .csb-alert {
     display: flex !important; align-items: flex-start; gap: 7px;
-    background: #fdf5f7; border-left: 3px solid #931D3D;
+    background: #f3f8fc; border-left: 3px solid #1e73be;
     border-radius: 0 10px 10px 0; padding: 8px 10px;
-    font-size: 0.73rem; font-weight: 700; color: #6d3a47;
+    font-size: 0.73rem; font-weight: 700; color: #3a556d;
     margin-bottom: 10px; line-height: 1.45;
 }
-.csb-alert i { color: #931D3D; flex-shrink: 0; margin-top: 1px; }
+.csb-alert i { color: #1e73be; flex-shrink: 0; margin-top: 1px; }
 
 /* Título de sección */
 .csb-section-title {
-    font-size: 0.65rem; font-weight: 900; color: #931D3D;
+    font-size: 0.65rem; font-weight: 900; color: #1e73be;
     text-transform: uppercase; letter-spacing: 0.10em;
     margin: 12px 0 5px; display: block !important;
 }
@@ -127,15 +127,15 @@
 .csb-hours { display: grid !important; gap: 4px; }
 .csb-hour-row {
     display: flex !important; align-items: center;
-    background: #fbf8f9; border: 1px solid rgba(147,29,61,0.08);
+    background: #f3f8fc; border: 1px solid rgba(147,29,61,0.08);
     border-radius: 9px; padding: 8px 10px;
 }
 .csb-h-time { width: 50px; font-size: 0.77rem; font-weight: 600; color: #4f4347; flex-shrink: 0; display: block !important; }
-.csb-h-icon { width: 20px; font-size: 0.82rem; color: #931D3D; flex-shrink: 0; text-align: center; }
+.csb-h-icon { width: 20px; font-size: 0.82rem; color: #1e73be; flex-shrink: 0; text-align: center; }
 .csb-h-temp { width: 34px; font-size: 0.88rem; font-weight: 900; color: #1a1a1a; flex-shrink: 0; display: block !important; }
 .csb-h-desc { flex: 1; font-size: 0.68rem; color: #6c5b61; line-height: 1.2; padding: 0 5px; display: block !important; }
 .csb-h-rain { font-size: 0.70rem; text-align: right; flex-shrink: 0; white-space: nowrap; display: inline-flex !important; align-items: center; gap: 4px; }
-.csb-h-rain.rain-hi  { color: #931D3D; font-weight: 800; }
+.csb-h-rain.rain-hi  { color: #1e73be; font-weight: 800; }
 .csb-h-rain.rain-mid { color: #b5621a; font-weight: 700; }
 .csb-h-rain.rain-lo  { color: #9a8086; }
 
@@ -143,14 +143,14 @@
 .csb-days { display: grid !important; gap: 4px; }
 .csb-day-row {
     display: flex !important; align-items: center;
-    background: #fbf8f9; border: 1px solid rgba(147,29,61,0.08);
+    background: #f3f8fc; border: 1px solid rgba(147,29,61,0.08);
     border-radius: 9px; padding: 9px 10px;
 }
 .csb-day-name { width: 68px; font-size: 0.74rem; font-weight: 700; color: #1a1a1a; flex-shrink: 0; display: block !important; line-height: 1.2; }
-.csb-day-icon { width: 20px; font-size: 0.82rem; color: #931D3D; flex-shrink: 0; text-align: center; }
+.csb-day-icon { width: 20px; font-size: 0.82rem; color: #1e73be; flex-shrink: 0; text-align: center; }
 .csb-day-cond { flex: 1; font-size: 0.67rem; color: #7a636a; padding: 0 5px; line-height: 1.2; display: block !important; }
 .csb-day-rain { font-size: 0.70rem; flex-shrink: 0; width: 52px; text-align: center; display: inline-flex !important; align-items: center; justify-content: center; gap: 4px; }
-.csb-day-rain.rain-hi  { color: #931D3D; font-weight: 800; }
+.csb-day-rain.rain-hi  { color: #1e73be; font-weight: 800; }
 .csb-day-rain.rain-mid { color: #b5621a; font-weight: 700; }
 .csb-day-rain.rain-lo  { color: #9a8086; }
 .csb-day-range { font-size: 0.77rem; font-weight: 800; color: #1a1a1a; width: 50px; text-align: right; flex-shrink: 0; white-space: nowrap; display: block !important; }
@@ -167,7 +167,7 @@
 
 /* ══ SPARKLINE LLUVIA ══ */
 .csb-spark-wrap {
-    background: #fbf8f9;
+    background: #f3f8fc;
     border: 1px solid rgba(147,29,61,0.09);
     border-radius: 12px; padding: 9px 12px; margin-bottom: 8px;
 }
@@ -186,9 +186,9 @@
 /* Chip de rango del día en el bloque Ahora */
 .csb-day-chip {
     background: rgba(147,29,61,0.10) !important;
-    color: #5a2030 !important;
+    color: #203f5a !important;
 }
-.csb-day-chip strong { color: #3a1020 !important; }
+.csb-day-chip strong { color: #10263a !important; }
 
 /* Sensación horaria pequeña */
 .csb-h-feel { font-size: 0.64rem; color: #9a8086; font-weight: 400; }
@@ -247,11 +247,11 @@
 #clima-sidebar-header .csb-icon,
 #clima-sidebar-header .csb-chevron,
 #clima-sidebar-header .csb-title {
-    color: #8d1738 !important;
+    color: #17568d !important;
 }
 #csb-temp-badge {
     font-size: 0.80rem; font-weight: 800;
-    color: #8d1738 !important;
+    color: #17568d !important;
     background: #fff !important;
     border: 1px solid rgba(147,29,61,0.18);
     border-radius: 999px;
@@ -262,13 +262,13 @@
     width: 26px; height: 26px; border-radius: 50%;
     border: 1px solid rgba(147,29,61,0.18) !important;
     background: #fff !important;
-    color: #8d1738 !important;
+    color: #17568d !important;
     cursor: pointer; display: grid; place-items: center;
     font-size: 0.68rem; flex-shrink: 0;
     box-shadow: none !important;
 }
 #csb-refresh:hover {
-    background: #f6edef !important;
+    background: #edf2f6 !important;
 }
 
 /* ================================================================

@@ -41,7 +41,7 @@
     justify-content: space-between;
     gap: 10px;
     padding: 12px 14px;
-    background: linear-gradient(135deg, #931D3D 0%, #74132f 100%);
+    background: linear-gradient(135deg, #1e73be 0%, #155a94 100%);
     color: #fff;
     cursor: move;
     user-select: none;
@@ -120,7 +120,7 @@
     margin-bottom: 6px;
     font-size: .83rem;
     font-weight: 700;
-    color: #931D3D;
+    color: #1e73be;
 }
 
 .coords-input,
@@ -143,7 +143,7 @@
 .coords-input:focus,
 .coords-select:focus {
     outline: none;
-    border-color: #931D3D;
+    border-color: #1e73be;
     box-shadow: 0 0 0 3px rgba(147,29,61,.12);
 }
 
@@ -152,8 +152,8 @@
     font-size: .76rem;
     line-height: 1.45;
     color: #665c63;
-    background: #faf7f8;
-    border: 1px solid #eee2e7;
+    background: #f3f8fc;
+    border: 1px solid #e2e8ee;
     border-radius: 12px;
     padding: 11px 12px;
 }
@@ -177,7 +177,7 @@
 }
 
 .coords-btn.primary {
-    background: #931D3D;
+    background: #1e73be;
     color: #fff;
 }
 
@@ -185,7 +185,7 @@
     transform: translateY(-1px);
 }
 .coords-btn.primary:hover {
-    background: #7d1735;
+    background: #1e73be;
     box-shadow: 0 6px 12px rgba(147,29,61,.16);
 }
 .coords-btn:not(.primary):hover {
@@ -232,7 +232,7 @@
   overflow: hidden;
 }
 .ol-legend .header, .legend .header, .leyenda .header, #legend .header, #leyenda .header {
-  background: linear-gradient(180deg,#7a0019,#5a0012);
+  background: linear-gradient(180deg,#00417a,#00305a);
   color: #fff;
   font-weight: 600;
   letter-spacing: .3px;

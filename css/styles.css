@@ -1,14 +1,14 @@
 :root {
-    /* Redefinición de variables para tema claro basado en guinda, blanco y gris */
-    --primary: #931D3D;         /* Guinda principal */
-    --primary-dark: #781634;    /* Variante oscura para hover */
-    --primary-light: #B04159;   /* Tono claro para acentos */
+    /* Redefinición de variables para tema claro basado en azul institucional, blanco y gris */
+    --primary: #1e73be;         /* Azul principal (Apaseo el Grande) */
+    --primary-dark: #155a94;    /* Variante oscura para hover */
+    --primary-light: #52aae9;   /* Tono claro para acentos */
     --bg-dark: #F5F5F5;         /* Fondo general claro */
     --bg-panel: #FFFFFF;        /* Paneles blancos */
     --bg-card: #F7F7F7;         /* Tarjetas ligeramente gris claro */
     --text-primary: #2E2E2E;    /* Texto principal oscuro */
     --text-secondary: #666666;  /* Texto secundario gris medio */
-    --accent: #B04159;          /* Acento derivado del primario */
+    --accent: #2d9bea;          /* Acento derivado del primario */
     --success: #10b981;         /* Mantener éxito */
     --warning: #f59e0b;         /* Mantener advertencia */
     --border: rgba(0,0,0,0.1); /* Bordes sutiles */
@@ -106,7 +106,7 @@ body.sidebar-collapsed {
     height: 60px;
     background:
         radial-gradient(1100px 78px at 50% -10%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.015) 42%, transparent 68%),
-        linear-gradient(180deg, #971f42 0%, #791735 56%, #621126 100%);
+        linear-gradient(180deg, #1f5f97 0%, #174b79 56%, #113c62 100%);
     display: flex;
     align-items: center;
     padding: 0;
@@ -235,9 +235,9 @@ body.sidebar-collapsed {
     background: linear-gradient(
         180deg,
         #ffffff        0%,
-        #f9eaea       28%,
-        #ffd5d5       52%,
-        #f9eaea       76%,
+        #e9f2fb       28%,
+        #d5ebff       52%,
+        #e9f2fb       76%,
         #e8b8b8      100%
     );
     -webkit-background-clip: text;
@@ -391,12 +391,12 @@ body.atlas-cesium-active .ol-print-dialog {
 /* Estado activo: pill blanco sobre el fondo del grupo */
 .header-btn.active {
     background: rgba(255,255,255,0.96);
-    color: #8a1a37;
+    color: #1a568a;
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.22);
     transform: translateY(0);
 }
-.header-btn.active i { color: #8a1a37; }
+.header-btn.active i { color: #1a568a; }
 
 /* ── Botón 3D: igual que los demás botones del pill ── */
 .header-btn-3d {
@@ -561,7 +561,7 @@ body.atlas-cesium-active .ol-print-dialog {
     pointer-events: none;
 }
 .atlas-cesium-geocoder__status.is-error {
-    color: #ffd1d9;
+    color: #d1eaff;
 }
 .atlas-cesium-geocoder__status.is-info {
     color: rgba(255,255,255,0.72);
@@ -975,7 +975,7 @@ body.atlas-cesium-active .ol-print-dialog {
     border-radius: 999px;
     background: rgba(255, 248, 236, 0.96);
     border: 1.25px solid rgba(122, 22, 50, 0.28);
-    color: #8b1739;
+    color: #17558b;
     font-size: 0.56rem;
     font-weight: 800;
     line-height: 1;
@@ -1050,7 +1050,7 @@ body.sidebar-collapsed .header-sidebar-toggle { display: inline-flex; }
 .sidebar {
     width: var(--sidebar-open-width);
     height: 100%;
-    background: linear-gradient(180deg, #ffffff 0%, #fcfbfb 100%);
+    background: linear-gradient(180deg, #ffffff 0%, #fbfcfc 100%);
     display: flex;
     flex-direction: column;
     border-right: 1px solid rgba(122, 21, 50, 0.10);
@@ -1107,7 +1107,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 .sidebar-topbar {
     height: 38px;
     min-height: 38px;
-    background: linear-gradient(180deg, #8e1c3f 0%, #821938 100%);
+    background: linear-gradient(180deg, #1c598e 0%, #195182 100%);
     position: relative;
     border-right: 1px solid rgba(255,255,255,0.06);
 }
@@ -1305,7 +1305,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     display: flex;
     align-items: center;
     padding: 8px 11px;
-    background: linear-gradient(180deg, #97224a 0%, #8a1d42 100%);
+    background: linear-gradient(180deg, #226097 0%, #1d578a 100%);
     border: 1px solid rgba(122, 21, 50, 0.62);
     border-radius: 10px;
     box-shadow: 0 2px 7px rgba(122, 21, 50, 0.10);
@@ -1317,7 +1317,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 }
 
 .layer-group-header:hover {
-    background: linear-gradient(180deg, #8f1d43 0%, #821a3c 100%);
+    background: linear-gradient(180deg, #1d5a8f 0%, #1a5182 100%);
     box-shadow: 0 4px 10px rgba(122, 21, 50, 0.14);
 }
 
@@ -1334,7 +1334,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 
 .layer-group-header .icon {
     margin-right: 8px;
-    color: #f6b2c2;
+    color: #b2d6f6;
     font-size: 1.2rem;
 }
 
@@ -1620,7 +1620,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 }
 
 .layer-item.active .layer-name {
-    color: #5d1b30;
+    color: #1b3e5d;
     font-weight: 600;
 }
 
@@ -1864,7 +1864,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 
 .geocoder-input:focus {
     outline: none;
-    border-color: #ad5a72;
+    border-color: #5a86ad;
     box-shadow: 0 0 0 2px rgba(173,90,114,0.18);
     background: #fff;
 }
@@ -2020,7 +2020,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     height: 18px;
     border: none;
     border-radius: 3px;
-    background: #d81b3a;
+    background: #1b80d8;
     color: #fff;
     font-size: 11px;
     line-height: 18px;
@@ -2030,7 +2030,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 }
 
 .geocoder-selection-close:hover {
-    background: #bf1733;
+    background: #1771bf;
 }
 
 .geocoder-selection-marker {
@@ -2131,7 +2131,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     padding: 3px 6px;
     background: #eeeeee;
     font-weight: 700;
-    color: #8c1230;
+    color: #12538c;
     border-bottom: 1px solid rgba(0,0,0,0.12);
     font-size: 0.92rem;
     text-align: center;
@@ -2146,7 +2146,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     justify-self: center;
     align-self: center;
     margin: 0;
-    color: #7b0f28;
+    color: #0f497b;
     font-weight: 800;
 }
 
@@ -2535,7 +2535,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 .basemap-traffic-global-title {
     font-size: 0.84rem;
     font-weight: 700;
-    color: #7a1833;
+    color: #184c7a;
     line-height: 1.05;
 }
 
@@ -2923,7 +2923,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
         letter-spacing: 0.09em;
     }
     .header-logo-line2 {
-        /* Scale down the “CELAYA” text further */
+        /* Scale down the municipio text further */
         font-size: 0.68rem;
         letter-spacing: 0.10em;
     }
@@ -3438,14 +3438,14 @@ body.sidebar-collapsed .header-sidebar-toggle {
     overflow: hidden;
     background:
         radial-gradient(circle at top, rgba(176, 65, 89, 0.22), transparent 32%),
-        linear-gradient(145deg, #2a0e17 0%, #4d1830 46%, #7a2142 100%);
+        linear-gradient(145deg, #0e1d2a 0%, #18344d 46%, #21507a 100%);
     transition: opacity 0.72s ease, visibility 0.72s ease;
 }
 
 .intro-splash--poster {
     background:
         radial-gradient(circle at top, rgba(176, 65, 89, 0.20), transparent 30%),
-        linear-gradient(145deg, #2b1016 0%, #4a1827 42%, #6e2232 100%);
+        linear-gradient(145deg, #101e2b 0%, #18334a 42%, #224b6e 100%);
 }
 
 .intro-splash::before {
@@ -3626,7 +3626,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     min-width: 0;
 }
 .sidebar-tip__body i {
-    color: #8a1a37;
+    color: #1a568a;
     font-size: 0.85rem;
     margin-top: 2px;
     flex-shrink: 0;
@@ -3638,7 +3638,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     gap: 6px;
     border: 1px solid rgba(138,26,55,0.14);
     background: #ffffff;
-    color: #8a1a37;
+    color: #1a568a;
     font-size: 0.70rem;
     font-weight: 700;
     padding: 3px 10px;
@@ -3660,13 +3660,13 @@ body.sidebar-collapsed .header-sidebar-toggle {
     height: 13px;
     border-radius: 50%;
     background: rgba(138,26,55,0.09);
-    color: #8a1a37;
+    color: #1a568a;
     font-size: 0.60rem;
     font-weight: 800;
     flex-shrink: 0;
 }
 .sidebar-tip__guide-link:hover {
-    color: #6f1430;
+    color: #14456f;
     background: #ffffff;
     border-color: rgba(138,26,55,0.22);
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -3685,7 +3685,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     margin-top: 2px;
     transition: color 0.15s;
 }
-.sidebar-tip__close:hover { color: #8a1a37; }
+.sidebar-tip__close:hover { color: #1a568a; }
 
 /* ── Tooltips mejorados en botones del header ── */
 /* Tooltip de botones — manejado por JS (ver initHeaderTooltips) */
@@ -3964,7 +3964,7 @@ body.ol-street-view--activated .legend-panel.collapsed {
 .legend-item-title {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #7b0f28;
+    color: #0f497b;
     margin-bottom: 8px;
     line-height: 1.25;
 }
@@ -3990,12 +3990,12 @@ body.ol-street-view--activated .legend-panel.collapsed {
 }
 
 .legend-content::-webkit-scrollbar-thumb {
-    background: #7b0f28;
+    background: #0f497b;
     border-radius: 10px;
 }
 
 .legend-content {
-    scrollbar-color: #7b0f28 rgba(0,0,0,0.06);
+    scrollbar-color: #0f497b rgba(0,0,0,0.06);
     scrollbar-width: thin;
 }
 
@@ -4174,7 +4174,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
         top: var(--header-h);
         left: 0; right: 0;
         z-index: 1399;
-        background: var(--primary-dark, #7d1735);
+        background: var(--primary-dark, #1e73be);
         padding: 10px 12px 12px;
         flex-wrap: wrap;
         gap: 6px;
@@ -4796,8 +4796,8 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
 
 /* ── Variables de diseño del panel ───────────────────── */
 #q9-info-panel {
-    --q9-primary: #931D3D;
-    --q9-primary-dk: #781634;
+    --q9-primary: #1e73be;
+    --q9-primary-dk: #155a94;
     --q9-radius: 14px;
     --q9-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 8px 28px rgba(0,0,0,0.14);
 
@@ -5387,19 +5387,19 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
         border-radius: 10px !important;
         border: 1px solid rgba(123, 15, 40, 0.14) !important;
         background: rgba(255,255,255,0.94) !important;
-        color: #7b1532 !important;
+        color: #154b7b !important;
         box-shadow: 0 8px 18px rgba(72, 10, 28, 0.10) !important;
     }
 
     .ol-zoom button:hover,
     .ol-zoom-general-control button:hover {
         background: #ffffff !important;
-        color: #641128 !important;
+        color: #113d64 !important;
     }
 
     /* Panel lateral: inicio más limpio */
     .sidebar {
-        background: linear-gradient(180deg, #ffffff 0%, #fcfbfb 100%);
+        background: linear-gradient(180deg, #ffffff 0%, #fbfcfc 100%);
         border-right-color: rgba(91, 12, 33, 0.10);
         box-shadow: 6px 0 18px rgba(54, 8, 21, 0.06);
     }
@@ -5407,7 +5407,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
     .sidebar-topbar {
         height: 42px;
         min-height: 42px;
-        background: linear-gradient(180deg, #8d1738 0%, #73132f 100%);
+        background: linear-gradient(180deg, #17568d 0%, #134673 100%);
         border-right: 1px solid rgba(255,255,255,0.08);
         border-bottom: 1px solid rgba(84, 11, 30, 0.26);
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
@@ -5415,7 +5415,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
 
     .sidebar-header {
         padding: 20px 12px 8px;
-        background: linear-gradient(180deg, #ffffff 0%, #fbf8f9 100%);
+        background: linear-gradient(180deg, #ffffff 0%, #f3f8fc 100%);
         border-bottom: 1px solid rgba(91, 12, 33, 0.08);
     }
 
@@ -5537,7 +5537,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
         font-size: 0.73rem;
         font-weight: 800;
         letter-spacing: 0.04em;
-        color: #6f3a4b;
+        color: #3a566f;
     }
 
     .layer-subgroup-content {
@@ -5571,7 +5571,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
     }
 
     .layer-item.active .layer-name {
-        color: #4c1727;
+        color: #17334c;
         font-weight: 700;
     }
 
@@ -5719,7 +5719,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
         font-size: 0.72rem;
         font-weight: 800;
         letter-spacing: 0.045em;
-        color: #724351;
+        color: #435c72;
     }
 
     .layer-subgroup-content {
@@ -5761,7 +5761,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
     }
 
     .layer-item.active .layer-name {
-        color: #4d1728;
+        color: #17344d;
         font-weight: 700;
     }
 
@@ -6003,7 +6003,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
     }
 
     .layer-item.active .layer-name {
-        color: #4c1727;
+        color: #17334c;
         font-weight: 700;
     }
 
@@ -6100,12 +6100,12 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
 .legend-panel.collapsed .legend-header .close-btn {
     border: 1px solid rgba(123, 15, 40, 0.14);
     background: rgba(255,255,255,0.94);
-    color: #7b1532;
+    color: #154b7b;
     box-shadow: 0 8px 18px rgba(72, 10, 28, 0.10);
 }
 .legend-panel.collapsed .legend-header .close-btn:hover {
     background: #ffffff;
-    color: #641128;
+    color: #113d64;
 }
 
 #btn-geocoder-close.locating {
@@ -6120,7 +6120,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
   overflow: hidden;
 }
 .ol-legend .header, .legend .header, .leyenda .header, #legend .header, #leyenda .header {
-  background: linear-gradient(180deg,#7a0019,#5a0012);
+  background: linear-gradient(180deg,#00417a,#00305a);
   color: #fff;
   font-weight: 600;
   letter-spacing: .3px;
@@ -6227,7 +6227,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
 .header-btn-3d.active,
 .header-btn-3d.active:hover {
     background: rgba(255,255,255,0.96) !important;
-    color: #8a1a37 !important;
+    color: #1a568a !important;
     border-radius: 6px;
     border: none !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.22) !important;
@@ -6262,16 +6262,16 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
 .geocoder-close {
     width: 34px !important;
     height: 34px !important;
-    color: #7b1532 !important;
+    color: #154b7b !important;
 }
 
 .geocoder-close:hover {
     background: #ffffff !important;
-    color: #641128 !important;
+    color: #113d64 !important;
 }
 
 .geocoder-field > i {
-    color: #7b1532 !important;
+    color: #154b7b !important;
 }
 
 .geocoder-input {

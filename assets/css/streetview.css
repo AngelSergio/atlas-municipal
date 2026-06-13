@@ -247,7 +247,7 @@ body.streetview-resizing {
   overflow: hidden;
 }
 .ol-legend .header, .legend .header, .leyenda .header, #legend .header, #leyenda .header {
-  background: linear-gradient(180deg,#7a0019,#5a0012);
+  background: linear-gradient(180deg,#00417a,#00305a);
   color: #fff;
   font-weight: 600;
   letter-spacing: .3px;

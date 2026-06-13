@@ -19,7 +19,7 @@
     var showFeatureInfo = opts.showFeatureInfo || null;
     var tempLayers = [];
     var colorIndex = 0;
-    var colors = ['#7B1B32','#00897b','#ef6c00','#2e7d32','#1565c0','#ad1457','#6d4c41','#6a1b9a'];
+    var colors = ['#1b4e7b','#00897b','#ef6c00','#2e7d32','#1565c0','#1466ad','#6d4c41','#6a1b9a'];
 
     function nextColor(){
       var c = colors[colorIndex % colors.length];
@@ -57,7 +57,7 @@
 
     function makeDefaultStyle(color){
       var fill = 'rgba(123, 27, 50, 0.18)';
-      var stroke = color || '#7B1B32';
+      var stroke = color || '#1b4e7b';
       return function(feature){
         var geom = feature && feature.getGeometry ? feature.getGeometry() : null;
         var type = geom && geom.getType ? geom.getType() : '';
@@ -145,7 +145,7 @@
         row.innerHTML = [
           '<div class="layer-item-left">',
             '<input type="checkbox" class="layer-checkbox temp-layer-checkbox" ' + (entry.layer.getVisible() ? 'checked' : '') + '>',
-            '<div class="layer-legend temp-layer-swatch" style="background:' + escapeHtml(entry.color || '#7B1B32') + '"></div>',
+            '<div class="layer-legend temp-layer-swatch" style="background:' + escapeHtml(entry.color || '#1b4e7b') + '"></div>',
             '<span class="layer-name" title="' + escapeHtml(entry.name) + '">' + escapeHtml(entry.name) + '</span>',
           '</div>',
           '<div class="temp-layer-actions">',

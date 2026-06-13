@@ -1,6 +1,6 @@
 /**
  * ui-intro-labels.js  v2.3
- * Atlas Municipal de Peligros y Riesgos - Proteccion Civil y Bomberos de Celaya
+ * Atlas Municipal de Peligros y Riesgos - guia rapida (textos basados en el tema del municipio)
  *
  * v2.3: En pantallas moviles (<= 768 px) el tour spotlight se sustituye por un
  *       bottom-sheet tactil con las funciones listadas. En desktop (>= 769 px)
@@ -14,6 +14,9 @@
  */
 (function () {
     'use strict';
+
+    // Nombre del municipio tomado del tema (window.MUNICIPIO_CONFIG).
+    var MUNI = (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.municipio) || 'tu municipio';
 
     /* =========================================================
        PASOS DEL TOUR
@@ -45,7 +48,7 @@
             side:   'right',
             icon:   '\u2601\uFE0F',
             title:  'Clima',
-            desc:   'Consulta el clima actual de Celaya o del punto que elijas en el mapa. Desde aqui puedes actualizar los datos y abrir el panel del pronostico.',
+            desc:   'Consulta el clima actual de ' + MUNI + ' o del punto que elijas en el mapa. Desde aqui puedes actualizar los datos y abrir el panel del pronostico.',
         },
         {
             target: ['#btn-page-reload', '#btn-sidebar-handle'],
@@ -59,14 +62,14 @@
             side:   'bottom',
             icon:   '\uD83D\uDCCD',
             title:  'Buscar direccion y mi ubicacion',
-            desc:   'Usa el buscador para localizar cualquier calle, colonia, fraccionamiento o lugar de Celaya; o pulsa el boton de mi ubicacion para centrar el mapa en tu posicion actual.',
+            desc:   'Usa el buscador para localizar cualquier calle, colonia, fraccionamiento o lugar de ' + MUNI + '; o pulsa el boton de mi ubicacion para centrar el mapa en tu posicion actual.',
         },
         {
             target: ['.ol-zoom', 'button[aria-label="Zoom general"]'],
             side:   'right',
             icon:   '\uD83D\uDD0E',
             title:  'Acercar, alejar y zoom general',
-            desc:   'Aqui tienes tres controles rapidos: + para acercarte, - para alejarte y Zoom general para regresar de un clic a la vista completa del municipio de Celaya.',
+            desc:   'Aqui tienes tres controles rapidos: + para acercarte, - para alejarte y Zoom general para regresar de un clic a la vista completa del municipio de ' + MUNI + '.',
         },
         {
             target: { within: '#map', relX: 0.54, relY: 0.38, width: 150, height: 150 },
@@ -156,13 +159,13 @@
         '#uit-arrow{position:fixed;z-index:88002;pointer-events:none;opacity:0;transition:opacity .22s;overflow:visible;}',
         '#uit-arrow.visible{opacity:1;}',
         '#uit-card{position:fixed;z-index:88003;background:#fff;border-radius:18px;',
-        '  box-shadow:0 10px 50px rgba(0,0,0,.42),0 0 0 3px #931D3D;',
+        '  box-shadow:0 10px 50px rgba(0,0,0,.42),0 0 0 3px #1e73be;',
         '  width:min(390px,92vw);pointer-events:all;opacity:0;',
         '  transform:scale(.90) translateY(14px);',
         '  transition:opacity .30s,transform .30s cubic-bezier(.4,0,.2,1);',
         '  font-family:"Segoe UI",Arial,sans-serif;overflow:hidden;}',
         '#uit-card.visible{opacity:1;transform:scale(1) translateY(0);}',
-        '#uit-card-header{background:linear-gradient(135deg,#931D3D 0%,#6b1428 100%);',
+        '#uit-card-header{background:linear-gradient(135deg,#1e73be 0%,#14426b 100%);',
         '  padding:14px 18px 13px;display:flex;align-items:center;gap:11px;color:#fff;}',
         '#uit-card-icon{font-size:1.65rem;line-height:1;flex-shrink:0;filter:drop-shadow(0 1px 4px rgba(0,0,0,.4));}',
         '#uit-card-title{font-size:1.02rem;font-weight:700;flex:1;line-height:1.25;}',
@@ -171,7 +174,7 @@
         '  padding:3px 10px;border-radius:20px;white-space:nowrap;}',
         '#uit-card-body{padding:14px 18px 6px;font-size:.895rem;color:#2d2d2d;line-height:1.60;}',
         '#uit-progress-bar{height:5px;background:#ececec;margin:8px 18px 0;border-radius:3px;overflow:hidden;}',
-        '#uit-progress-fill{height:100%;background:linear-gradient(90deg,#931D3D,#c03050);border-radius:3px;transition:width .38s ease;}',
+        '#uit-progress-fill{height:100%;background:linear-gradient(90deg,#1e73be,#307dc0);border-radius:3px;transition:width .38s ease;}',
         '#uit-card-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 14px;gap:8px;}',
         '.uit-btn{border:none;border-radius:24px;font-family:inherit;font-size:.84rem;font-weight:700;',
         '  cursor:pointer;padding:9px 17px;transition:background .16s,transform .10s;',
@@ -182,8 +185,8 @@
         '#uit-btn-close:hover{background:#e0e0e0;}',
         '#uit-btn-prev{background:#f5f5f5;color:#555;}',
         '#uit-btn-prev:hover:not(:disabled){background:#e5e5e5;}',
-        '#uit-btn-next{background:#931D3D;color:#fff;}',
-        '#uit-btn-next:hover{background:#781634;}',
+        '#uit-btn-next{background:#1e73be;color:#fff;}',
+        '#uit-btn-next:hover{background:#155a94;}',
         '#uit-btn-next.finish{background:#2e7d32;}',
         '#uit-btn-next.finish:hover{background:#1b5e20;}',
         '#uit-kb-hint{position:fixed;bottom:15px;left:50%;transform:translateX(-50%);',
@@ -217,7 +220,7 @@
         '  border-radius:2px;margin:10px auto 0;flex-shrink:0;cursor:grab;touch-action:none;}',
 
         /* header */
-        '#uig-hdr{background:linear-gradient(135deg,#931D3D 0%,#6b1428 100%);',
+        '#uig-hdr{background:linear-gradient(135deg,#1e73be 0%,#14426b 100%);',
         '  padding:13px 16px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}',
         '#uig-hdr-icon{font-size:1.45rem;line-height:1;flex-shrink:0;}',
         '#uig-hdr-txt{flex:1;min-width:0;}',
@@ -245,7 +248,7 @@
         '  line-height:1.25;margin-bottom:3px;}',
         '.uig-dsc{font-size:0.76rem;color:#555;line-height:1.52;}',
         '.uig-num{flex-shrink:0;width:20px;height:20px;',
-        '  background:rgba(147,29,61,0.09);color:#931D3D;',
+        '  background:rgba(147,29,61,0.09);color:#1e73be;',
         '  border-radius:50%;font-size:0.62rem;font-weight:800;',
         '  display:flex;align-items:center;justify-content:center;margin-top:2px;}',
 

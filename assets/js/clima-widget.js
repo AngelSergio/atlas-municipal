@@ -6,7 +6,10 @@
       .finally(() => clearTimeout(timer));
   }
 
-  const DEFAULT_COORDS = { lat: 20.5235, lon: -100.8157, label: 'Centro de Celaya' };
+  // Coordenadas y etiqueta por defecto tomadas del tema (window.MUNICIPIO_CONFIG).
+  const _mc = window.MUNICIPIO_CONFIG || {};
+  const _center = (_mc.mapa && _mc.mapa.center) || [-100.8157, 20.5235];
+  const DEFAULT_COORDS = { lat: _center[1], lon: _center[0], label: 'Centro de ' + (_mc.municipio || 'el municipio') };
 
   /* Descripciones completas para el ciudadano */
   const WX = {
@@ -100,7 +103,7 @@
       </div>
       <div id="clima-sidebar-panel" class="collapsed">
         <div class="csb-body" id="csb-body">
-          <div class="csb-empty">Toca ↺ para cargar el clima de Celaya.</div>
+          <div class="csb-empty">Toca ↺ para cargar el clima de ${_mc.municipio || 'el municipio'}.</div>
         </div>
       </div>`;
 
@@ -363,10 +366,10 @@
       : peakPct < 50               ? `Posible lluvia hacia las ${peakHour}`
       : peakPct < 75               ? `Probable lluvia ~${peakHour}`
       :                              `Alta prob. lluvia a las ${peakHour}`;
-    const riskColor = peakPct < 25 ? '#9a8086' : peakPct < 50 ? '#b5621a' : '#931D3D';
+    const riskColor = peakPct < 25 ? '#9a8086' : peakPct < 50 ? '#b5621a' : '#1e73be';
     const bars = items.map(item => {
       const h   = Math.max(4, Math.round((item.pct / 100) * 40));
-      const col = item.pct >= 50 ? '#931D3D' : item.pct >= 25 ? '#e07340' : '#c5b4ba';
+      const col = item.pct >= 50 ? '#1e73be' : item.pct >= 25 ? '#e07340' : '#c5b4ba';
       return `<div class="csb-spark-col">
         <div class="csb-spark-bar" style="height:${h}px;background:${col}"></div>
         <div class="csb-spark-time">${item.time}</div>

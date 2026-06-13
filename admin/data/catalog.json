@@ -1,0 +1,50 @@
+{
+    "themes": [
+        {
+            "id": "medio-fisico",
+            "name": "Medio físico",
+            "icon": "fa-mountain",
+            "expanded": false
+        },
+        {
+            "id": "medio-sociodemografico",
+            "name": "Medio sociodemográfico",
+            "icon": "fa-users",
+            "expanded": true
+        },
+        {
+            "id": "peligros",
+            "name": "Peligros",
+            "icon": "fa-exclamation-triangle",
+            "expanded": false
+        },
+        {
+            "id": "riesgos",
+            "name": "Riesgos",
+            "icon": "fa-exclamation-circle",
+            "expanded": false
+        },
+        {
+            "id": "obras",
+            "name": "Obras",
+            "icon": "fa-helmet-safety",
+            "expanded": false
+        }
+    ],
+    "layers": [
+        {
+            "layer": "limite_municipal",
+            "name": "Límite Municipal",
+            "theme": "medio-sociodemografico",
+            "visible": true,
+            "order": 0,
+            "style": "apaseo_gde:limite_municipal",
+            "extent": [
+                -11217092.9685,
+                2328133.4185,
+                -11185615.2763,
+                2358316.6365
+            ]
+        }
+    ]
+}

@@ -3,36 +3,53 @@
  * Reemplaza logos, nombre del municipio, dependencia y paleta de colores.
  */
 window.MUNICIPIO_CONFIG = {
-  municipio:     'Celaya',
+  municipio:     'Apaseo el Grande',
   estado:        'Guanajuato',
   dependencia:   'Protección Civil y Bomberos',
 
   geoserver: {
     url:       '/geoserver',
-    workspace: 'pc'
+    workspace: 'apaseo_gde'
   },
+
+  // Capa de límite municipal: se dibuja siempre encima y se protege del modo radio.
+  limiteMunicipalLayer: 'limite_municipal',
 
   mapa: {
-    center:         [-100.8167, 20.5289], // [longitud, latitud] WGS84
+    center:         [-100.6235, 20.5914], // [longitud, latitud] WGS84 — centro del municipio de Apaseo el Grande
     zoom:           12,
-    homeExtent3857: [-11233767.3321, 2315094.3382, -11204184.5071, 2356006.2018]
+    // Extensión del límite municipal (EPSG:3857), derivada de la capa limite_municipal
+    homeExtent3857: [-11217092.9685, 2328133.4185, -11185615.2763, 2358316.6365],
+    // Mismo extent en grados [oeste, sur, este, norte] — usado por la vista 3D (Cesium)
+    homeExtentWGS84: [-100.76486, 20.46445, -100.48209, 20.71827],
+    // Vista inicial de la cámara 3D
+    vista3D: { height: 42000, pitch: -55 }
   },
 
-  logo:          'assets/images/branding/logo-pcb.png',
-  logoEscudo:    'assets/images/branding/logo-pcb-escudo.png',
-  logoMunicipio: 'assets/images/branding/celaya-logo-horizontal.png',
+  // Sesgo del buscador de lugares (Google Places): radio alrededor del centro del mapa.
+  geocoder: { radioMetros: 25000 },
+
+  // Recursos enlazados desde el panel "Acerca de".
+  recursos: {
+    atlasPdf:       '/pdf/ATLAS_CELAYA.pdf', // TODO: reemplazar por el PDF del Atlas de Apaseo el Grande
+    programasPcUrl: ''                        // URL de Programas de PC (vacío = se oculta)
+  },
+
+  logo:          'assets/images/branding/apaseo-pc.png',
+  logoEscudo:    'assets/images/branding/apaseo-pc.png',
+  logoMunicipio: 'assets/images/branding/apaseo-logo-horizontal.png',
 
   colores: {
-    primary:      '#931D3D',
-    primaryDark:  '#781634',
-    primaryLight: '#B04159',
-    accent:       '#B04159'
+    primary:      '#1e73be',
+    primaryDark:  '#155a94',
+    primaryLight: '#52aae9',
+    accent:       '#2d9bea'
   },
 
   contacto: {
-    telefono:     '(461) 615-0911',
-    telefonoHref: 'tel:+524616150911',
-    direccion:    'Orquídeas #123, Col. Rosalinda I, C.P. 38060, Celaya, Gto.',
-    mapsUrl:      'https://www.google.com/maps/search/?api=1&query=Orqu%C3%ADdeas+123,+Col.+Rosalinda+I,+Celaya,+Gto.'
+    telefono:     '(413) 158-3911',
+    telefonoHref: 'tel:+524131583911',
+    direccion:    'Melchor Ocampo #113, Zona Centro, C.P. 38160, Apaseo el Grande, Gto.',
+    mapsUrl:      'https://www.google.com/maps/search/?api=1&query=Melchor+Ocampo+113,+Zona+Centro,+Apaseo+el+Grande,+Gto.'
   }
 };
