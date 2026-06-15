@@ -1,7 +1,7 @@
 /**
  * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.
  * No editar a mano: usar https://<host>/atlas-apaseo-gde/admin/
- * Fuente: admin/data/catalog.json   |   Regenerado: 2026-06-15T23:18:31+00:00
+ * Fuente: admin/data/catalog.json   |   Regenerado: 2026-06-15T23:49:01+00:00
  */
 window.MUNICIPIO_LAYERS = {
     "extents": {
@@ -106,19 +106,19 @@ window.MUNICIPIO_LAYERS = {
                             "width": 2
                         },
                         {
-                            "name": "Colonias",
-                            "layer": "colonias_apaseo",
-                            "visible": false,
-                            "styleType": "poly-outline",
-                            "color": "#800080",
-                            "width": 2
-                        },
-                        {
                             "name": "Calles y Avenidas",
                             "layer": "calles_apaseo",
                             "visible": false,
                             "styleType": "line",
                             "color": "#bf0000",
+                            "width": 2
+                        },
+                        {
+                            "name": "Colonias",
+                            "layer": "colonias_apaseo",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#800080",
                             "width": 2
                         },
                         {

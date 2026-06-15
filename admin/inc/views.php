@@ -8,7 +8,9 @@ function view_header(string $title): void {
     echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
     echo '<title>' . h($title) . ' · Atlas ' . h($muni) . '</title>';
     echo '<link rel="icon" href="/atlas-apaseo-gde/assets/images/branding/favicon-32.png">';
-    echo '<link rel="stylesheet" href="assets/admin.css"></head><body>';
+    echo '<link rel="stylesheet" href="/atlas-apaseo-gde/assets/vendor/fontawesome/css/all.min.css">';
+    echo '<link rel="stylesheet" href="assets/admin.css">';
+    echo '<script>document.documentElement.classList.add("js")</script></head><body>';
     echo '<header class="topbar"><div class="brand">';
     echo '<img src="/atlas-apaseo-gde/assets/images/branding/apaseo-pc.png" alt="" class="logo">';
     echo '<div><strong>Panel administrativo</strong><span>Atlas de Peligros y Riesgos · ' . h($muni) . '</span></div></div>';
@@ -31,14 +33,14 @@ function view_footer(): void {
 if (!admin_is_setup()) {
     view_header('Configuración inicial');
     ?>
-    <div class="card narrow">
-        <h1>Configuración inicial</h1>
+    <div class="card narrow auth-card">
+        <h1><i class="fa-solid fa-shield-halved"></i> Configuración inicial</h1>
         <p class="muted">Define la contraseña del administrador. Mínimo 10 caracteres. Se guardará cifrada (bcrypt) fuera del directorio web.</p>
         <form method="post">
             <input type="hidden" name="action" value="setup"><?= csrf_field() ?>
             <label>Contraseña<input type="password" name="password" minlength="10" required autofocus></label>
             <label>Repetir contraseña<input type="password" name="password2" minlength="10" required></label>
-            <button class="btn primary">Guardar contraseña</button>
+            <button class="btn primary"><i class="fa-solid fa-floppy-disk"></i> Guardar contraseña</button>
         </form>
     </div>
     <?php
@@ -50,15 +52,15 @@ if (!is_authenticated()) {
     view_header('Iniciar sesión');
     $rem = admin_lock_remaining();
     ?>
-    <div class="card narrow">
-        <h1>Iniciar sesión</h1>
+    <div class="card narrow auth-card">
+        <h1><i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión</h1>
         <?php if ($rem > 0): ?>
             <p class="flash err">Acceso bloqueado temporalmente. Intenta en <?= ceil($rem / 60) ?> min.</p>
         <?php endif; ?>
         <form method="post">
             <input type="hidden" name="action" value="login"><?= csrf_field() ?>
             <label>Contraseña<input type="password" name="password" required autofocus <?= $rem > 0 ? 'disabled' : '' ?>></label>
-            <button class="btn primary" <?= $rem > 0 ? 'disabled' : '' ?>>Entrar</button>
+            <button class="btn primary" <?= $rem > 0 ? 'disabled' : '' ?>><i class="fa-solid fa-right-to-bracket"></i> Entrar</button>
         </form>
     </div>
     <?php
@@ -71,9 +73,16 @@ $catalog = catalog_load();
 $themes  = $catalog['themes'];
 view_header('Capas');
 ?>
+<div class="page-head">
+    <div>
+        <h1>Gestión de capas</h1>
+        <p class="muted">Sube, organiza y estiliza las capas que se muestran en el visor público.</p>
+    </div>
+    <a class="btn ghost" href="/atlas-apaseo-gde/" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Abrir visor</a>
+</div>
 <div class="grid">
     <section class="card">
-        <h2>Publicar nueva capa</h2>
+        <h2><i class="fa-solid fa-cloud-arrow-up"></i> Publicar nueva capa</h2>
         <p class="muted">Sube un <strong>.zip de shapefile</strong> (con .shp, .shx, .dbf, .prj), <strong>.geojson</strong> o <strong>.kml</strong>. Se carga en PostGIS (reproyectado a WGS84), se publica en GeoServer y se agrega al visor.</p>
         <form method="post" enctype="multipart/form-data" class="publish">
             <input type="hidden" name="action" value="publish"><?= csrf_field() ?>
@@ -132,12 +141,12 @@ view_header('Capas');
                 <label class="inline"><input type="checkbox" name="visible"> Visible al cargar el visor</label>
                 <label class="inline"><input type="checkbox" name="overwrite"> Sobrescribir si ya existe</label>
             </div>
-            <button class="btn primary">Cargar y publicar</button>
+            <button class="btn primary"><i class="fa-solid fa-cloud-arrow-up"></i> Cargar y publicar</button>
         </form>
     </section>
 
     <section class="card">
-        <h2>Temas / agrupaciones</h2>
+        <h2><i class="fa-solid fa-layer-group"></i> Temas / agrupaciones</h2>
         <p class="muted">Renombra, reordena, crea o elimina las agrupaciones del panel lateral del visor. Un tema solo puede eliminarse si no tiene capas.</p>
         <?php foreach ($themes as $ti => $t): $tcount = 0; foreach ($catalog['layers'] as $l) if (($l['theme'] ?? '') === $t['id']) $tcount++; ?>
             <div class="theme-row">
@@ -150,9 +159,9 @@ view_header('Capas');
                     <button class="btn small">Guardar</button>
                 </form>
                 <div class="theme-actions">
-                    <form method="post"><input type="hidden" name="action" value="theme_move"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><input type="hidden" name="dir" value="up"><?= csrf_field() ?><button class="btn icon" title="Subir" <?= $ti === 0 ? 'disabled' : '' ?>>▲</button></form>
-                    <form method="post"><input type="hidden" name="action" value="theme_move"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><input type="hidden" name="dir" value="down"><?= csrf_field() ?><button class="btn icon" title="Bajar" <?= $ti === count($themes) - 1 ? 'disabled' : '' ?>>▼</button></form>
-                    <form method="post" onsubmit="return confirm('¿Eliminar el tema “<?= h($t['name']) ?>”?');"><input type="hidden" name="action" value="theme_delete"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><?= csrf_field() ?><button class="btn icon danger" title="Eliminar tema" <?= $tcount > 0 ? 'disabled' : '' ?>>🗑</button></form>
+                    <form method="post"><input type="hidden" name="action" value="theme_move"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><input type="hidden" name="dir" value="up"><?= csrf_field() ?><button class="btn icon" title="Subir" <?= $ti === 0 ? 'disabled' : '' ?>><i class="fa-solid fa-chevron-up"></i></button></form>
+                    <form method="post"><input type="hidden" name="action" value="theme_move"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><input type="hidden" name="dir" value="down"><?= csrf_field() ?><button class="btn icon" title="Bajar" <?= $ti === count($themes) - 1 ? 'disabled' : '' ?>><i class="fa-solid fa-chevron-down"></i></button></form>
+                    <form method="post" onsubmit="return confirm('¿Eliminar el tema “<?= h($t['name']) ?>”?');"><input type="hidden" name="action" value="theme_delete"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><?= csrf_field() ?><button class="btn icon danger" title="Eliminar tema" <?= $tcount > 0 ? 'disabled' : '' ?>><i class="fa-solid fa-trash-can"></i></button></form>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -161,7 +170,7 @@ view_header('Capas');
             <input type="hidden" name="action" value="theme_add"><?= csrf_field() ?>
             <input type="text" name="name" placeholder="Nombre del nuevo tema" required>
             <input type="text" name="icon" placeholder="fa-layer-group" class="ticon" title="Ícono FontAwesome (opcional)">
-            <button class="btn primary small">+ Crear tema</button>
+            <button class="btn primary small"><i class="fa-solid fa-plus"></i> Crear tema</button>
         </form>
 
         <?php $bm = catalog_basemap($catalog); ?>
@@ -179,7 +188,7 @@ view_header('Capas');
     </section>
 
     <section class="card">
-        <h2>Capas del visor</h2>
+        <h2><i class="fa-solid fa-map"></i> Capas del visor</h2>
         <?php
         $byTheme = [];
         foreach ($catalog['layers'] as $l) $byTheme[$l['theme'] ?? ''][] = $l;
@@ -191,54 +200,65 @@ view_header('Capas');
             <?php if (!$rows): ?>
                 <p class="muted small">Sin capas.</p>
             <?php else: foreach ($rows as $l): ?>
+                <?php
+                    $geom    = $l['geom'] ?? '';
+                    $allowed = sld_allowed_types($geom);
+                    $curType = $l['style_type'] ?? array_key_first($allowed);
+                    if (!isset($allowed[$curType])) $curType = array_key_first($allowed);
+                    $curColor = $l['color'] ?? '#1e73be';
+                    $curW     = $l['width'] ?? 2;
+                ?>
                 <div class="layer">
-                    <form method="post" class="layer-edit">
-                        <input type="hidden" name="action" value="layer_update">
-                        <input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><?= csrf_field() ?>
-                        <input type="text" name="name" value="<?= h($l['name']) ?>" class="lname">
-                        <code class="lid"><?= h($l['layer']) ?></code>
-                        <select name="theme" class="ltheme">
-                            <?php foreach ($themes as $tt): ?>
-                                <option value="<?= h($tt['id']) ?>" <?= ($tt['id'] === ($l['theme'] ?? '')) ? 'selected' : '' ?>><?= h($tt['name']) ?></option>
+                    <div class="layer-head">
+                        <button type="button" class="layer-toggle" aria-expanded="false" aria-label="Editar <?= h($l['name']) ?>">
+                            <i class="fa-solid fa-chevron-right caret"></i>
+                            <span class="lname-display"><?= h($l['name']) ?></span>
+                            <code class="lid"><?= h($l['layer']) ?></code>
+                            <?php if (empty($l['visible'])): ?><i class="fa-regular fa-eye-slash off" title="Oculta al cargar"></i><?php endif; ?>
+                        </button>
+                        <div class="layer-order">
+                            <?php foreach (['up' => 'fa-arrow-up', 'down' => 'fa-arrow-down'] as $dir => $ico): ?>
+                                <form method="post"><input type="hidden" name="action" value="layer_move"><input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><input type="hidden" name="dir" value="<?= $dir ?>"><?= csrf_field() ?><button class="btn icon" title="Mover <?= $dir ?>"><i class="fa-solid <?= $ico ?>"></i></button></form>
                             <?php endforeach; ?>
-                        </select>
-                        <label class="inline" title="Visible al cargar"><input type="checkbox" name="visible" <?= !empty($l['visible']) ? 'checked' : '' ?>> 👁</label>
-                        <button class="btn small">Guardar</button>
-                    </form>
-                    <?php
-                        $geom    = $l['geom'] ?? '';
-                        $allowed = sld_allowed_types($geom);
-                        $curType = $l['style_type'] ?? array_key_first($allowed);
-                        if (!isset($allowed[$curType])) $curType = array_key_first($allowed);
-                        $curColor = $l['color'] ?? '#1e73be';
-                        $curW     = $l['width'] ?? 2;
-                    ?>
-                    <form method="post" class="layer-style" title="Geometría: <?= h($geom ?: 'desconocida') ?>">
-                        <input type="hidden" name="action" value="layer_style">
-                        <input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><?= csrf_field() ?>
-                        <?php if (count($allowed) > 1): ?>
-                            <select name="style_type" class="lstype">
-                                <?php foreach ($allowed as $k => $lab): ?>
-                                    <option value="<?= h($k) ?>" <?= $k === $curType ? 'selected' : '' ?>><?= h($lab) ?></option>
+                        </div>
+                    </div>
+                    <div class="layer-body">
+                        <form method="post" class="layer-edit">
+                            <input type="hidden" name="action" value="layer_update">
+                            <input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><?= csrf_field() ?>
+                            <input type="text" name="name" value="<?= h($l['name']) ?>" class="lname">
+                            <select name="theme" class="ltheme">
+                                <?php foreach ($themes as $tt): ?>
+                                    <option value="<?= h($tt['id']) ?>" <?= ($tt['id'] === ($l['theme'] ?? '')) ? 'selected' : '' ?>><?= h($tt['name']) ?></option>
                                 <?php endforeach; ?>
                             </select>
-                        <?php else: ?>
-                            <input type="hidden" name="style_type" value="<?= h((string)array_key_first($allowed)) ?>">
-                            <span class="stype-fixed"><?= h((string)reset($allowed)) ?></span>
-                        <?php endif; ?>
-                        <input type="color" name="color" value="<?= h($curColor) ?>" title="Color">
-                        <input type="number" name="width" value="<?= h((string)$curW) ?>" step="0.5" min="0" max="20" class="lw" title="Grosor de línea/borde">
-                        <button class="btn small">Aplicar estilo</button>
-                    </form>
-                    <div class="layer-actions">
-                        <?php foreach (['up' => '▲', 'down' => '▼'] as $dir => $sym): ?>
-                            <form method="post"><input type="hidden" name="action" value="layer_move"><input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><input type="hidden" name="dir" value="<?= $dir ?>"><?= csrf_field() ?><button class="btn icon" title="Mover <?= $dir ?>"><?= $sym ?></button></form>
-                        <?php endforeach; ?>
-                        <form method="post" class="del" onsubmit="return confirm('¿Eliminar <?= h($l['layer']) ?> del catálogo?\n\nMarca PURGAR antes para borrarla también de GeoServer y PostGIS (irreversible).');">
-                            <input type="hidden" name="action" value="layer_delete"><input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><?= csrf_field() ?>
-                            <label class="inline danger" title="Borrar de GeoServer y PostGIS"><input type="checkbox" name="purge"> purgar</label>
-                            <button class="btn icon danger" title="Eliminar">🗑</button>
+                            <label class="inline" title="Visible al cargar"><input type="checkbox" name="visible" <?= !empty($l['visible']) ? 'checked' : '' ?>> <i class="fa-regular fa-eye"></i></label>
+                            <button class="btn small">Guardar</button>
                         </form>
+                        <form method="post" class="layer-style" title="Geometría: <?= h($geom ?: 'desconocida') ?>">
+                            <input type="hidden" name="action" value="layer_style">
+                            <input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><?= csrf_field() ?>
+                            <?php if (count($allowed) > 1): ?>
+                                <select name="style_type" class="lstype">
+                                    <?php foreach ($allowed as $k => $lab): ?>
+                                        <option value="<?= h($k) ?>" <?= $k === $curType ? 'selected' : '' ?>><?= h($lab) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php else: ?>
+                                <input type="hidden" name="style_type" value="<?= h((string)array_key_first($allowed)) ?>">
+                                <span class="stype-fixed"><?= h((string)reset($allowed)) ?></span>
+                            <?php endif; ?>
+                            <input type="color" name="color" value="<?= h($curColor) ?>" title="Color">
+                            <input type="number" name="width" value="<?= h((string)$curW) ?>" step="0.5" min="0" max="20" class="lw" title="Grosor de línea/borde">
+                            <button class="btn small">Aplicar estilo</button>
+                        </form>
+                        <div class="layer-foot">
+                            <form method="post" class="del" onsubmit="return confirm('¿Eliminar <?= h($l['layer']) ?> del catálogo?\n\nMarca PURGAR antes para borrarla también de GeoServer y PostGIS (irreversible).');">
+                                <input type="hidden" name="action" value="layer_delete"><input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><?= csrf_field() ?>
+                                <label class="inline danger" title="Borrar de GeoServer y PostGIS"><input type="checkbox" name="purge"> purgar</label>
+                                <button class="btn icon danger" title="Eliminar"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; endif; ?>
@@ -246,20 +266,40 @@ view_header('Capas');
 
         <form method="post" class="regen">
             <input type="hidden" name="action" value="regenerate"><?= csrf_field() ?>
-            <button class="btn ghost">Regenerar municipio.layers.js</button>
-            <a class="btn ghost" href="/atlas-apaseo-gde/" target="_blank">Abrir visor ↗</a>
+            <button class="btn ghost"><i class="fa-solid fa-arrows-rotate"></i> Regenerar municipio.layers.js</button>
+            <a class="btn ghost" href="/atlas-apaseo-gde/" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Abrir visor</a>
         </form>
     </section>
 
     <section class="card narrow">
-        <h2>Cambiar contraseña</h2>
+        <h2><i class="fa-solid fa-key"></i> Cambiar contraseña</h2>
         <form method="post">
             <input type="hidden" name="action" value="change_password"><?= csrf_field() ?>
             <label>Contraseña actual<input type="password" name="current" required></label>
             <label>Nueva contraseña<input type="password" name="new" minlength="10" required></label>
-            <button class="btn">Actualizar</button>
+            <button class="btn primary"><i class="fa-solid fa-floppy-disk"></i> Actualizar</button>
         </form>
     </section>
 </div>
+<script>
+// Acordeón de capas: una sola tarjeta abierta a la vez. Al hacer clic en la
+// cabecera se expande para editar; al abrir otra (o volver a hacer clic) se colapsa.
+// Las flechas de orden están fuera de .layer-toggle, así que no expanden.
+document.addEventListener('click', function (e) {
+    var toggle = e.target.closest('.layer-toggle');
+    if (!toggle) return;
+    var card = toggle.closest('.layer');
+    var wasOpen = card.classList.contains('open');
+    document.querySelectorAll('.layer.open').forEach(function (c) {
+        c.classList.remove('open');
+        var t = c.querySelector('.layer-toggle');
+        if (t) t.setAttribute('aria-expanded', 'false');
+    });
+    if (!wasOpen) {
+        card.classList.add('open');
+        toggle.setAttribute('aria-expanded', 'true');
+    }
+});
+</script>
 <?php
 view_footer();
