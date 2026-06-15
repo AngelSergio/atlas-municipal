@@ -90,3 +90,15 @@ function sld_suggest_type(string $geomType): string {
     if (strpos($g, 'LINE') !== false)    return 'line';
     return 'point';
 }
+
+/** Tipos de estilo aplicables según la geometría (id => etiqueta). */
+function sld_allowed_types(string $geomType): array {
+    $g = strtoupper($geomType);
+    if (strpos($g, 'POLYGON') !== false) {
+        return ['poly-outline' => 'Polígono — solo contorno', 'poly-fill' => 'Polígono — relleno + borde'];
+    }
+    if (strpos($g, 'LINE') !== false)  return ['line' => 'Línea'];
+    if (strpos($g, 'POINT') !== false) return ['point' => 'Punto'];
+    // Geometría desconocida: ofrecer todo.
+    return ['poly-outline' => 'Polígono — solo contorno', 'poly-fill' => 'Polígono — relleno + borde', 'line' => 'Línea', 'point' => 'Punto'];
+}

@@ -81,21 +81,35 @@ function pg_drop_table(string $table): void {
  * AUNQUE cargue los datos; por eso el éxito se decide por el conteo de filas, no
  * por el código de salida.
  */
-function pg_load_file(string $srcPath, string $table, ?string $srcEpsg = null): array {
+function pg_load_file(string $srcPath, string $table, ?string $srcEpsg = null, ?string $srcEncoding = null): array {
     $p = config()['postgis'];
     $pgconn = sprintf('PG:host=%s port=%s dbname=%s user=%s password=%s',
         $p['host'], $p['port'], $p['db'], $p['user'], $p['pass']);
 
-    $args = [
-        'ogr2ogr', '-f', 'PostgreSQL', $pgconn, $srcPath,
+    $args = ['ogr2ogr'];
+
+    // Codificación de origen del shapefile (.dbf). Si el shapefile no trae .cpg y
+    // viene en Latin1/CP1252 (común en datos de gobierno mexicano), GDAL lo lee mal
+    // y pierde los acentos. Forzar SHAPE_ENCODING le indica el origen y lo recodifica
+    // a UTF-8. 'auto'/vacío respeta el .cpg/LDID del propio archivo.
+    $ext = strtolower(pathinfo($srcPath, PATHINFO_EXTENSION));
+    $encMap = ['utf-8' => 'UTF-8', 'utf8' => 'UTF-8', 'latin1' => 'ISO-8859-1',
+               'iso-8859-1' => 'ISO-8859-1', 'cp1252' => 'CP1252', 'windows-1252' => 'CP1252'];
+    $enc = $encMap[strtolower((string)$srcEncoding)] ?? '';
+    if ($ext === 'shp' && $enc !== '') {
+        array_push($args, '--config', 'SHAPE_ENCODING', $enc);
+    }
+
+    array_push($args,
+        '-f', 'PostgreSQL', $pgconn, $srcPath,
         '-nln', $table,
         '-nlt', 'PROMOTE_TO_MULTI',
         '-lco', 'GEOMETRY_NAME=geom',
         '-lco', 'FID=gid',
         '-lco', 'PRECISION=NO',
         '-t_srs', 'EPSG:4326',
-        '-overwrite', '-skipfailures',
-    ];
+        '-overwrite', '-skipfailures'
+    );
     if ($srcEpsg && preg_match('/^\d{4,6}$/', $srcEpsg)) {
         array_push($args, '-s_srs', 'EPSG:' . $srcEpsg);
     }

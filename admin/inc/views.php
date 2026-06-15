@@ -77,7 +77,7 @@ view_header('Capas');
         <p class="muted">Sube un <strong>.zip de shapefile</strong> (con .shp, .shx, .dbf, .prj), <strong>.geojson</strong> o <strong>.kml</strong>. Se carga en PostGIS (reproyectado a WGS84), se publica en GeoServer y se agrega al visor.</p>
         <form method="post" enctype="multipart/form-data" class="publish">
             <input type="hidden" name="action" value="publish"><?= csrf_field() ?>
-            <label>Archivo
+            <label>Archivo <span class="hint">máx <?= h(ini_get('upload_max_filesize')) ?></span>
                 <input type="file" name="file" accept=".zip,.geojson,.json,.kml" required>
             </label>
             <div class="row2">
@@ -101,6 +101,17 @@ view_header('Capas');
                 </label>
             </div>
             <div class="row2">
+                <label>Codificación de origen <span class="hint">acentos del shapefile</span>
+                    <select name="src_encoding">
+                        <option value="">Auto (usa el .cpg del archivo)</option>
+                        <option value="utf-8">UTF-8</option>
+                        <option value="latin1">Latin1 / ISO-8859-1</option>
+                        <option value="cp1252">Windows-1252</option>
+                    </select>
+                </label>
+                <span class="hint" style="align-self:end">Si los acentos salen mal, recarga el .zip eligiendo Latin1.</span>
+            </div>
+            <div class="row3">
                 <label>Estilo
                     <select name="style_type">
                         <option value="">Auto según geometría</option>
@@ -113,6 +124,9 @@ view_header('Capas');
                 <label>Color
                     <input type="color" name="color" value="#1e73be">
                 </label>
+                <label>Grosor <span class="hint">línea/borde</span>
+                    <input type="number" name="width" value="2" step="0.5" min="0" max="20">
+                </label>
             </div>
             <div class="checks">
                 <label class="inline"><input type="checkbox" name="visible"> Visible al cargar el visor</label>
@@ -120,6 +134,48 @@ view_header('Capas');
             </div>
             <button class="btn primary">Cargar y publicar</button>
         </form>
+    </section>
+
+    <section class="card">
+        <h2>Temas / agrupaciones</h2>
+        <p class="muted">Renombra, reordena, crea o elimina las agrupaciones del panel lateral del visor. Un tema solo puede eliminarse si no tiene capas.</p>
+        <?php foreach ($themes as $ti => $t): $tcount = 0; foreach ($catalog['layers'] as $l) if (($l['theme'] ?? '') === $t['id']) $tcount++; ?>
+            <div class="theme-row">
+                <form method="post" class="theme-edit">
+                    <input type="hidden" name="action" value="theme_update">
+                    <input type="hidden" name="id" value="<?= h($t['id']) ?>"><?= csrf_field() ?>
+                    <input type="text" name="name" value="<?= h($t['name']) ?>" class="tname" required>
+                    <input type="text" name="icon" value="<?= h($t['icon'] ?? '') ?>" class="ticon" placeholder="fa-…" title="Ícono FontAwesome (ej. fa-mountain)">
+                    <span class="count" title="capas en este tema"><?= $tcount ?></span>
+                    <button class="btn small">Guardar</button>
+                </form>
+                <div class="theme-actions">
+                    <form method="post"><input type="hidden" name="action" value="theme_move"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><input type="hidden" name="dir" value="up"><?= csrf_field() ?><button class="btn icon" title="Subir" <?= $ti === 0 ? 'disabled' : '' ?>>▲</button></form>
+                    <form method="post"><input type="hidden" name="action" value="theme_move"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><input type="hidden" name="dir" value="down"><?= csrf_field() ?><button class="btn icon" title="Bajar" <?= $ti === count($themes) - 1 ? 'disabled' : '' ?>>▼</button></form>
+                    <form method="post" onsubmit="return confirm('¿Eliminar el tema “<?= h($t['name']) ?>”?');"><input type="hidden" name="action" value="theme_delete"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><?= csrf_field() ?><button class="btn icon danger" title="Eliminar tema" <?= $tcount > 0 ? 'disabled' : '' ?>>🗑</button></form>
+                </div>
+            </div>
+        <?php endforeach; ?>
+
+        <form method="post" class="theme-add">
+            <input type="hidden" name="action" value="theme_add"><?= csrf_field() ?>
+            <input type="text" name="name" placeholder="Nombre del nuevo tema" required>
+            <input type="text" name="icon" placeholder="fa-layer-group" class="ticon" title="Ícono FontAwesome (opcional)">
+            <button class="btn primary small">+ Crear tema</button>
+        </form>
+
+        <?php $bm = catalog_basemap($catalog); ?>
+        <div class="basemap-cfg">
+            <h3 class="theme"><i class="fa fa-map"></i> Grupo de mapas de fondo</h3>
+            <p class="muted small">Grupo especial del visor: selector de Google (mapa, híbrido, satélite, terrain) y tráfico en tiempo real. No contiene capas WMS.</p>
+            <form method="post" class="theme-edit">
+                <input type="hidden" name="action" value="basemap_update"><?= csrf_field() ?>
+                <input type="text" name="name" value="<?= h($bm['name']) ?>" class="tname">
+                <input type="text" name="icon" value="<?= h($bm['icon']) ?>" class="ticon" placeholder="fa-map" title="Ícono FontAwesome">
+                <label class="inline"><input type="checkbox" name="enabled" <?= !empty($bm['enabled']) ? 'checked' : '' ?>> Mostrar en el visor</label>
+                <button class="btn small">Guardar</button>
+            </form>
+        </div>
     </section>
 
     <section class="card">
@@ -148,6 +204,31 @@ view_header('Capas');
                         </select>
                         <label class="inline" title="Visible al cargar"><input type="checkbox" name="visible" <?= !empty($l['visible']) ? 'checked' : '' ?>> 👁</label>
                         <button class="btn small">Guardar</button>
+                    </form>
+                    <?php
+                        $geom    = $l['geom'] ?? '';
+                        $allowed = sld_allowed_types($geom);
+                        $curType = $l['style_type'] ?? array_key_first($allowed);
+                        if (!isset($allowed[$curType])) $curType = array_key_first($allowed);
+                        $curColor = $l['color'] ?? '#1e73be';
+                        $curW     = $l['width'] ?? 2;
+                    ?>
+                    <form method="post" class="layer-style" title="Geometría: <?= h($geom ?: 'desconocida') ?>">
+                        <input type="hidden" name="action" value="layer_style">
+                        <input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><?= csrf_field() ?>
+                        <?php if (count($allowed) > 1): ?>
+                            <select name="style_type" class="lstype">
+                                <?php foreach ($allowed as $k => $lab): ?>
+                                    <option value="<?= h($k) ?>" <?= $k === $curType ? 'selected' : '' ?>><?= h($lab) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php else: ?>
+                            <input type="hidden" name="style_type" value="<?= h((string)array_key_first($allowed)) ?>">
+                            <span class="stype-fixed"><?= h((string)reset($allowed)) ?></span>
+                        <?php endif; ?>
+                        <input type="color" name="color" value="<?= h($curColor) ?>" title="Color">
+                        <input type="number" name="width" value="<?= h((string)$curW) ?>" step="0.5" min="0" max="20" class="lw" title="Grosor de línea/borde">
+                        <button class="btn small">Aplicar estilo</button>
                     </form>
                     <div class="layer-actions">
                         <?php foreach (['up' => '▲', 'down' => '▼'] as $dir => $sym): ?>

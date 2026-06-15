@@ -1,15 +1,9 @@
 {
     "themes": [
         {
-            "id": "medio-fisico",
-            "name": "Medio físico",
-            "icon": "fa-mountain",
-            "expanded": false
-        },
-        {
             "id": "medio-sociodemografico",
-            "name": "Medio sociodemográfico",
-            "icon": "fa-users",
+            "name": "Base Territorial",
+            "icon": "fa-earth-americas",
             "expanded": true
         },
         {
@@ -37,14 +31,186 @@
             "name": "Límite Municipal",
             "theme": "medio-sociodemografico",
             "visible": true,
-            "order": 0,
+            "order": 8,
             "style": "apaseo_gde:limite_municipal",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#1e73be",
+            "width": 3,
             "extent": [
                 -11217092.9685,
                 2328133.4185,
                 -11185615.2763,
                 2358316.6365
             ]
+        },
+        {
+            "layer": "guanajuato",
+            "name": "Límite Estatal",
+            "theme": "medio-sociodemografico",
+            "visible": true,
+            "style": "apaseo_gde:guanajuato",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#000000",
+            "width": 3,
+            "extent": [
+                -11365389.64496024,
+                2262697.847432676,
+                -11095358.654396243,
+                2492256.177443656
+            ],
+            "order": 9
+        },
+        {
+            "layer": "localidades",
+            "name": "Localidades",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "apaseo_gde:localidades",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#007f00",
+            "width": 2,
+            "extent": [
+                -11216862.295533799,
+                2329684.029902734,
+                -11185851.393960528,
+                2356601.0394009617
+            ],
+            "order": 0
+        },
+        {
+            "layer": "colonias_apaseo",
+            "name": "Colonias",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "apaseo_gde:colonias_apaseo",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#800080",
+            "width": 2,
+            "extent": [
+                -11210298.372325286,
+                2329693.4362538564,
+                -11193679.395487286,
+                2344504.4344541943
+            ],
+            "order": 3
+        },
+        {
+            "layer": "agebs_rurales",
+            "name": "AGEBS Rurales",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "apaseo_gde:agebs_rurales",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#008080",
+            "width": 2,
+            "extent": [
+                -11217092.968529863,
+                2328133.4185421593,
+                -11185615.276285773,
+                2358316.636473352
+            ],
+            "order": 1
+        },
+        {
+            "layer": "agebs_urbanos",
+            "name": "AGEBS Urbanos",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "apaseo_gde:agebs_urbanos",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#2020c0",
+            "width": 2,
+            "extent": [
+                -11210359.374547314,
+                2329684.029902734,
+                -11185851.393960528,
+                2344508.2888988256
+            ],
+            "order": 2
+        },
+        {
+            "layer": "calles_apaseo",
+            "name": "Calles y Avenidas",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "apaseo_gde:calles_apaseo",
+            "geom": "MULTILINESTRING",
+            "style_type": "line",
+            "color": "#bf0000",
+            "width": 2,
+            "extent": [
+                -11216862.295641294,
+                2329684.0297227846,
+                -11185851.39406919,
+                2356601.039219044
+            ],
+            "order": 4
+        },
+        {
+            "layer": "red_vial_apaseo",
+            "name": "Red Vial",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "apaseo_gde:red_vial_apaseo",
+            "geom": "MULTILINESTRING",
+            "style_type": "line",
+            "color": "#bf00bf",
+            "width": 2,
+            "extent": [
+                -11217092.339603703,
+                2328149.475276915,
+                -11185615.549284955,
+                2356341.091403779
+            ],
+            "order": 5
+        },
+        {
+            "layer": "red_hidrografica",
+            "name": "Hidrografía",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "apaseo_gde:red_hidrografica",
+            "geom": "MULTILINESTRING",
+            "style_type": "line",
+            "color": "#1fbfbf",
+            "width": 2,
+            "extent": [
+                -11215432.120010009,
+                2305482.183210761,
+                -11140517.945087604,
+                2383724.635410001
+            ],
+            "order": 6
+        },
+        {
+            "layer": "limites_colonias",
+            "name": "Colonias y Localidades",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "apaseo_gde:limites_colonias",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#bfbf00",
+            "width": 2,
+            "extent": [
+                -11216862.295533799,
+                2329326.1058907732,
+                -11185851.393960528,
+                2356601.0394009617
+            ],
+            "order": 7
         }
-    ]
+    ],
+    "basemap": {
+        "enabled": true,
+        "name": "Capas Base",
+        "icon": "fa-map",
+        "expanded": false
+    }
 }

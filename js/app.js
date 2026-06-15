@@ -482,6 +482,13 @@ let wmsLayers = {};
 window.wmsLayers = wmsLayers; // Expuesto para cesium-3d.js (Opción A)
 let activeLayers = [];
 window.activeLayers = [];
+// Orden de dibujo maestro: layerKey de "encima" (índice 0) a "debajo".
+// Inicia con el orden del catálogo y puede ajustarse en vivo (flechas ↑/↓).
+let layerRenderOrder = [];
+// Override de estilo en vivo por capa: layerKey -> 'poly-outline' | 'poly-fill'.
+// Solo contiene las capas cuyo estilo difiere del default del catálogo.
+let styleOverrides = {};
+const LAYER_Z_BASE = 100; // zIndex mínimo de las capas WMS operativas
 let cesium2DLayerSnapshot = null;
 let wmsLayerExtents = {};
 let wmsCapabilitiesPromise = null;
@@ -1025,14 +1032,17 @@ function createWMSLayers() {
                     opacity: 0.9,
                     properties: {
                         name: layerDef.name,
-                        layerKey: layerKey
+                        layerKey: layerKey,
+                        // Metadatos para el orden/contorno en vivo (vienen de municipio.layers.js).
+                        styleType: layerDef.styleType || '',
+                        color: layerDef.color || '#1e73be',
+                        width: layerDef.width || 2
                     }
                 });
                 map.addLayer(wmsLayers[layerKey]);
-                wmsLayers[layerKey].setZIndex(100);
+                layerRenderOrder.push(layerKey);
                 if (layerKey === CONFIG.limiteMunicipalLayer) {
                     wmsLayers[layerKey].setOpacity(1);
-                    wmsLayers[layerKey].setZIndex(1200);
                 }
 
                 if (layerDef.visible) {
@@ -1060,16 +1070,18 @@ function createWMSLayers() {
                         opacity: 0.9,
                         properties: {
                             name: layerDef.name,
-                            layerKey: layerKey
+                            layerKey: layerKey,
+                            styleType: layerDef.styleType || '',
+                            color: layerDef.color || '#1e73be',
+                            width: layerDef.width || 2
                         }
                     });
                     map.addLayer(wmsLayers[layerKey]);
-                    wmsLayers[layerKey].setZIndex(100);
+                    layerRenderOrder.push(layerKey);
                     if (layerKey === CONFIG.limiteMunicipalLayer) {
                         wmsLayers[layerKey].setOpacity(1);
-                        wmsLayers[layerKey].setZIndex(1200);
                     }
-                    
+
                     if (layerDef.visible) {
                         activeLayers.push(layerKey);
                     }
@@ -1083,7 +1095,132 @@ function createWMSLayers() {
     }
     
     LAYER_GROUPS.forEach(group => processGroup(group));
+    applyLayerPrefs();   // fusiona orden/estilo guardados (localStorage) sobre el default del catálogo
     syncActiveLayersGlobal();
+}
+
+// ========================================
+// ORDEN DE DIBUJO Y ESTILO EN VIVO (contorno/relleno)
+// ========================================
+
+/** Clave de localStorage namespaced por workspace del municipio. */
+function _layerPrefsKey(kind) { return `atlas:${CONFIG.workspace}:${kind}`; }
+
+/** Lee preferencias del navegador. Tolerante a fallos (modo privado, etc.). */
+function loadLayerPrefs() {
+    try {
+        const order  = JSON.parse(localStorage.getItem(_layerPrefsKey('layerOrder'))   || 'null');
+        const styles = JSON.parse(localStorage.getItem(_layerPrefsKey('styleOverrides')) || 'null');
+        return {
+            order:  Array.isArray(order) ? order : null,
+            styles: (styles && typeof styles === 'object') ? styles : null
+        };
+    } catch (e) { return { order: null, styles: null }; }
+}
+
+/** Persiste el orden y los overrides de estilo actuales. */
+function saveLayerPrefs() {
+    try {
+        localStorage.setItem(_layerPrefsKey('layerOrder'),    JSON.stringify(layerRenderOrder));
+        localStorage.setItem(_layerPrefsKey('styleOverrides'), JSON.stringify(styleOverrides));
+    } catch (e) { /* sin persistencia: el ajuste sigue funcionando en la sesión */ }
+}
+
+/** Asigna zIndex según el orden maestro: índice 0 = encima en el mapa. */
+function applyLayerZIndex() {
+    const n = layerRenderOrder.length;
+    layerRenderOrder.forEach((key, i) => {
+        const layer = wmsLayers[key];
+        if (layer) layer.setZIndex(LAYER_Z_BASE + (n - i));
+    });
+}
+
+/** Fusiona el orden guardado con el del catálogo y aplica overrides de estilo. */
+function applyLayerPrefs() {
+    const prefs = loadLayerPrefs();
+    if (prefs.order) {
+        const known  = new Set(layerRenderOrder);
+        const merged = prefs.order.filter(k => known.has(k));
+        layerRenderOrder.forEach(k => { if (!merged.includes(k)) merged.push(k); });
+        layerRenderOrder = merged;
+    }
+    if (prefs.styles) {
+        Object.entries(prefs.styles).forEach(([key, type]) => {
+            // Solo aplica si la capa existe, es polígono y difiere del default.
+            if (!isPolygonLayer(key)) return;
+            if (type !== 'poly-outline' && type !== 'poly-fill') return;
+            const def = wmsLayers[key]?.get('styleType') || '';
+            if (type === def) return;
+            styleOverrides[key] = type;
+            applyStyleOverride(key);
+        });
+    }
+    applyLayerZIndex();
+}
+
+/** ¿La capa es de tipo polígono? (controla si se muestra el toggle contorno/relleno) */
+function isPolygonLayer(key) {
+    return String(wmsLayers[key]?.get('styleType') || '').indexOf('poly') === 0;
+}
+
+/** Tipo de estilo efectivo de una capa: override en vivo o el default del catálogo. */
+function effectiveStyleType(key) {
+    return styleOverrides[key] || wmsLayers[key]?.get('styleType') || '';
+}
+
+/** SLD 1.0.0 mínimo que replica los presets poly-outline/poly-fill de admin/inc/sld.php. */
+function buildPolygonSld(layerName, type, color, width) {
+    const c = /^#[0-9a-fA-F]{6}$/.test(color) ? color : '#1e73be';
+    const w = (Number(width) > 0 ? Number(width) : 2).toFixed(1);
+    const sym = type === 'poly-fill'
+        ? `<PolygonSymbolizer><Fill><CssParameter name="fill">${c}</CssParameter><CssParameter name="fill-opacity">0.45</CssParameter></Fill><Stroke><CssParameter name="stroke">${c}</CssParameter><CssParameter name="stroke-width">${w}</CssParameter></Stroke></PolygonSymbolizer>`
+        : `<PolygonSymbolizer><Stroke><CssParameter name="stroke">${c}</CssParameter><CssParameter name="stroke-width">${w}</CssParameter></Stroke></PolygonSymbolizer>`;
+    return `<?xml version="1.0" encoding="UTF-8"?><StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><NamedLayer><Name>${layerName}</Name><UserStyle><Title>${layerName}</Title><FeatureTypeStyle><Rule>${sym}</Rule></FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>`;
+}
+
+/** Aplica (o quita) el override SLD_BODY de una capa según styleOverrides. */
+function applyStyleOverride(key) {
+    const layer = wmsLayers[key];
+    if (!layer) return;
+    const src = layer.getSource();
+    if (!src || typeof src.updateParams !== 'function') return;
+    const override = styleOverrides[key];
+    const params = src.getParams();
+    if (override) {
+        const layerName = params.LAYERS || key;
+        params.SLD_BODY = buildPolygonSld(layerName, override, layer.get('color'), layer.get('width'));
+    } else {
+        delete params.SLD_BODY;
+    }
+    src.updateParams(params);
+}
+
+/** Alterna contorno↔relleno de una capa polígono (override en vivo). */
+function toggleLayerStyle(key) {
+    if (!isPolygonLayer(key)) return;
+    const next = effectiveStyleType(key) === 'poly-fill' ? 'poly-outline' : 'poly-fill';
+    const def  = wmsLayers[key]?.get('styleType') || '';
+    if (next === def) delete styleOverrides[key];   // vuelve al default → sin SLD_BODY
+    else              styleOverrides[key] = next;
+    applyStyleOverride(key);
+    saveLayerPrefs();
+    updateLegend();
+}
+
+/** Mueve una capa ↑/↓ entre las capas visibles del panel y reasigna zIndex. */
+function moveLayerInOrder(key, dir) {
+    const visible = layerRenderOrder.filter(k => wmsLayers[k]?.getVisible());
+    const vi = visible.indexOf(key);
+    if (vi < 0) return;
+    const target = dir === 'up' ? vi - 1 : vi + 1;
+    if (target < 0 || target >= visible.length) return;
+    const neighbor = visible[target];
+    const ai = layerRenderOrder.indexOf(key);
+    const bi = layerRenderOrder.indexOf(neighbor);
+    [layerRenderOrder[ai], layerRenderOrder[bi]] = [layerRenderOrder[bi], layerRenderOrder[ai]];
+    applyLayerZIndex();
+    saveLayerPrefs();
+    updateLegend();
 }
 
 // ========================================
@@ -1929,10 +2066,10 @@ function isProtectedMunicipalLayer(layerKey, layer) {
 }
 
 function ensureMunicipalLayerGuard() {
+    // El límite municipal ya no se fuerza encima (zIndex): su orden lo controla el
+    // usuario (flechas ↑/↓) y el default del catálogo. Aquí solo se conserva su
+    // protección frente al "modo radio" y su estado en el árbol de capas.
     const municipalLayer = wmsLayers[CONFIG.limiteMunicipalLayer];
-    if (municipalLayer) {
-        municipalLayer.setZIndex(1200);
-    }
     const municipalItem = document.querySelector(`.layer-item[data-layer="${CONFIG.limiteMunicipalLayer}"]`);
     if (municipalItem) {
         const activeSearch = document.getElementById('layer-search')?.value?.trim?.() || '';
@@ -2273,8 +2410,10 @@ async function zoomToLayer(layerKey, layerName = layerKey) {
 
 // Determina si la leyenda de una capa es "Single symbol" (sin reglas con nombre real).
 // Devuelve la URL de imagen con forceLabels:off (single symbol) o forceLabels:on (multi-regla).
-async function getLegendUrl(legendBaseUrl, legendLayerName) {
-    const base = `${legendBaseUrl}?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&TRANSPARENT=true&LAYER=${encodeURIComponent(legendLayerName)}&LEGEND_OPTIONS=fontAntiAliasing:true;fontSize:10;dpi:90`;
+async function getLegendUrl(legendBaseUrl, legendLayerName, sldBody) {
+    const sldParam = sldBody ? `&SLD_BODY=${encodeURIComponent(sldBody)}` : '';
+    const base = `${legendBaseUrl}?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&TRANSPARENT=true&LAYER=${encodeURIComponent(legendLayerName)}${sldParam}&LEGEND_OPTIONS=fontAntiAliasing:true;fontSize:10;dpi:90`;
+    if (sldBody) return base + ';forceLabels:off'; // override en vivo: símbolo único
     try {
         const jsonUrl = `${legendBaseUrl}?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=application/json&LAYER=${encodeURIComponent(legendLayerName)}`;
         const resp = await fetchWithTimeout(jsonUrl, {}, 15000);
@@ -2308,30 +2447,67 @@ async function showLayerLegend(layerDef) {
 
 async function updateLegend() {
     const content = document.getElementById('legend-content');
+    _bindLegendControls(content);
 
-    if (activeLayers.length === 0) {
+    // Capas activas en el orden de dibujo (índice 0 del orden maestro = encima en el mapa).
+    const activeSet = new Set(activeLayers);
+    const ordered = layerRenderOrder.filter(k => activeSet.has(k) && wmsLayers[k]?.getVisible());
+
+    if (ordered.length === 0) {
         content.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Active capas para ver su leyenda</p>';
         document.getElementById('legend-panel')?.classList.add('collapsed');
         return;
     }
 
-    const items = await Promise.all(activeLayers.map(async layerKey => {
+    const items = await Promise.all(ordered.map(async (layerKey, idx) => {
         const layer = wmsLayers[layerKey];
         if (!layer) return '';
         const name = layer.get('name');
         const source = layer.getSource();
         const legendBaseUrl = source?.getUrl?.() || `${CONFIG.geoserverUrl}/${CONFIG.workspace}/wms`;
         const legendLayerName = source?.getParams?.()?.LAYERS || layerKey;
-        const legendUrl = await getLegendUrl(legendBaseUrl, legendLayerName);
+        const sldBody = source?.getParams?.()?.SLD_BODY || null;
+        const legendUrl = await getLegendUrl(legendBaseUrl, legendLayerName, sldBody);
+
+        const upDis   = idx === 0 ? 'disabled' : '';
+        const downDis = idx === ordered.length - 1 ? 'disabled' : '';
+        let styleBtn = '';
+        if (isPolygonLayer(layerKey)) {
+            const isFill = effectiveStyleType(layerKey) === 'poly-fill';
+            styleBtn = `<button type="button" class="legend-tool legend-tool-style ${isFill ? 'is-fill' : ''}" data-action="style" title="${isFill ? 'Cambiar a solo contorno' : 'Cambiar a relleno'}"><i class="fas ${isFill ? 'fa-square' : 'fa-vector-square'}"></i></button>`;
+        }
         return `
-                <div class="legend-item">
-                    <div class="legend-item-title">${name}</div>
+                <div class="legend-item" data-layer-key="${layerKey}">
+                    <div class="legend-item-head">
+                        <div class="legend-item-title">${name}</div>
+                        <div class="legend-item-tools">
+                            <button type="button" class="legend-tool" data-action="up"   title="Subir (encima)" ${upDis}><i class="fas fa-chevron-up"></i></button>
+                            <button type="button" class="legend-tool" data-action="down" title="Bajar (debajo)" ${downDis}><i class="fas fa-chevron-down"></i></button>
+                            ${styleBtn}
+                        </div>
+                    </div>
                     <img src="${legendUrl}" alt="Leyenda" onerror="this.style.display='none'">
                 </div>
             `;
     }));
 
     content.innerHTML = items.join('');
+}
+
+/** Listener único (delegación) para los controles ↑/↓ y contorno/relleno del panel. */
+function _bindLegendControls(content) {
+    if (!content || content._reorderBound) return;
+    content._reorderBound = true;
+    content.addEventListener('click', (e) => {
+        const btn = e.target.closest('.legend-tool');
+        if (!btn || btn.disabled) return;
+        const item = btn.closest('.legend-item');
+        const key = item?.getAttribute('data-layer-key');
+        if (!key) return;
+        const action = btn.getAttribute('data-action');
+        if (action === 'up' || action === 'down') moveLayerInOrder(key, action);
+        else if (action === 'style') toggleLayerStyle(key);
+    });
 }
 
 // ========================================
@@ -3890,6 +4066,7 @@ function _probeLayer(evt, layerKey) {
                             }
                         } catch(_ce) {}
                         resolve({
+                            layerKey:     layerKey,
                             layerTitle:   layer.get('title') || layer.get('name') || layerKey,
                             features:     data.features,
                             collectionCrs: collCrs
@@ -3931,30 +4108,16 @@ async function handleMapClick(e) {
     var hits    = results.filter(Boolean);
     if (!hits.length) return;
 
-    // Ordenar hits por área del primer feature (ascendente):
-    // el feature más pequeño = más específico = el que realmente clickeó el usuario → va primero.
-    // Límite Municipal (enorme) queda al final; Lotes Baldíos (pequeño) queda primero.
+    // Ordenar hits según el orden de dibujo elegido por el usuario (flechas ↑/↓ del
+    // panel de leyenda): la capa de más arriba (índice 0 en layerRenderOrder, = encima
+    // en el mapa) aparece primero. Así el clic respeta el orden visible de las capas.
     if (hits.length > 1) {
         hits.sort(function(a, b) {
-            function featArea(hit) {
-                try {
-                    var f = hit.features && hit.features[0];
-                    if (!f || !f.geometry || !f.geometry.coordinates) return Infinity;
-                    var geom = f.geometry;
-                    // Calcular bbox del primer ring de coordenadas
-                    var coords = geom.type === 'Polygon'   ? geom.coordinates[0]
-                               : geom.type === 'MultiPolygon' ? geom.coordinates[0][0]
-                               : geom.coordinates;
-                    if (!coords || !coords.length) return Infinity;
-                    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-                    coords.forEach(function(c) {
-                        if (c[0] < minX) minX = c[0]; if (c[0] > maxX) maxX = c[0];
-                        if (c[1] < minY) minY = c[1]; if (c[1] > maxY) maxY = c[1];
-                    });
-                    return (maxX - minX) * (maxY - minY);
-                } catch(_e) { return Infinity; }
-            }
-            return featArea(a) - featArea(b);
+            var ia = layerRenderOrder.indexOf(a.layerKey);
+            var ib = layerRenderOrder.indexOf(b.layerKey);
+            if (ia < 0) ia = Infinity;
+            if (ib < 0) ib = Infinity;
+            return ia - ib;
         });
     }
 

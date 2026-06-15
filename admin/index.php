@@ -17,6 +17,15 @@ $action = $_POST['action'] ?? $_GET['action'] ?? '';
 /* ============================ Acciones POST ============================ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+    // Si el cuerpo excede post_max_size, PHP descarta $_POST y $_FILES por
+    // completo: se detecta por un POST con Content-Length pero $_POST vacío.
+    // Sin esto, el fallo se confundiría con "Token CSRF inválido".
+    if (empty($_POST) && (int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
+        $max = ini_get('post_max_size');
+        flash('error', "El archivo es demasiado grande: supera el máximo permitido ($max). Comprime el shapefile o avísame para subir el límite.");
+        redirect('index.php');
+    }
+
     // Setup inicial: solo permitido si aún no hay contraseña.
     if ($action === 'setup' && !admin_is_setup()) {
         csrf_check();
@@ -75,6 +84,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect('index.php');
     }
 
+    if ($action === 'theme_add') {
+        theme_add((string)($_POST['name'] ?? ''), (string)($_POST['icon'] ?? ''));
+        redirect('index.php');
+    }
+    if ($action === 'theme_update') {
+        theme_update((string)($_POST['id'] ?? ''), (string)($_POST['name'] ?? ''), (string)($_POST['icon'] ?? ''));
+        redirect('index.php');
+    }
+    if ($action === 'theme_move') {
+        theme_move((string)($_POST['id'] ?? ''), (string)($_POST['dir'] ?? ''));
+        redirect('index.php');
+    }
+    if ($action === 'theme_delete') {
+        theme_delete((string)($_POST['id'] ?? ''));
+        redirect('index.php');
+    }
+
+    if ($action === 'basemap_update') {
+        $c = catalog_load();
+        $c['basemap'] = [
+            'enabled'  => isset($_POST['enabled']),
+            'name'     => trim((string)($_POST['name'] ?? '')) ?: 'Capas Base',
+            'icon'     => trim((string)($_POST['icon'] ?? '')) ?: 'fa-map',
+            'expanded' => isset($_POST['expanded']),
+        ];
+        catalog_save($c); regenerate_layers_js($c);
+        flash('ok', 'Grupo de mapas de fondo actualizado.');
+        redirect('index.php');
+    }
+
+    if ($action === 'layer_style') {
+        layer_style(
+            (string)($_POST['layer'] ?? ''),
+            (string)($_POST['style_type'] ?? ''),
+            (string)($_POST['color'] ?? '#1e73be'),
+            (float)($_POST['width'] ?? 2)
+        );
+        redirect('index.php');
+    }
+
     if ($action === 'layer_move') {
         layer_move((string)($_POST['layer'] ?? ''), (string)($_POST['dir'] ?? ''));
         redirect('index.php');
@@ -100,8 +149,18 @@ function publish_handle(): void {
     $theme  = (string)($_POST['theme'] ?? '');
     if (!in_array($theme, $themes, true)) { flash('error', 'Tema inválido.'); return; }
 
-    if (empty($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
-        flash('error', 'Archivo no recibido (¿supera el tamaño máximo?).'); return;
+    $err = $_FILES['file']['error'] ?? UPLOAD_ERR_NO_FILE;
+    if (empty($_FILES['file']) || $err !== UPLOAD_ERR_OK) {
+        $msgs = [
+            UPLOAD_ERR_INI_SIZE   => 'El archivo supera el máximo permitido (' . ini_get('upload_max_filesize') . ').',
+            UPLOAD_ERR_FORM_SIZE  => 'El archivo supera el tamaño máximo del formulario.',
+            UPLOAD_ERR_PARTIAL    => 'La subida se interrumpió; vuelve a intentarlo.',
+            UPLOAD_ERR_NO_FILE    => 'No seleccionaste ningún archivo.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Error del servidor: no hay carpeta temporal.',
+            UPLOAD_ERR_CANT_WRITE => 'Error del servidor: no se pudo escribir el archivo.',
+        ];
+        flash('error', $msgs[$err] ?? 'No se pudo recibir el archivo (código ' . $err . ').');
+        return;
     }
     $orig = $_FILES['file']['name'];
     $ext  = strtolower(pathinfo($orig, PATHINFO_EXTENSION));
@@ -141,7 +200,8 @@ function publish_handle(): void {
         }
 
         $srcEpsg = preg_replace('/\D/', '', (string)($_POST['src_epsg'] ?? ''));
-        $load = pg_load_file($src, $table, $srcEpsg ?: null);
+        $srcEnc  = (string)($_POST['src_encoding'] ?? '');
+        $load = pg_load_file($src, $table, $srcEpsg ?: null, $srcEnc ?: null);
         if (!$load['ok']) {
             flash('error', 'ogr2ogr no cargó datos. ' . h(substr($load['log'], -300)));
             return;
@@ -159,10 +219,14 @@ function publish_handle(): void {
 
         // Estilo.
         $geom  = pg_geom_type($table);
-        $stype = (string)($_POST['style_type'] ?? sld_suggest_type($geom));
+        $stype = ($_POST['style_type'] ?? '') !== '' ? (string)$_POST['style_type'] : sld_suggest_type($geom);
+        $allowed = sld_allowed_types($geom);
+        if (!isset($allowed[$stype])) $stype = array_key_first($allowed);
         $color = (string)($_POST['color'] ?? '#1e73be');
+        $width = (float)($_POST['width'] ?? 2);
+        if ($width <= 0) $width = 2;
         $styleName = $table;
-        $sld = sld_generate($styleName, $stype, $color);
+        $sld = sld_generate($styleName, $stype, $color, $width);
         $st = gs_apply_style($table, $styleName, $sld);
         $styleRef = $st['ok'] ? config()['geoserver']['workspace'] . ':' . $styleName : '';
 
@@ -171,12 +235,16 @@ function publish_handle(): void {
 
         // Catálogo + regeneración.
         catalog_upsert([
-            'layer'   => $table,
-            'name'    => $title,
-            'theme'   => $theme,
-            'visible' => isset($_POST['visible']),
-            'style'   => $styleRef,
-            'extent'  => $extent,
+            'layer'      => $table,
+            'name'       => $title,
+            'theme'      => $theme,
+            'visible'    => isset($_POST['visible']),
+            'style'      => $styleRef,
+            'geom'       => $geom,
+            'style_type' => $stype,
+            'color'      => $color,
+            'width'      => $width,
+            'extent'     => $extent,
         ]);
 
         flash('ok', "Capa '$table' publicada ({$load['rows']} elementos, geom $geom)"
@@ -184,6 +252,89 @@ function publish_handle(): void {
     } finally {
         rrmdir($work);
     }
+}
+
+function theme_add(string $name, string $icon): void {
+    $name = trim($name);
+    if ($name === '') { flash('error', 'El nombre del tema es obligatorio.'); return; }
+    $c = catalog_load();
+    $id = $base = catalog_slug($name);
+    $n = 2;
+    while (catalog_theme_find($c, $id) >= 0) { $id = $base . '-' . $n; $n++; }
+    $c['themes'][] = [
+        'id'       => $id,
+        'name'     => $name,
+        'icon'     => trim($icon) !== '' ? trim($icon) : 'fa-layer-group',
+        'expanded' => false,
+    ];
+    catalog_save($c); regenerate_layers_js($c);
+    flash('ok', "Tema “{$name}” creado.");
+}
+
+function theme_update(string $id, string $name, string $icon): void {
+    $c = catalog_load();
+    $i = catalog_theme_find($c, $id);
+    if ($i < 0) { flash('error', 'Tema no encontrado.'); return; }
+    $name = trim($name);
+    if ($name === '') { flash('error', 'El nombre no puede quedar vacío.'); return; }
+    $c['themes'][$i]['name'] = $name;
+    if (trim($icon) !== '') $c['themes'][$i]['icon'] = trim($icon);
+    catalog_save($c); regenerate_layers_js($c);
+    flash('ok', 'Tema actualizado.');
+}
+
+function theme_move(string $id, string $dir): void {
+    $c = catalog_load();
+    $i = catalog_theme_find($c, $id);
+    if ($i < 0) return;
+    $j = $dir === 'up' ? $i - 1 : $i + 1;
+    if ($j < 0 || $j >= count($c['themes'])) return;
+    $tmp = $c['themes'][$i]; $c['themes'][$i] = $c['themes'][$j]; $c['themes'][$j] = $tmp;
+    catalog_save($c); regenerate_layers_js($c);
+    flash('ok', 'Orden de temas actualizado.');
+}
+
+function theme_delete(string $id): void {
+    $c = catalog_load();
+    $i = catalog_theme_find($c, $id);
+    if ($i < 0) { flash('error', 'Tema no encontrado.'); return; }
+    $count = catalog_theme_count($c, $id);
+    if ($count > 0) {
+        flash('error', "No se puede eliminar “{$c['themes'][$i]['name']}”: tiene $count capa(s). Muévelas a otro tema primero.");
+        return;
+    }
+    if (count($c['themes']) <= 1) { flash('error', 'Debe quedar al menos un tema.'); return; }
+    $nm = $c['themes'][$i]['name'];
+    array_splice($c['themes'], $i, 1);
+    catalog_save($c); regenerate_layers_js($c);
+    flash('ok', "Tema “{$nm}” eliminado.");
+}
+
+function layer_style(string $layer, string $type, string $color, float $width): void {
+    if ($layer === '') return;
+    $c = catalog_load();
+    $i = catalog_find($c, $layer);
+    if ($i < 0) { flash('error', 'Capa no encontrada en el catálogo.'); return; }
+
+    $allowed = sld_allowed_types($c['layers'][$i]['geom'] ?? '');
+    if (!isset($allowed[$type])) $type = array_key_first($allowed);
+    if ($width <= 0) $width = 2;
+
+    $styleName = $layer; // mismo nombre que la capa
+    $sld = sld_generate($styleName, $type, $color, $width);
+    $st = gs_apply_style($layer, $styleName, $sld);
+    if (!$st['ok']) {
+        flash('error', "GeoServer no aplicó el estilo (HTTP {$st['code']}).");
+        return;
+    }
+    $c['layers'][$i]['style']      = config()['geoserver']['workspace'] . ':' . $styleName;
+    $c['layers'][$i]['style_type'] = $type;
+    $c['layers'][$i]['color']      = $color;
+    $c['layers'][$i]['width']      = $width;
+    catalog_save($c);
+    // Regenerar para que el metadato del visor (styleType/color/width) no quede desfasado.
+    regenerate_layers_js($c);
+    flash('ok', "Estilo de '$layer' actualizado. Recarga el visor (Ctrl+F5) para verlo.");
 }
 
 function layer_move(string $layer, string $dir): void {

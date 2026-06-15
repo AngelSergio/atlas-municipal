@@ -3975,6 +3975,55 @@ body.ol-street-view--activated .legend-panel.collapsed {
     display: block;
 }
 
+/* Cabecera del ítem: título + controles de orden/estilo */
+.legend-item-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.legend-item-head .legend-item-title {
+    margin-bottom: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.legend-item-tools {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+}
+.legend-tool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid rgba(15, 73, 123, 0.25);
+    border-radius: 6px;
+    background: #fff;
+    color: #0f497b;
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.legend-tool:hover:not(:disabled) {
+    background: rgba(15, 73, 123, 0.1);
+    border-color: rgba(15, 73, 123, 0.5);
+}
+.legend-tool:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+.legend-tool-style.is-fill {
+    background: #0f497b;
+    border-color: #0f497b;
+    color: #fff;
+}
+
 .legend-content p {
     margin: 0;
     color: #4a4a4a;

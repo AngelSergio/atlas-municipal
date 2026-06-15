@@ -17,16 +17,35 @@ function catalog_default(): array {
         ],
         'layers' => [
             [
-                'layer'   => 'limite_municipal',
-                'name'    => 'Límite Municipal',
-                'theme'   => 'medio-sociodemografico',
-                'visible' => true,
-                'order'   => 0,
-                'style'   => 'apaseo_gde:limite_municipal',
-                'extent'  => [-11217092.9685, 2328133.4185, -11185615.2763, 2358316.6365],
+                'layer'      => 'limite_municipal',
+                'name'       => 'Límite Municipal',
+                'theme'      => 'medio-sociodemografico',
+                'visible'    => true,
+                'order'      => 0,
+                'style'      => 'apaseo_gde:limite_municipal',
+                'geom'       => 'MULTIPOLYGON',
+                'style_type' => 'poly-outline',
+                'color'      => '#1e73be',
+                'width'      => 3,
+                'extent'     => [-11217092.9685, 2328133.4185, -11185615.2763, 2358316.6365],
             ],
         ],
+        // Grupo especial de mapas de fondo (Google roadmap/híbrido/satélite/terrain
+        // + tráfico). Lo dibuja app.js vía isBasemapGroup; aquí solo se controla
+        // si se muestra y con qué nombre/ícono.
+        'basemap' => [
+            'enabled'  => true,
+            'name'     => 'Capas Base',
+            'icon'     => 'fa-map',
+            'expanded' => false,
+        ],
     ];
+}
+
+/** Ajustes del grupo de mapas de fondo, con valores por defecto. */
+function catalog_basemap(array $c): array {
+    $d = ['enabled' => true, 'name' => 'Capas Base', 'icon' => 'fa-map', 'expanded' => false];
+    return array_merge($d, is_array($c['basemap'] ?? null) ? $c['basemap'] : []);
 }
 
 function catalog_load(): array {
@@ -46,6 +65,32 @@ function catalog_find(array $c, string $layer): int {
         if (($l['layer'] ?? '') === $layer) return $i;
     }
     return -1;
+}
+
+function catalog_theme_find(array $c, string $id): int {
+    foreach ($c['themes'] as $i => $t) {
+        if (($t['id'] ?? '') === $id) return $i;
+    }
+    return -1;
+}
+
+/** Genera un identificador (slug) estable a partir de un nombre. */
+function catalog_slug(string $s): string {
+    $s = strtolower(trim($s));
+    $s = strtr($s, [
+        'á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ü'=>'u','ñ'=>'n',
+        'à'=>'a','è'=>'e','ì'=>'i','ò'=>'o','ù'=>'u',
+    ]);
+    $s = preg_replace('/[^a-z0-9]+/', '-', $s);
+    $s = trim($s, '-');
+    return $s !== '' ? $s : 'tema';
+}
+
+/** Número de capas asignadas a un tema. */
+function catalog_theme_count(array $c, string $id): int {
+    $n = 0;
+    foreach ($c['layers'] as $l) if (($l['theme'] ?? '') === $id) $n++;
+    return $n;
 }
 
 /** Agrega o actualiza una capa en el catálogo. */
@@ -93,9 +138,15 @@ function regenerate_layers_js(?array $c = null): bool {
         $rows = array_values(array_filter($c['layers'], fn($l) => ($l['theme'] ?? '') === $t['id']));
         usort($rows, fn($a, $b) => ((int)($a['order'] ?? 0)) <=> ((int)($b['order'] ?? 0)));
         $layers = array_map(fn($l) => [
-            'name'    => $l['name'],
-            'layer'   => $l['layer'],
-            'visible' => (bool)($l['visible'] ?? false),
+            'name'      => $l['name'],
+            'layer'     => $l['layer'],
+            'visible'   => (bool)($l['visible'] ?? false),
+            // El visor usa estos campos para el orden/contorno en vivo:
+            // styleType permite saber si la capa es polígono (toggle contorno/relleno)
+            // y color/width sirven para construir el override SLD del lado cliente.
+            'styleType' => (string)($l['style_type'] ?? ''),
+            'color'     => (string)($l['color'] ?? '#1e73be'),
+            'width'     => (float)($l['width'] ?? 2),
         ], $rows);
         $child = [
             'id'       => $t['id'],
@@ -107,17 +158,31 @@ function regenerate_layers_js(?array $c = null): bool {
         $children[] = $child;
     }
 
+    $groups = [[
+        'id'           => 'temas',
+        'name'         => 'TEMAS',
+        'icon'         => 'fa-folder-open',
+        'iconExpanded' => 'fa-folder-open',
+        'iconCollapsed'=> 'fa-folder',
+        'expanded'     => true,
+        'children'     => $children,
+    ]];
+
+    // Grupo especial de mapas de fondo (lo renderiza app.js por isBasemapGroup).
+    $bm = catalog_basemap($c);
+    if (!empty($bm['enabled'])) {
+        $groups[] = [
+            'id'             => 'capas-base',
+            'name'           => $bm['name'],
+            'icon'           => $bm['icon'],
+            'expanded'       => (bool)$bm['expanded'],
+            'isBasemapGroup' => true,
+        ];
+    }
+
     $struct = [
         'extents' => (object)$extents,
-        'groups'  => [[
-            'id'           => 'temas',
-            'name'         => 'TEMAS',
-            'icon'         => 'fa-folder-open',
-            'iconExpanded' => 'fa-folder-open',
-            'iconCollapsed'=> 'fa-folder',
-            'expanded'     => true,
-            'children'     => $children,
-        ]],
+        'groups'  => $groups,
     ];
 
     $json = json_encode($struct, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

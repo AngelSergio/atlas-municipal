@@ -53,18 +53,16 @@ function gs_featuretype_exists(string $table): bool {
 function gs_apply_style(string $table, string $styleName, string $sld): array {
     $g = config()['geoserver'];
     $ws = $g['workspace'];
+    $ct = 'application/vnd.ogc.sld+xml';
 
-    // ¿existe el estilo?
+    // Crear desde el SLD en un solo paso (POST con ?name=) o reemplazar (PUT) si ya existe.
     $exists = gs_request('GET', "workspaces/$ws/styles/$styleName.json")['ok'];
-    if (!$exists) {
-        $meta = "<style><name>$styleName</name><filename>$styleName.sld</filename></style>";
-        $c = gs_request('POST', "workspaces/$ws/styles", $meta);
-        if (!$c['ok']) return $c;
+    if ($exists) {
+        $r = gs_request('PUT', "workspaces/$ws/styles/$styleName", $sld, $ct);
+    } else {
+        $r = gs_request('POST', "workspaces/$ws/styles?name=" . urlencode($styleName), $sld, $ct);
     }
-    // Subir el cuerpo SLD.
-    $put = gs_request('PUT', "workspaces/$ws/styles/$styleName",
-        $sld, 'application/vnd.ogc.sld+xml');
-    if (!$put['ok']) return $put;
+    if (!$r['ok']) return $r;
 
     // Asignar como estilo por defecto de la capa.
     $assign = gs_request('PUT', "layers/$ws:$table",
