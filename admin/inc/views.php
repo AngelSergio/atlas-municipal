@@ -324,6 +324,7 @@ document.addEventListener('submit', function (e) {
             else            card.parentNode.insertBefore(sib, card);
             card.classList.remove('moved'); void card.offsetWidth; // reinicia la animación
             card.classList.add('moved');
+            (d.flash || []).forEach(function (f) { adminToast(f.msg, f.type); });
         })
         .catch(function () { form.submit(); }); // fallback: recarga normal
 });

@@ -132,8 +132,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'layer_move') {
         $ok = layer_move((string)($_POST['layer'] ?? ''), (string)($_POST['dir'] ?? ''));
-        if (is_ajax()) json_out(['ok' => $ok]);
         if ($ok) flash('ok', 'Orden actualizado.');
+        if (is_ajax()) ajax_ok($ok);
         redirect('index.php');
     }
 
