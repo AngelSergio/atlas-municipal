@@ -80,7 +80,14 @@ view_header('Capas');
     </div>
     <a class="btn ghost" href="/atlas-apaseo-gde/" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Abrir visor</a>
 </div>
-<div class="grid">
+<nav class="tab-nav" role="tablist" aria-label="Secciones del panel">
+    <button type="button" class="tab-btn active" data-tab="publicar"><i class="fa-solid fa-cloud-arrow-up"></i> Publicar capa</button>
+    <button type="button" class="tab-btn" data-tab="temas"><i class="fa-solid fa-layer-group"></i> Temas</button>
+    <button type="button" class="tab-btn" data-tab="capas"><i class="fa-solid fa-map"></i> Capas</button>
+    <button type="button" class="tab-btn" data-tab="cuenta"><i class="fa-solid fa-key"></i> Cuenta</button>
+</nav>
+<div class="tab-panels">
+    <div class="tab-panel active" id="tab-publicar" data-tab="publicar">
     <section class="card">
         <h2><i class="fa-solid fa-cloud-arrow-up"></i> Publicar nueva capa</h2>
         <p class="muted">Sube un <strong>.zip de shapefile</strong> (con .shp, .shx, .dbf, .prj), <strong>.geojson</strong> o <strong>.kml</strong>. Se carga en PostGIS (reproyectado a WGS84), se publica en GeoServer y se agrega al visor.</p>
@@ -144,7 +151,8 @@ view_header('Capas');
             <button class="btn primary"><i class="fa-solid fa-cloud-arrow-up"></i> Cargar y publicar</button>
         </form>
     </section>
-
+    </div>
+    <div class="tab-panel" id="tab-temas" data-tab="temas">
     <section class="card" id="card-temas">
         <h2><i class="fa-solid fa-layer-group"></i> Temas / agrupaciones</h2>
         <p class="muted">Renombra, reordena, crea o elimina las agrupaciones del panel lateral del visor. Un tema solo puede eliminarse si no tiene capas.</p>
@@ -186,7 +194,8 @@ view_header('Capas');
             </form>
         </div>
     </section>
-
+    </div>
+    <div class="tab-panel" id="tab-capas" data-tab="capas">
     <section class="card" id="card-capas">
         <h2><i class="fa-solid fa-map"></i> Capas del visor</h2>
         <?php
@@ -270,7 +279,8 @@ view_header('Capas');
             <a class="btn ghost" href="/atlas-apaseo-gde/" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Abrir visor</a>
         </form>
     </section>
-
+    </div>
+    <div class="tab-panel" id="tab-cuenta" data-tab="cuenta">
     <section class="card narrow">
         <h2><i class="fa-solid fa-key"></i> Cambiar contraseña</h2>
         <form method="post">
@@ -280,6 +290,7 @@ view_header('Capas');
             <button class="btn primary"><i class="fa-solid fa-floppy-disk"></i> Actualizar</button>
         </form>
     </section>
+    </div>
 </div>
 <script>
 // Acordeón de capas: una sola tarjeta abierta a la vez. Al hacer clic en la
@@ -375,6 +386,32 @@ function adminToast(msg, type) {
     box.appendChild(t);
     setTimeout(function () { t.classList.add('out'); setTimeout(function () { t.remove(); }, 300); }, 2600);
 }
+
+// Pestañas: muestra una sección a la vez. La pestaña activa se recuerda (localStorage)
+// para sobrevivir recargas (publicar capa, cambiar contraseña) y los refrescos parciales
+// no la afectan porque envuelven a las secciones, no a los paneles.
+function activateAdminTab(name) {
+    var any = false;
+    document.querySelectorAll('.tab-btn').forEach(function (b) {
+        var on = b.getAttribute('data-tab') === name; b.classList.toggle('active', on); if (on) any = true;
+    });
+    if (!any) return false;
+    document.querySelectorAll('.tab-panel').forEach(function (p) {
+        p.classList.toggle('active', p.getAttribute('data-tab') === name);
+    });
+    return true;
+}
+document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    var name = btn.getAttribute('data-tab');
+    activateAdminTab(name);
+    try { localStorage.setItem('admin-tab', name); } catch (err) {}
+});
+(function () {
+    var saved; try { saved = localStorage.getItem('admin-tab'); } catch (err) {}
+    if (saved) activateAdminTab(saved);
+})();
 </script>
 <?php
 view_footer();

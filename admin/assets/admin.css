@@ -44,6 +44,28 @@ body{
 .page-head h1{margin:0 0 .15rem}
 .page-head p{margin:0}
 .page-head .btn{text-decoration:none}
+
+/* ---------- Pestañas ---------- */
+.tab-nav{display:none}                       /* sin JS: oculto; los paneles se muestran apilados */
+.js .tab-nav{display:flex;flex-wrap:wrap;gap:.2rem;margin-bottom:1.3rem;border-bottom:1px solid var(--line)}
+.tab-btn{
+  display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;font:inherit;font-weight:600;font-size:.92rem;
+  color:var(--muted);background:transparent;border:0;border-bottom:3px solid transparent;
+  padding:.65rem 1.05rem;margin-bottom:-1px;border-radius:9px 9px 0 0;
+  transition:color .15s ease,background .15s ease,border-color .15s ease;
+}
+.tab-btn:hover{color:var(--ink);background:var(--primary-50)}
+.tab-btn.active{color:var(--primary-dark);border-bottom-color:var(--primary)}
+.tab-btn:focus-visible{outline:none;box-shadow:var(--ring)}
+.js .tab-panel{display:none}
+.js .tab-panel.active{display:block;animation:tabIn .2s ease}
+@keyframes tabIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.tab-panel + .tab-panel{margin-top:1.2rem}    /* separación al apilar sin JS */
+.js .tab-panel + .tab-panel{margin-top:0}
+@media(max-width:560px){
+  .js .tab-nav{gap:0}
+  .tab-btn{flex:1 1 auto;justify-content:center;padding:.6rem .55rem;font-size:.84rem}
+}
 .foot{text-align:center;color:var(--muted);font-size:.8rem;padding:2rem 1rem}
 .grid{display:grid;grid-template-columns:1fr;gap:1.25rem;align-items:start}
 @media(min-width:920px){
