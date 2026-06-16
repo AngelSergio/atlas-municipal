@@ -81,19 +81,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             catalog_save($c); regenerate_layers_js($c);
             flash('ok', 'Capa actualizada: ' . h($layer));
         }
+        if (is_ajax()) ajax_ok();
         redirect('index.php');
     }
 
     if ($action === 'theme_add') {
         theme_add((string)($_POST['name'] ?? ''), (string)($_POST['icon'] ?? ''));
+        if (is_ajax()) ajax_ok();
         redirect('index.php');
     }
     if ($action === 'theme_update') {
         theme_update((string)($_POST['id'] ?? ''), (string)($_POST['name'] ?? ''), (string)($_POST['icon'] ?? ''));
+        if (is_ajax()) ajax_ok();
         redirect('index.php');
     }
     if ($action === 'theme_move') {
         theme_move((string)($_POST['id'] ?? ''), (string)($_POST['dir'] ?? ''));
+        if (is_ajax()) ajax_ok();
         redirect('index.php');
     }
     if ($action === 'theme_delete') {
@@ -111,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
         catalog_save($c); regenerate_layers_js($c);
         flash('ok', 'Grupo de mapas de fondo actualizado.');
+        if (is_ajax()) ajax_ok();
         redirect('index.php');
     }
 
@@ -121,11 +126,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             (string)($_POST['color'] ?? '#1e73be'),
             (float)($_POST['width'] ?? 2)
         );
+        if (is_ajax()) ajax_ok();
         redirect('index.php');
     }
 
     if ($action === 'layer_move') {
-        layer_move((string)($_POST['layer'] ?? ''), (string)($_POST['dir'] ?? ''));
+        $ok = layer_move((string)($_POST['layer'] ?? ''), (string)($_POST['dir'] ?? ''));
+        if (is_ajax()) json_out(['ok' => $ok]);
+        if ($ok) flash('ok', 'Orden actualizado.');
         redirect('index.php');
     }
 
@@ -337,10 +345,10 @@ function layer_style(string $layer, string $type, string $color, float $width): 
     flash('ok', "Estilo de '$layer' actualizado. Recarga el visor (Ctrl+F5) para verlo.");
 }
 
-function layer_move(string $layer, string $dir): void {
+function layer_move(string $layer, string $dir): bool {
     $c = catalog_load();
     $i = catalog_find($c, $layer);
-    if ($i < 0) return;
+    if ($i < 0) return false;
     $theme = $c['layers'][$i]['theme'] ?? '';
     // Índices de la misma temática ordenados por 'order'.
     $sib = [];
@@ -348,13 +356,30 @@ function layer_move(string $layer, string $dir): void {
     usort($sib, fn($a, $b) => ((int)($c['layers'][$a]['order'] ?? 0)) <=> ((int)($c['layers'][$b]['order'] ?? 0)));
     $pos = array_search($i, $sib, true);
     $swap = $dir === 'up' ? $pos - 1 : $pos + 1;
-    if ($pos === false || $swap < 0 || $swap >= count($sib)) return;
+    if ($pos === false || $swap < 0 || $swap >= count($sib)) return false;
     $a = $sib[$pos]; $b = $sib[$swap];
     $tmp = $c['layers'][$a]['order'] ?? 0;
     $c['layers'][$a]['order'] = $c['layers'][$b]['order'] ?? 0;
     $c['layers'][$b]['order'] = $tmp;
-    catalog_save($c); regenerate_layers_js($c);
-    flash('ok', 'Orden actualizado.');
+    return catalog_save($c) && regenerate_layers_js($c);
+}
+
+/** ¿La petición actual es AJAX? (fetch del panel para reordenar sin recargar). */
+function is_ajax(): bool {
+    if (($_POST['ajax'] ?? '') === '1') return true;
+    return strtolower($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'xmlhttprequest';
+}
+
+/** Responde JSON y termina. */
+function json_out(array $data): void {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($data);
+    exit;
+}
+
+/** Respuesta AJAX estándar: ok + mensajes flash pendientes (para mostrarlos como toast). */
+function ajax_ok(bool $ok = true): void {
+    json_out(['ok' => $ok, 'flash' => flash_take()]);
 }
 
 function layer_delete(string $layer, bool $purge): void {

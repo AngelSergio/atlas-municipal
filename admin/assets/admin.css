@@ -155,6 +155,8 @@ input[type=checkbox]{width:1.05rem;height:1.05rem;accent-color:var(--primary);cu
 }
 .layer:hover{border-color:#d3dae3}
 .layer.open{background:#fff;border-color:var(--primary-light);box-shadow:var(--shadow-sm)}
+.layer.moved{animation:layerMoved .6s ease}
+@keyframes layerMoved{0%{background:var(--primary-100);border-color:var(--primary-light)}100%{}}
 .layer-head{display:flex;align-items:center;gap:.4rem;padding:.4rem .5rem .4rem .35rem}
 .layer-toggle{
   flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:.55rem;
@@ -217,6 +219,21 @@ input[type=checkbox]{width:1.05rem;height:1.05rem;accent-color:var(--primary);cu
   border-top:1px solid var(--line-soft);
 }
 .regen .btn{text-decoration:none}
+
+/* ---------- Toasts / estado ocupado ---------- */
+#admin-toasts{position:fixed;right:1rem;bottom:1rem;z-index:60;display:flex;flex-direction:column;gap:.5rem;max-width:340px}
+.toast{
+  padding:.6rem .9rem;border-radius:9px;font-size:.86rem;font-weight:500;color:#fff;
+  box-shadow:var(--shadow-md);display:flex;align-items:center;gap:.5rem;animation:toastIn .25s ease;
+}
+.toast::before{font-family:"Font Awesome 6 Free";font-weight:900}
+.toast-ok{background:#1b7a3d}
+.toast-ok::before{content:"\f058"}
+.toast-err{background:var(--danger)}
+.toast-err::before{content:"\f06a"}
+.toast.out{opacity:0;transform:translateY(6px);transition:opacity .3s ease,transform .3s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+body.is-busy{cursor:progress}
 
 /* ---------- Responsive fino ---------- */
 @media(max-width:560px){

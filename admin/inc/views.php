@@ -145,12 +145,12 @@ view_header('Capas');
         </form>
     </section>
 
-    <section class="card">
+    <section class="card" id="card-temas">
         <h2><i class="fa-solid fa-layer-group"></i> Temas / agrupaciones</h2>
         <p class="muted">Renombra, reordena, crea o elimina las agrupaciones del panel lateral del visor. Un tema solo puede eliminarse si no tiene capas.</p>
         <?php foreach ($themes as $ti => $t): $tcount = 0; foreach ($catalog['layers'] as $l) if (($l['theme'] ?? '') === $t['id']) $tcount++; ?>
             <div class="theme-row">
-                <form method="post" class="theme-edit">
+                <form method="post" class="theme-edit ajax-form">
                     <input type="hidden" name="action" value="theme_update">
                     <input type="hidden" name="id" value="<?= h($t['id']) ?>"><?= csrf_field() ?>
                     <input type="text" name="name" value="<?= h($t['name']) ?>" class="tname" required>
@@ -159,14 +159,14 @@ view_header('Capas');
                     <button class="btn small">Guardar</button>
                 </form>
                 <div class="theme-actions">
-                    <form method="post"><input type="hidden" name="action" value="theme_move"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><input type="hidden" name="dir" value="up"><?= csrf_field() ?><button class="btn icon" title="Subir" <?= $ti === 0 ? 'disabled' : '' ?>><i class="fa-solid fa-chevron-up"></i></button></form>
-                    <form method="post"><input type="hidden" name="action" value="theme_move"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><input type="hidden" name="dir" value="down"><?= csrf_field() ?><button class="btn icon" title="Bajar" <?= $ti === count($themes) - 1 ? 'disabled' : '' ?>><i class="fa-solid fa-chevron-down"></i></button></form>
+                    <form method="post" class="ajax-form"><input type="hidden" name="action" value="theme_move"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><input type="hidden" name="dir" value="up"><?= csrf_field() ?><button class="btn icon" title="Subir" <?= $ti === 0 ? 'disabled' : '' ?>><i class="fa-solid fa-chevron-up"></i></button></form>
+                    <form method="post" class="ajax-form"><input type="hidden" name="action" value="theme_move"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><input type="hidden" name="dir" value="down"><?= csrf_field() ?><button class="btn icon" title="Bajar" <?= $ti === count($themes) - 1 ? 'disabled' : '' ?>><i class="fa-solid fa-chevron-down"></i></button></form>
                     <form method="post" onsubmit="return confirm('¿Eliminar el tema “<?= h($t['name']) ?>”?');"><input type="hidden" name="action" value="theme_delete"><input type="hidden" name="id" value="<?= h($t['id']) ?>"><?= csrf_field() ?><button class="btn icon danger" title="Eliminar tema" <?= $tcount > 0 ? 'disabled' : '' ?>><i class="fa-solid fa-trash-can"></i></button></form>
                 </div>
             </div>
         <?php endforeach; ?>
 
-        <form method="post" class="theme-add">
+        <form method="post" class="theme-add ajax-form">
             <input type="hidden" name="action" value="theme_add"><?= csrf_field() ?>
             <input type="text" name="name" placeholder="Nombre del nuevo tema" required>
             <input type="text" name="icon" placeholder="fa-layer-group" class="ticon" title="Ícono FontAwesome (opcional)">
@@ -177,7 +177,7 @@ view_header('Capas');
         <div class="basemap-cfg">
             <h3 class="theme"><i class="fa fa-map"></i> Grupo de mapas de fondo</h3>
             <p class="muted small">Grupo especial del visor: selector de Google (mapa, híbrido, satélite, terrain) y tráfico en tiempo real. No contiene capas WMS.</p>
-            <form method="post" class="theme-edit">
+            <form method="post" class="theme-edit ajax-form">
                 <input type="hidden" name="action" value="basemap_update"><?= csrf_field() ?>
                 <input type="text" name="name" value="<?= h($bm['name']) ?>" class="tname">
                 <input type="text" name="icon" value="<?= h($bm['icon']) ?>" class="ticon" placeholder="fa-map" title="Ícono FontAwesome">
@@ -187,7 +187,7 @@ view_header('Capas');
         </div>
     </section>
 
-    <section class="card">
+    <section class="card" id="card-capas">
         <h2><i class="fa-solid fa-map"></i> Capas del visor</h2>
         <?php
         $byTheme = [];
@@ -218,12 +218,12 @@ view_header('Capas');
                         </button>
                         <div class="layer-order">
                             <?php foreach (['up' => 'fa-arrow-up', 'down' => 'fa-arrow-down'] as $dir => $ico): ?>
-                                <form method="post"><input type="hidden" name="action" value="layer_move"><input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><input type="hidden" name="dir" value="<?= $dir ?>"><?= csrf_field() ?><button class="btn icon" title="Mover <?= $dir ?>"><i class="fa-solid <?= $ico ?>"></i></button></form>
+                                <form method="post" class="layer-move-form"><input type="hidden" name="action" value="layer_move"><input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><input type="hidden" name="dir" value="<?= $dir ?>"><?= csrf_field() ?><button class="btn icon" title="Mover <?= $dir ?>"><i class="fa-solid <?= $ico ?>"></i></button></form>
                             <?php endforeach; ?>
                         </div>
                     </div>
                     <div class="layer-body">
-                        <form method="post" class="layer-edit">
+                        <form method="post" class="layer-edit ajax-form">
                             <input type="hidden" name="action" value="layer_update">
                             <input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><?= csrf_field() ?>
                             <input type="text" name="name" value="<?= h($l['name']) ?>" class="lname">
@@ -235,7 +235,7 @@ view_header('Capas');
                             <label class="inline" title="Visible al cargar"><input type="checkbox" name="visible" <?= !empty($l['visible']) ? 'checked' : '' ?>> <i class="fa-regular fa-eye"></i></label>
                             <button class="btn small">Guardar</button>
                         </form>
-                        <form method="post" class="layer-style" title="Geometría: <?= h($geom ?: 'desconocida') ?>">
+                        <form method="post" class="layer-style ajax-form" title="Geometría: <?= h($geom ?: 'desconocida') ?>">
                             <input type="hidden" name="action" value="layer_style">
                             <input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><?= csrf_field() ?>
                             <?php if (count($allowed) > 1): ?>
@@ -300,6 +300,80 @@ document.addEventListener('click', function (e) {
         toggle.setAttribute('aria-expanded', 'true');
     }
 });
+
+// Reordenar capas (flechas ↑/↓) sin recargar la página: fetch + mover la tarjeta
+// en el DOM. Si algo falla, recarga normal (fallback).
+document.addEventListener('submit', function (e) {
+    var form = e.target;
+    if (!form.classList || !form.classList.contains('layer-move-form')) return;
+    var card = form.closest('.layer');
+    var dirInput = form.querySelector('[name=dir]');
+    var dir = dirInput ? dirInput.value : '';
+    if (!card || !dir) return;
+    // Tarjeta vecina dentro del mismo tema (el <h3> del tema corta el grupo).
+    var sib = dir === 'up' ? card.previousElementSibling : card.nextElementSibling;
+    e.preventDefault();
+    if (!sib || !sib.classList.contains('layer')) return; // borde: nada que mover
+    var fd = new FormData(form);
+    fd.append('ajax', '1');
+    fetch('index.php', { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (d) {
+            if (!d || !d.ok) throw 0;
+            if (dir === 'up') card.parentNode.insertBefore(card, sib);
+            else            card.parentNode.insertBefore(sib, card);
+            card.classList.remove('moved'); void card.offsetWidth; // reinicia la animación
+            card.classList.add('moved');
+        })
+        .catch(function () { form.submit(); }); // fallback: recarga normal
+});
+
+// Resto de acciones (guardar capa, aplicar estilo, temas: crear/renombrar/reordenar,
+// mapas de fondo) sin recargar: fetch + refresco parcial de las dos tarjetas dinámicas.
+document.addEventListener('submit', function (e) {
+    var form = e.target;
+    if (!form.classList || !form.classList.contains('ajax-form')) return;
+    e.preventDefault();
+    var actionInput = form.querySelector('[name=action]');
+    var action = actionInput ? actionInput.value : '';
+    var fd = new FormData(form);
+    fd.append('ajax', '1');
+    document.body.classList.add('is-busy');
+    fetch('index.php', { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (d) {
+            (d && d.flash || []).forEach(function (f) { adminToast(f.msg, f.type); });
+            // El estilo se aplica en GeoServer y no altera la UI del panel: basta el toast.
+            if (action === 'layer_style') return;
+            return refreshAdminSections();
+        })
+        .catch(function () { form.submit(); }) // fallback: recarga normal
+        .then(function () { document.body.classList.remove('is-busy'); });
+});
+
+// Re-pide la página y reemplaza solo las tarjetas Temas y Capas (estado del servidor).
+function refreshAdminSections() {
+    return fetch('index.php', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(function (r) { return r.text(); })
+        .then(function (html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            ['card-temas', 'card-capas'].forEach(function (id) {
+                var fresh = doc.getElementById(id), cur = document.getElementById(id);
+                if (fresh && cur) cur.replaceWith(document.importNode(fresh, true));
+            });
+        });
+}
+
+// Notificación efímera (toast).
+function adminToast(msg, type) {
+    var box = document.getElementById('admin-toasts');
+    if (!box) { box = document.createElement('div'); box.id = 'admin-toasts'; document.body.appendChild(box); }
+    var t = document.createElement('div');
+    t.className = 'toast ' + (type === 'error' ? 'toast-err' : 'toast-ok');
+    t.textContent = msg;
+    box.appendChild(t);
+    setTimeout(function () { t.classList.add('out'); setTimeout(function () { t.remove(); }, 300); }, 2600);
+}
 </script>
 <?php
 view_footer();
