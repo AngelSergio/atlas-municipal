@@ -1,7 +1,7 @@
 /**
  * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.
  * No editar a mano: usar https://<host>/atlas-apaseo-gde/admin/
- * Fuente: admin/data/catalog.json   |   Regenerado: 2026-06-15T23:49:01+00:00
+ * Fuente: admin/data/catalog.json   |   Regenerado: 2026-06-16T00:22:37+00:00
  */
 window.MUNICIPIO_LAYERS = {
     "extents": {
@@ -82,11 +82,11 @@ window.MUNICIPIO_LAYERS = {
                     "expanded": true,
                     "layers": [
                         {
-                            "name": "Localidades",
-                            "layer": "localidades",
+                            "name": "Hidrografía",
+                            "layer": "red_hidrografica",
                             "visible": false,
-                            "styleType": "poly-outline",
-                            "color": "#007f00",
+                            "styleType": "line",
+                            "color": "#1fbfbf",
                             "width": 2
                         },
                         {
@@ -114,14 +114,6 @@ window.MUNICIPIO_LAYERS = {
                             "width": 2
                         },
                         {
-                            "name": "Colonias",
-                            "layer": "colonias_apaseo",
-                            "visible": false,
-                            "styleType": "poly-outline",
-                            "color": "#800080",
-                            "width": 2
-                        },
-                        {
                             "name": "Red Vial",
                             "layer": "red_vial_apaseo",
                             "visible": false,
@@ -130,11 +122,19 @@ window.MUNICIPIO_LAYERS = {
                             "width": 2
                         },
                         {
-                            "name": "Hidrografía",
-                            "layer": "red_hidrografica",
+                            "name": "Localidades",
+                            "layer": "localidades",
                             "visible": false,
-                            "styleType": "line",
-                            "color": "#1fbfbf",
+                            "styleType": "poly-outline",
+                            "color": "#007f00",
+                            "width": 2
+                        },
+                        {
+                            "name": "Colonias",
+                            "layer": "colonias_apaseo",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#800080",
                             "width": 2
                         },
                         {
