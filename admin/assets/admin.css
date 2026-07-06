@@ -157,6 +157,19 @@ input[type=checkbox]{width:1.05rem;height:1.05rem;accent-color:var(--primary);cu
 .btn:disabled,.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none}
 .publish .btn.primary{margin-top:1rem;width:100%}
 
+/* ---------- Importar capa ---------- */
+.import-or{display:flex;align-items:center;text-align:center;color:var(--muted);
+  font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;margin:.2rem 0}
+.import-or::before,.import-or::after{content:"";flex:1;height:1px;background:var(--border)}
+.import-or span{padding:0 .8rem}
+.import-result{margin-top:1.4rem;padding:1rem 1.1rem;border:1px solid var(--border);
+  border-radius:10px;background:var(--ok-bg,#f0f9f2)}
+.import-result h3{margin:0 0 .6rem;font-size:.98rem;display:flex;align-items:center;gap:.45rem}
+.import-result h3 i{color:var(--ok,#2e9e5b)}
+.import-meta{list-style:none;margin:0 0 .9rem;padding:0;font-size:.86rem;color:var(--text)}
+.import-meta li{padding:.15rem 0}
+.import-result .btn.primary{width:auto}
+
 /* ---------- Flash ---------- */
 .flash{
   padding:.7rem 1rem;border-radius:var(--radius-sm);margin-bottom:1rem;font-size:.88rem;font-weight:500;

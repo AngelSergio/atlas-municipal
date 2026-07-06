@@ -11,6 +11,7 @@ require __DIR__ . '/inc/postgis.php';
 require __DIR__ . '/inc/geoserver.php';
 require __DIR__ . '/inc/sld.php';
 require __DIR__ . '/inc/catalog.php';
+require __DIR__ . '/inc/import.php';
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
@@ -67,6 +68,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'publish') {
         publish_handle();
+        redirect('index.php');
+    }
+
+    if ($action === 'import_fetch') {
+        import_handle();
         redirect('index.php');
     }
 
@@ -172,8 +178,8 @@ function publish_handle(): void {
     }
     $orig = $_FILES['file']['name'];
     $ext  = strtolower(pathinfo($orig, PATHINFO_EXTENSION));
-    if (!in_array($ext, ['zip', 'geojson', 'json', 'kml'], true)) {
-        flash('error', 'Formato no soportado. Usa .zip (shapefile), .geojson o .kml.'); return;
+    if (!in_array($ext, ['zip', 'geojson', 'json', 'kml', 'kmz'], true)) {
+        flash('error', 'Formato no soportado. Usa .zip (shapefile), .geojson, .kml o .kmz.'); return;
     }
 
     $title = trim((string)($_POST['title'] ?? '')) ?: pathinfo($orig, PATHINFO_FILENAME);
@@ -197,8 +203,29 @@ function publish_handle(): void {
             $shp = glob($work . '/*.shp') ?: glob($work . '/**/*.shp');
             if (!$shp) { flash('error', 'El ZIP no contiene un .shp.'); return; }
             $src = $shp[0];
+        } elseif ($ext === 'kmz') {
+            // Un KMZ es un ZIP con un .kml adentro (por convención doc.kml) e íconos.
+            $za = new ZipArchive();
+            if ($za->open($dest) !== true) { flash('error', 'KMZ ilegible.'); return; }
+            $za->extractTo($work); $za->close();
+            $kml = glob($work . '/doc.kml') ?: glob($work . '/*.kml') ?: glob($work . '/**/*.kml');
+            if (!$kml) { flash('error', 'El KMZ no contiene un .kml.'); return; }
+            $src = $kml[0];
         } else {
             $src = $dest;
+        }
+
+        // KML/KMZ tipo NetworkLink: no tiene geometría, es un puntero a un servidor
+        // remoto (p. ej. exportado desde el Atlas de CENAPRED/ArcGIS). ogr2ogr fallaría
+        // con un error críptico; damos un mensaje claro antes de intentar cargarlo.
+        if (in_array($ext, ['kml', 'kmz'], true) && is_file($src)) {
+            $head = (string)file_get_contents($src, false, null, 0, 65536);
+            if (stripos($head, '<NetworkLink') !== false && stripos($head, '<Placemark') === false) {
+                flash('error', 'Este KML/KMZ no contiene datos: es un enlace en vivo (NetworkLink) '
+                    . 'a un servidor remoto, no geometría descargable. Descarga la capa real '
+                    . '(por ejemplo como GeoJSON desde el servicio de origen) y súbela.');
+                return;
+            }
         }
 
         // Evitar pisar una capa existente sin querer.
@@ -407,6 +434,12 @@ function rrmdir(string $dir): void {
         is_dir($p) ? rrmdir($p) : @unlink($p);
     }
     @rmdir($dir);
+}
+
+/* ===================== Descarga de capa importada (GET) ===================== */
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'import_download') {
+    if (!is_authenticated()) { http_response_code(403); exit('No autorizado.'); }
+    import_download();
 }
 
 /* ============================ Vistas ============================ */

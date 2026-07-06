@@ -82,6 +82,7 @@ view_header('Capas');
 </div>
 <nav class="tab-nav" role="tablist" aria-label="Secciones del panel">
     <button type="button" class="tab-btn active" data-tab="publicar"><i class="fa-solid fa-cloud-arrow-up"></i> Publicar capa</button>
+    <button type="button" class="tab-btn" data-tab="importar"><i class="fa-solid fa-file-import"></i> Importar</button>
     <button type="button" class="tab-btn" data-tab="temas"><i class="fa-solid fa-layer-group"></i> Temas</button>
     <button type="button" class="tab-btn" data-tab="capas"><i class="fa-solid fa-map"></i> Capas</button>
     <button type="button" class="tab-btn" data-tab="cuenta"><i class="fa-solid fa-key"></i> Cuenta</button>
@@ -90,11 +91,11 @@ view_header('Capas');
     <div class="tab-panel active" id="tab-publicar" data-tab="publicar">
     <section class="card">
         <h2><i class="fa-solid fa-cloud-arrow-up"></i> Publicar nueva capa</h2>
-        <p class="muted">Sube un <strong>.zip de shapefile</strong> (con .shp, .shx, .dbf, .prj), <strong>.geojson</strong> o <strong>.kml</strong>. Se carga en PostGIS (reproyectado a WGS84), se publica en GeoServer y se agrega al visor.</p>
+        <p class="muted">Sube un <strong>.zip de shapefile</strong> (con .shp, .shx, .dbf, .prj), <strong>.geojson</strong>, <strong>.kml</strong> o <strong>.kmz</strong>. Se carga en PostGIS (reproyectado a WGS84), se publica en GeoServer y se agrega al visor.</p>
         <form method="post" enctype="multipart/form-data" class="publish">
             <input type="hidden" name="action" value="publish"><?= csrf_field() ?>
             <label>Archivo <span class="hint">máx <?= h(ini_get('upload_max_filesize')) ?></span>
-                <input type="file" name="file" accept=".zip,.geojson,.json,.kml" required>
+                <input type="file" name="file" accept=".zip,.geojson,.json,.kml,.kmz" required>
             </label>
             <div class="row2">
                 <label>Nombre visible
@@ -150,6 +151,42 @@ view_header('Capas');
             </div>
             <button class="btn primary"><i class="fa-solid fa-cloud-arrow-up"></i> Cargar y publicar</button>
         </form>
+    </section>
+    </div>
+    <div class="tab-panel" id="tab-importar" data-tab="importar">
+    <section class="card">
+        <h2><i class="fa-solid fa-file-import"></i> Importar capa desde un servicio</h2>
+        <p class="muted">
+            Algunos KMZ/KML (por ejemplo del <strong>Atlas de CENAPRED</strong>) no traen la geometría:
+            son un <strong>NetworkLink</strong> que apunta a un servidor ArcGIS. Aquí se descargan los datos
+            reales y se convierten a <strong>GeoJSON</strong>. Luego lo descargas y lo publicas en
+            <em>“Publicar capa”</em>. Solo se permiten servicios en dominios <code>.gob.mx</code> o <code>.unam.mx</code>.
+        </p>
+        <form method="post" enctype="multipart/form-data" class="publish" id="import-form">
+            <input type="hidden" name="action" value="import_fetch"><?= csrf_field() ?>
+            <label>Archivo KMZ / KML <span class="hint">con NetworkLink</span>
+                <input type="file" name="file" accept=".kml,.kmz">
+            </label>
+            <div class="import-or"><span>o</span></div>
+            <label>URL del servicio <span class="hint">ArcGIS MapServer/FeatureServer o KmlServer</span>
+                <input type="url" name="service_url" placeholder="http://…/MapServer/29  ·  o el KmlServer con LayerIDs">
+            </label>
+            <button class="btn primary" id="import-submit"><i class="fa-solid fa-cloud-arrow-down"></i> Importar y convertir</button>
+        </form>
+        <?php if (!empty($_SESSION['import_result'])): $ir = $_SESSION['import_result']; ?>
+        <div class="import-result">
+            <h3><i class="fa-solid fa-circle-check"></i> Capa lista para publicar</h3>
+            <ul class="import-meta">
+                <li><strong>Nombre:</strong> <?= h($ir['name'] !== '' ? $ir['name'] : '(sin nombre)') ?></li>
+                <li><strong>Entidades:</strong> <?= (int)$ir['features'] ?></li>
+                <li><strong>Geometría:</strong> <?= h($ir['geom']) ?></li>
+            </ul>
+            <a class="btn primary" href="index.php?action=import_download&amp;token=<?= h($ir['token']) ?>">
+                <i class="fa-solid fa-download"></i> Descargar <?= h($ir['filename']) ?>
+            </a>
+            <p class="hint" style="margin-top:.6rem">Después ve a <strong>“Publicar capa”</strong> y sube el GeoJSON descargado.</p>
+        </div>
+        <?php endif; ?>
     </section>
     </div>
     <div class="tab-panel" id="tab-temas" data-tab="temas">
@@ -411,6 +448,18 @@ document.addEventListener('click', function (e) {
 (function () {
     var saved; try { saved = localStorage.getItem('admin-tab'); } catch (err) {}
     if (saved) activateAdminTab(saved);
+    // Tras importar, mostrar siempre la pestaña con el resultado.
+    if (document.querySelector('.import-result')) activateAdminTab('importar');
+})();
+
+// Importar puede tardar unos segundos (descarga remota): estado de carga.
+(function () {
+    var f = document.getElementById('import-form');
+    if (!f) return;
+    f.addEventListener('submit', function () {
+        var b = document.getElementById('import-submit');
+        if (b) { b.disabled = true; b.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Importando…'; }
+    });
 })();
 </script>
 <?php
