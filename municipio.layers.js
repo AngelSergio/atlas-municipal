@@ -1,7 +1,7 @@
 /**
  * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.
  * No editar a mano: usar https://<host>/atlas-apaseo-gde/admin/
- * Fuente: admin/data/catalog.json   |   Regenerado: 2026-06-16T00:22:37+00:00
+ * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-06T21:14:35+00:00
  */
 window.MUNICIPIO_LAYERS = {
     "extents": {
@@ -64,6 +64,18 @@ window.MUNICIPIO_LAYERS = {
             2329326.1058907732,
             -11185851.393960528,
             2356601.0394009617
+        ],
+        "zonas_inundacion_pluvial_apaseo": [
+            -11208366.218482355,
+            2338183.156891668,
+            -11199781.698328704,
+            2352814.5194257703
+        ],
+        "zonas_inundacion_fluvial_apaseo": [
+            -11211811.55166267,
+            2336214.1683035195,
+            -11189026.655465532,
+            2352807.359573696
         ]
     },
     "groups": [
@@ -175,7 +187,24 @@ window.MUNICIPIO_LAYERS = {
                     "name": "Riesgos",
                     "icon": "fa-exclamation-circle",
                     "expanded": false,
-                    "layers": []
+                    "layers": [
+                        {
+                            "name": "Zonas Inundación Pluvial",
+                            "layer": "zonas_inundacion_pluvial_apaseo",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#00c0c0",
+                            "width": 2
+                        },
+                        {
+                            "name": "Zonas Inundación Fluvial",
+                            "layer": "zonas_inundacion_fluvial_apaseo",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#a0a000",
+                            "width": 2
+                        }
+                    ]
                 },
                 {
                     "id": "obras",

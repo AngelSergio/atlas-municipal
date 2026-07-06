@@ -205,6 +205,42 @@
                 2356601.0394009617
             ],
             "order": 7
+        },
+        {
+            "layer": "zonas_inundacion_pluvial_apaseo",
+            "name": "Zonas Inundación Pluvial",
+            "theme": "riesgos",
+            "visible": false,
+            "style": "apaseo_gde:zonas_inundacion_pluvial_apaseo",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#00c0c0",
+            "width": 2,
+            "extent": [
+                -11208366.218482355,
+                2338183.156891668,
+                -11199781.698328704,
+                2352814.5194257703
+            ],
+            "order": 10
+        },
+        {
+            "layer": "zonas_inundacion_fluvial_apaseo",
+            "name": "Zonas Inundación Fluvial",
+            "theme": "riesgos",
+            "visible": false,
+            "style": "apaseo_gde:zonas_inundacion_fluvial_apaseo",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#a0a000",
+            "width": 2,
+            "extent": [
+                -11211811.55166267,
+                2336214.1683035195,
+                -11189026.655465532,
+                2352807.359573696
+            ],
+            "order": 11
         }
     ],
     "basemap": {
