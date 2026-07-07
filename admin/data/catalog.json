@@ -7,20 +7,56 @@
             "expanded": true
         },
         {
-            "id": "peligros",
-            "name": "Peligros",
-            "icon": "fa-exclamation-triangle",
+            "id": "fenomenos-geologicos",
+            "name": "Fenómenos Geológicos",
+            "icon": "fa-hill-rockslide",
+            "expanded": false
+        },
+        {
+            "id": "fenomenos-hidrometeorologicos",
+            "name": "Fenómenos Hidrometeorológicos",
+            "icon": "fa-cloud-showers-heavy",
+            "expanded": false
+        },
+        {
+            "id": "fenomenos-quimico-tecnologicos",
+            "name": "Fenómenos Químico-Tecnológicos",
+            "icon": "fa-industry",
+            "expanded": false
+        },
+        {
+            "id": "fenomenos-sanitario-ecologicos",
+            "name": "Fenómenos Sanitario-Ecológicos",
+            "icon": "fa-biohazard",
+            "expanded": false
+        },
+        {
+            "id": "fenomenos-socio-organizativos",
+            "name": "Fenómenos Socio-Organizativos",
+            "icon": "fa-people-group",
+            "expanded": false
+        },
+        {
+            "id": "bienes-expuestos",
+            "name": "Bienes Expuestos",
+            "icon": "fa-building-shield",
+            "expanded": false
+        },
+        {
+            "id": "vulnerabilidad",
+            "name": "Vulnerabilidad",
+            "icon": "fa-house-crack",
             "expanded": false
         },
         {
             "id": "riesgos",
-            "name": "Riesgos",
+            "name": "Riesgos / Escenarios",
             "icon": "fa-exclamation-circle",
             "expanded": false
         },
         {
             "id": "obras",
-            "name": "Obras",
+            "name": "Obras de Mitigación",
             "icon": "fa-helmet-safety",
             "expanded": false
         }
@@ -241,6 +277,42 @@
                 2352807.359573696
             ],
             "order": 11
+        },
+        {
+            "layer": "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
+            "name": "Puntos de Riesgo de Inundación",
+            "theme": "riesgos",
+            "visible": false,
+            "style": "apaseo_gde:puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
+            "geom": "MULTIPOINT",
+            "style_type": "point",
+            "color": "#1e73be",
+            "width": 2,
+            "extent": [
+                -11356480.49228996,
+                2270235.3924478125,
+                -11100556.982910873,
+                2473208.394414112
+            ],
+            "order": 12
+        },
+        {
+            "layer": "sierra_de_los_agustino_2",
+            "name": "Inestabilidad en Laderas (Los Agustinos)",
+            "theme": "fenomenos-geologicos",
+            "visible": false,
+            "style": "apaseo_gde:sierra_de_los_agustino_2",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#1e73be",
+            "width": 2,
+            "extent": [
+                -11215437.205247167,
+                2326157.8525215313,
+                -11185652.672412163,
+                2358301.2894429476
+            ],
+            "order": 10
         }
     ],
     "basemap": {

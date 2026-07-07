@@ -1,7 +1,7 @@
 /**
  * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.
  * No editar a mano: usar https://<host>/atlas-apaseo-gde/admin/
- * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-06T21:14:35+00:00
+ * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-06T23:49:54+00:00
  */
 window.MUNICIPIO_LAYERS = {
     "extents": {
@@ -76,6 +76,18 @@ window.MUNICIPIO_LAYERS = {
             2336214.1683035195,
             -11189026.655465532,
             2352807.359573696
+        ],
+        "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026": [
+            -11356480.49228996,
+            2270235.3924478125,
+            -11100556.982910873,
+            2473208.394414112
+        ],
+        "sierra_de_los_agustino_2": [
+            -11215437.205247167,
+            2326157.8525215313,
+            -11185652.672412163,
+            2358301.2894429476
         ]
     },
     "groups": [
@@ -176,15 +188,66 @@ window.MUNICIPIO_LAYERS = {
                     ]
                 },
                 {
-                    "id": "peligros",
-                    "name": "Peligros",
-                    "icon": "fa-exclamation-triangle",
+                    "id": "fenomenos-geologicos",
+                    "name": "Fenómenos Geológicos",
+                    "icon": "fa-hill-rockslide",
+                    "expanded": false,
+                    "layers": [
+                        {
+                            "name": "Inestabilidad en Laderas (Los Agustinos)",
+                            "layer": "sierra_de_los_agustino_2",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#1e73be",
+                            "width": 2
+                        }
+                    ]
+                },
+                {
+                    "id": "fenomenos-hidrometeorologicos",
+                    "name": "Fenómenos Hidrometeorológicos",
+                    "icon": "fa-cloud-showers-heavy",
+                    "expanded": false,
+                    "layers": []
+                },
+                {
+                    "id": "fenomenos-quimico-tecnologicos",
+                    "name": "Fenómenos Químico-Tecnológicos",
+                    "icon": "fa-industry",
+                    "expanded": false,
+                    "layers": []
+                },
+                {
+                    "id": "fenomenos-sanitario-ecologicos",
+                    "name": "Fenómenos Sanitario-Ecológicos",
+                    "icon": "fa-biohazard",
+                    "expanded": false,
+                    "layers": []
+                },
+                {
+                    "id": "fenomenos-socio-organizativos",
+                    "name": "Fenómenos Socio-Organizativos",
+                    "icon": "fa-people-group",
+                    "expanded": false,
+                    "layers": []
+                },
+                {
+                    "id": "bienes-expuestos",
+                    "name": "Bienes Expuestos",
+                    "icon": "fa-building-shield",
+                    "expanded": false,
+                    "layers": []
+                },
+                {
+                    "id": "vulnerabilidad",
+                    "name": "Vulnerabilidad",
+                    "icon": "fa-house-crack",
                     "expanded": false,
                     "layers": []
                 },
                 {
                     "id": "riesgos",
-                    "name": "Riesgos",
+                    "name": "Riesgos / Escenarios",
                     "icon": "fa-exclamation-circle",
                     "expanded": false,
                     "layers": [
@@ -203,12 +266,20 @@ window.MUNICIPIO_LAYERS = {
                             "styleType": "poly-outline",
                             "color": "#a0a000",
                             "width": 2
+                        },
+                        {
+                            "name": "Puntos de Riesgo de Inundación",
+                            "layer": "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#1e73be",
+                            "width": 2
                         }
                     ]
                 },
                 {
                     "id": "obras",
-                    "name": "Obras",
+                    "name": "Obras de Mitigación",
                     "icon": "fa-helmet-safety",
                     "expanded": false,
                     "layers": []
