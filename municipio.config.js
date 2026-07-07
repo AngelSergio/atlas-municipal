@@ -31,7 +31,7 @@ window.MUNICIPIO_CONFIG = {
 
   // Recursos enlazados desde el panel "Acerca de".
   recursos: {
-    atlasPdf:       '/pdf/ATLAS_CELAYA.pdf', // TODO: reemplazar por el PDF del Atlas de Apaseo el Grande
+    atlasPdf:       'pdf/atlas_municipal.pdf', // se sube/reemplaza desde el panel admin (pestaña Ajustes)
     programasPcUrl: ''                        // URL de Programas de PC (vacío = se oculta)
   },
 

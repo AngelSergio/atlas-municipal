@@ -13,3 +13,6 @@ assets/images/branding/apaseo-*.png
 # Archivos temporales de carga de capas/logos
 temporal/
 temp/
+
+# PDF del Atlas (por municipio, se sube desde el panel)
+pdf/

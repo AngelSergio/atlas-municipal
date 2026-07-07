@@ -60,6 +60,28 @@ function pg_extent_3857(string $table): ?array {
     return [ (float)$r['a'], (float)$r['b'], (float)$r['c'], (float)$r['d'] ];
 }
 
+/** Extent en EPSG:4326 [minx,miny,maxx,maxy] (para recortar importaciones al municipio). */
+function pg_extent_4326(string $table): ?array {
+    if (!pg_table_exists($table)) return null;
+    $sql = 'SELECT ST_XMin(e) a, ST_YMin(e) b, ST_XMax(e) c, ST_YMax(e) d FROM '
+         . '(SELECT ST_Extent(ST_Transform(geom,4326)) e FROM ' . pg_ident(pg_rw(), $table) . ') s';
+    $q = pg_query(pg_rw(), $sql);
+    if (!$q) return null;
+    $r = pg_fetch_assoc($q);
+    if (!$r || $r['a'] === null) return null;
+    return [ (float)$r['a'], (float)$r['b'], (float)$r['c'], (float)$r['d'] ];
+}
+
+/** Geometría del límite (unión disuelta, EPSG:4326) como GeoJSON, para recorte exacto. */
+function pg_boundary_geojson(string $table): ?string {
+    if (!pg_table_exists($table)) return null;
+    $sql = 'SELECT ST_AsGeoJSON(ST_Union(ST_Transform(geom,4326))) g FROM ' . pg_ident(pg_rw(), $table);
+    $q = pg_query(pg_rw(), $sql);
+    if (!$q) return null;
+    $g = pg_fetch_assoc($q)['g'] ?? null;
+    return ($g !== null && $g !== '') ? (string)$g : null;
+}
+
 function pg_ident($conn, string $id): string {
     return pg_escape_identifier($conn, $id);
 }

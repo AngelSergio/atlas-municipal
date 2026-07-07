@@ -93,66 +93,105 @@ function import_http_get(string $url, int $timeout = 90): array {
  * Descarga todas las entidades de una capa ArcGIS y las convierte a GeoJSON.
  * Devuelve ['ok'=>bool, 'path'=>geojson, 'name'=>str, 'features'=>int, 'geom'=>str, 'truncated'=>bool, 'error'=>str].
  */
-function import_fetch_geojson(string $queryUrl, string $metaUrl, string $work): array {
-    // Nombre legible de la capa (metadatos).
-    $name = '';
+function import_fetch_geojson(string $queryUrl, string $metaUrl, string $work, ?array $bbox = null): array {
+    // Filtro espacial opcional (recorte al municipio): envolvente en EPSG:4326.
+    $spatial = [];
+    if ($bbox && count($bbox) === 4) {
+        $spatial = [
+            'geometry'     => implode(',', $bbox),   // xmin,ymin,xmax,ymax
+            'geometryType' => 'esriGeometryEnvelope',
+            'inSR'         => '4326',
+            'spatialRel'   => 'esriSpatialRelIntersects',
+        ];
+    }
+
+    // Metadatos: nombre legible y campo de OBJECTID.
+    $name = ''; $oidField = 'OBJECTID';
     $meta = import_http_get($metaUrl . '?f=json', 40);
     if ($meta['ok']) {
         $md = json_decode($meta['body'], true);
-        if (is_array($md)) $name = (string)($md['name'] ?? '');
+        if (is_array($md)) {
+            $name = (string)($md['name'] ?? '');
+            if (!empty($md['objectIdField'])) $oidField = (string)$md['objectIdField'];
+        }
     }
 
-    // Descarga con paginación defensiva: se detiene si el servidor no pagina
-    // (mismos OBJECTID) para no entrar en un bucle infinito.
-    $all = null; $offset = 0; $pageSize = 2000; $guard = 0; $truncated = false;
-    $seen = []; $oidField = 'OBJECTID';
+    // Conteo total (para saber cuándo terminó y avisar si algo quedó fuera).
+    $total = null;
+    $rc0 = import_http_get($queryUrl . '?' . http_build_query(array_merge([
+        'where' => "$oidField>-1", 'returnCountOnly' => 'true', 'f' => 'json',
+    ], $spatial)), 40);
+    if ($rc0['ok']) { $cd = json_decode($rc0['body'], true); if (isset($cd['count'])) $total = (int)$cd['count']; }
+
+    // Descarga paginada por RANGO de OBJECTID, ESCRITA A DISCO conforme llega. Este
+    // ArcGIS NO soporta paginación por resultOffset (supportsPagination=false) y topa en
+    // maxRecordCount (~1000 registros); se avanza pidiendo los OBJECTID mayores al último
+    // ya traído ("OBJECTID>N", que además pasa el WAF donde "1=1" se bloquea). No se
+    // acumula en memoria (una capa de decenas de miles de polígonos la agotaría): se va
+    // ensamblando el Esri JSON en un archivo temporal página por página.
+    $esriPath    = $work . '/esri.json';
+    $geojsonPath = $work . '/import.geojson';
+    $fh = fopen($esriPath, 'w');
+    if (!$fh) return ['ok' => false, 'error' => 'No se pudo abrir el archivo temporal.'];
+
+    $guard = 0; $lastOid = -1; $truncated = false; $collected = 0; $geomEsri = '';
+    $headerDone = false;
     do {
-        $u = $queryUrl . '?' . http_build_query([
-            'where'             => 'OBJECTID>-1',   // 'OBJECTID>-1' pasa WAF donde '1=1' se bloquea
-            'outFields'         => '*',
-            'outSR'             => '4326',
-            'returnGeometry'    => 'true',
-            'resultOffset'      => $offset,
-            'resultRecordCount' => $pageSize,
-            'f'                 => 'json',
-        ]);
+        $u = $queryUrl . '?' . http_build_query(array_merge([
+            'where'          => "$oidField>$lastOid",
+            'outFields'      => '*',
+            'outSR'          => '4326',
+            'returnGeometry' => 'true',
+            'f'              => 'json',
+        ], $spatial));
         $r = import_http_get($u, 90);
-        if (!$r['ok']) return ['ok' => false, 'error' => "El servicio no respondió (HTTP {$r['code']}). {$r['error']}"];
+        if (!$r['ok']) { fclose($fh); return ['ok' => false, 'error' => "El servicio no respondió (HTTP {$r['code']}). {$r['error']}"]; }
         $d = json_decode($r['body'], true);
         if (!is_array($d) || isset($d['error'])) {
+            fclose($fh);
             $em = $d['error']['message'] ?? trim(substr(strip_tags($r['body']), 0, 180));
             return ['ok' => false, 'error' => "El servicio devolvió un error: " . ($em ?: 'respuesta no válida')];
         }
-        $oidField = (string)($d['objectIdFieldName'] ?? $oidField);
+        if (isset($d['objectIdFieldName'])) $oidField = (string)$d['objectIdFieldName'];
         $feats = $d['features'] ?? [];
-        $newCount = 0;
+        if (!$feats) break;
+        // OID máximo de la página → base de la siguiente consulta.
+        $pageMax = $lastOid;
         foreach ($feats as $f) {
             $oid = $f['attributes'][$oidField] ?? null;
-            if ($oid !== null) {
-                if (isset($seen[$oid])) continue;   // dedupe entre páginas
-                $seen[$oid] = true;
-            }
-            $newCount++;
-            if ($all === null) $all = ['features' => []] + $d;
-            $all['features'][] = $f;
+            if ($oid !== null && (int)$oid > $pageMax) $pageMax = (int)$oid;
         }
-        if ($all === null) $all = $d;   // primera página sin OID
+        // Cabecera del Esri JSON (geometryType/spatialReference/fields), una sola vez.
+        if (!$headerDone) {
+            $geomEsri = (string)($d['geometryType'] ?? '');
+            $wrapper = $d; unset($wrapper['features'], $wrapper['exceededTransferLimit']);
+            $wj = json_encode($wrapper, JSON_UNESCAPED_UNICODE);
+            $wj = substr($wj, 0, strrpos($wj, '}'));           // quita la '}' final
+            if (substr($wj, -1) !== '{') $wj .= ',';
+            fwrite($fh, $wj . '"features":[');
+            $headerDone = true;
+        }
+        // Features de la página (encode de un solo lote, sin acumular entre páginas).
+        $fjson = json_encode($feats, JSON_UNESCAPED_UNICODE);   // "[ {..},{..} ]"
+        $fjson = substr($fjson, 1, -1);                          // quita corchetes
+        if ($fjson !== '') {
+            fwrite($fh, ($collected > 0 ? ',' : '') . $fjson);
+            $collected += count($feats);
+        }
         $exceeded = !empty($d['exceededTransferLimit']);
-        $offset  += count($feats);
+        unset($d, $feats, $fjson);                               // liberar memoria de la página
+        if ($pageMax <= $lastOid) { if ($exceeded) $truncated = true; break; }
+        $lastOid = $pageMax;
         $guard++;
-        if ($newCount === 0) { if ($exceeded) $truncated = true; break; }  // el server no avanzó
-    } while ($exceeded && $guard < 50);
+        if (!$exceeded) break;   // última página parcial: terminó
+    } while ($guard < 1000);
+    fwrite($fh, ']}');
+    fclose($fh);
 
-    if ($all === null || empty($all['features'])) {
-        return ['ok' => false, 'error' => 'El servicio no devolvió ninguna entidad.'];
-    }
+    if ($collected === 0) return ['ok' => false, 'error' => 'El servicio no devolvió ninguna entidad.'];
+    if ($total !== null && $collected < $total) $truncated = true;
 
     // Convertir Esri JSON -> GeoJSON con ogr2ogr (driver ESRIJSON).
-    $esriPath    = $work . '/esri.json';
-    $geojsonPath = $work . '/import.geojson';
-    if (file_put_contents($esriPath, json_encode($all)) === false) {
-        return ['ok' => false, 'error' => 'No se pudo escribir el archivo temporal.'];
-    }
     $cmd = 'ogr2ogr -f GeoJSON ' . escapeshellarg($geojsonPath)
         . ' ' . escapeshellarg('ESRIJSON:' . $esriPath) . ' 2>&1';
     $o = []; $rc = 0; exec($cmd, $o, $rc);
@@ -160,11 +199,41 @@ function import_fetch_geojson(string $queryUrl, string $metaUrl, string $work): 
         return ['ok' => false, 'error' => 'No se pudo convertir a GeoJSON. ' . h(implode(' ', array_slice($o, -3)))];
     }
 
-    $gj    = json_decode((string)file_get_contents($geojsonPath), true);
-    $count = is_array($gj['features'] ?? null) ? count($gj['features']) : count($all['features']);
-    $geom  = $gj['features'][0]['geometry']['type'] ?? '';
+    // No se re-decodifica el GeoJSON (puede pesar decenas de MB): el conteo es $collected
+    // y la geometría se deriva del tipo Esri.
+    $geomMap = ['esriGeometryPoint' => 'Point', 'esriGeometryMultipoint' => 'MultiPoint',
+                'esriGeometryPolyline' => 'Line', 'esriGeometryPolygon' => 'Polygon'];
+    $geom = $geomMap[$geomEsri] ?? $geomEsri;
     return ['ok' => true, 'path' => $geojsonPath, 'name' => $name,
-            'features' => $count, 'geom' => $geom, 'truncated' => $truncated];
+            'features' => $collected, 'geom' => $geom, 'truncated' => $truncated];
+}
+
+/**
+ * Nombre de la tabla del límite municipal, leído de municipio.config.js (fuente única
+ * que cada instalación edita). Así el recorte funciona en cualquier municipio sin tocar
+ * código. Cae a 'limite_municipal' si no lo encuentra.
+ */
+function import_boundary_table(): string {
+    $default = 'limite_municipal';
+    $layersjs = config()['paths']['layersjs'] ?? '';
+    if ($layersjs === '') return $default;
+    $cfg = dirname($layersjs) . '/municipio.config.js';
+    if (!is_readable($cfg)) return $default;
+    $js = (string)file_get_contents($cfg);
+    if (preg_match('/limiteMunicipalLayer\s*:\s*[\'"]([A-Za-z0-9_]+)[\'"]/', $js, $m)) {
+        return pg_safe_table($m[1]);
+    }
+    return $default;
+}
+
+/** Conteo de features de un GeoJSON vía ogrinfo (barato, no carga todo en PHP). */
+function import_feature_count(string $geojsonPath): ?int {
+    $o = [];
+    exec('ogrinfo -so -al ' . escapeshellarg($geojsonPath) . ' 2>/dev/null', $o);
+    foreach ($o as $line) {
+        if (preg_match('/Feature Count:\s*(\d+)/', $line, $m)) return (int)$m[1];
+    }
+    return null;
 }
 
 /** Borra GeoJSON de importación con más de 24 h. */
@@ -179,6 +248,9 @@ function import_gc(string $dir): void {
  * y deja el GeoJSON listo para descargar (en $_SESSION['import_result']).
  */
 function import_handle(): void {
+    // Capas grandes (miles de polígonos) requieren varias consultas y memoria.
+    @set_time_limit(600);
+    @ini_set('memory_limit', '512M');
     unset($_SESSION['import_result']);
     $url  = trim((string)($_POST['service_url'] ?? ''));
     $work = config()['paths']['uploads'] . '/' . bin2hex(random_bytes(6));
@@ -228,11 +300,44 @@ function import_handle(): void {
             return;
         }
 
-        // 3) Descargar y convertir.
-        $res = import_fetch_geojson($ep['query'], $ep['meta'], $work);
+        // 3) Recorte al municipio (opcional): bbox del límite en 4326 como filtro del servicio.
+        $clip      = !empty($_POST['clip']);
+        $clipExact = !empty($_POST['clip_exact']);
+        $bbox = null;
+        if ($clip) {
+            $bt   = import_boundary_table();
+            $bbox = pg_extent_4326($bt);
+            if (!$bbox) {
+                flash('error', "No se pudo obtener el límite municipal ('$bt') para recortar. "
+                    . "¿Está cargado en PostGIS? Puedes reintentar sin recorte.");
+                return;
+            }
+        }
+
+        // 4) Descargar y convertir (con o sin recorte por envolvente).
+        $res = import_fetch_geojson($ep['query'], $ep['meta'], $work, $bbox);
         if (!$res['ok']) { flash('error', 'No se pudo importar: ' . $res['error']); return; }
 
-        // 4) Guardar el GeoJSON para descarga.
+        // 4b) Recorte EXACTO al polígono del municipio (opcional, tras el recorte por bbox).
+        $clippedExact = false;
+        if ($clip && $clipExact) {
+            $bg = pg_boundary_geojson(import_boundary_table());
+            if ($bg) {
+                $boundaryPath = $work . '/boundary.geojson';
+                $clippedPath  = $work . '/clipped.geojson';
+                file_put_contents($boundaryPath,
+                    '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":' . $bg . '}]}');
+                exec('ogr2ogr -f GeoJSON ' . escapeshellarg($clippedPath) . ' ' . escapeshellarg($res['path'])
+                    . ' -clipsrc ' . escapeshellarg($boundaryPath) . ' 2>&1');
+                if (is_file($clippedPath) && filesize($clippedPath) > 32) {
+                    $res['path']     = $clippedPath;
+                    $res['features'] = import_feature_count($clippedPath) ?? $res['features'];
+                    $clippedExact    = true;
+                }
+            }
+        }
+
+        // 5) Guardar el GeoJSON para descarga.
         $importsDir = config()['paths']['uploads'] . '/imports';
         @mkdir($importsDir, 0700, true);
         import_gc($importsDir);
@@ -252,7 +357,8 @@ function import_handle(): void {
         ];
         $warn = !empty($res['truncated'])
             ? ' AVISO: el servicio limitó la descarga; podrían faltar entidades.' : '';
-        flash('ok', "Importadas {$res['features']} entidades ({$res['geom']}). "
+        $clipMsg = $clip ? ($clippedExact ? ' Recortada al borde del municipio.' : ' Recortada al municipio (envolvente).') : '';
+        flash('ok', "Importadas {$res['features']} entidades ({$res['geom']}).{$clipMsg} "
             . "Descarga el GeoJSON y publícalo en “Publicar capa”." . $warn);
     } finally {
         rrmdir($work);

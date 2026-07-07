@@ -85,7 +85,7 @@ view_header('Capas');
     <button type="button" class="tab-btn" data-tab="importar"><i class="fa-solid fa-file-import"></i> Importar</button>
     <button type="button" class="tab-btn" data-tab="temas"><i class="fa-solid fa-layer-group"></i> Temas</button>
     <button type="button" class="tab-btn" data-tab="capas"><i class="fa-solid fa-map"></i> Capas</button>
-    <button type="button" class="tab-btn" data-tab="cuenta"><i class="fa-solid fa-key"></i> Cuenta</button>
+    <button type="button" class="tab-btn" data-tab="cuenta"><i class="fa-solid fa-sliders"></i> Ajustes</button>
 </nav>
 <div class="tab-panels">
     <div class="tab-panel active" id="tab-publicar" data-tab="publicar">
@@ -171,6 +171,10 @@ view_header('Capas');
             <label>URL del servicio <span class="hint">ArcGIS MapServer/FeatureServer o KmlServer</span>
                 <input type="url" name="service_url" placeholder="http://…/MapServer/29  ·  o el KmlServer con LayerIDs">
             </label>
+            <div class="checks">
+                <label class="inline"><input type="checkbox" name="clip" value="1" checked> Recortar al municipio <span class="hint">recomendado para capas estatales</span></label>
+                <label class="inline"><input type="checkbox" name="clip_exact" value="1"> Recorte exacto al borde <span class="hint">más lento</span></label>
+            </div>
             <button class="btn primary" id="import-submit"><i class="fa-solid fa-cloud-arrow-down"></i> Importar y convertir</button>
         </form>
         <?php if (!empty($_SESSION['import_result'])): $ir = $_SESSION['import_result']; ?>
@@ -318,6 +322,30 @@ view_header('Capas');
     </section>
     </div>
     <div class="tab-panel" id="tab-cuenta" data-tab="cuenta">
+    <?php
+        $pdfPath = dirname(config()['paths']['layersjs']) . '/pdf/atlas_municipal.pdf';
+        $pdfExists = is_file($pdfPath);
+    ?>
+    <section class="card narrow">
+        <h2><i class="fa-solid fa-file-pdf"></i> Documento del Atlas (PDF)</h2>
+        <p class="muted">Este es el PDF oficial que se descarga desde el botón <strong>“información”</strong> del visor. Sube aquí el Atlas de tu municipio; reemplaza al anterior.</p>
+        <?php if ($pdfExists): ?>
+            <p class="hint" style="margin-bottom:.8rem">
+                <i class="fa-solid fa-circle-check" style="color:var(--ok,#2e9e5b)"></i>
+                Actual: <a href="../pdf/atlas_municipal.pdf" target="_blank" rel="noopener">atlas_municipal.pdf</a>
+                (<?= number_format(filesize($pdfPath) / 1048576, 1) ?> MB · <?= h(date('Y-m-d', filemtime($pdfPath))) ?>)
+            </p>
+        <?php else: ?>
+            <p class="hint" style="margin-bottom:.8rem"><i class="fa-solid fa-triangle-exclamation" style="color:#c98a00"></i> Aún no hay documento cargado.</p>
+        <?php endif; ?>
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="atlas_pdf"><?= csrf_field() ?>
+            <label>Archivo PDF <span class="hint">máx <?= h(ini_get('upload_max_filesize')) ?></span>
+                <input type="file" name="pdf" accept="application/pdf,.pdf" required>
+            </label>
+            <button class="btn primary"><i class="fa-solid fa-cloud-arrow-up"></i> Subir documento</button>
+        </form>
+    </section>
     <section class="card narrow">
         <h2><i class="fa-solid fa-key"></i> Cambiar contraseña</h2>
         <form method="post">

@@ -76,6 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect('index.php');
     }
 
+    if ($action === 'atlas_pdf') {
+        atlas_pdf_handle();
+        redirect('index.php');
+    }
+
     if ($action === 'layer_update') {
         $layer = (string)($_POST['layer'] ?? '');
         $c = catalog_load();
@@ -287,6 +292,39 @@ function publish_handle(): void {
     } finally {
         rrmdir($work);
     }
+}
+
+/** Sube/reemplaza el PDF oficial del Atlas que enlaza el botón "información" del visor. */
+function atlas_pdf_handle(): void {
+    $err = $_FILES['pdf']['error'] ?? UPLOAD_ERR_NO_FILE;
+    if (empty($_FILES['pdf']) || $err !== UPLOAD_ERR_OK) {
+        $map = [
+            UPLOAD_ERR_INI_SIZE  => 'El PDF supera el máximo permitido (' . ini_get('upload_max_filesize') . ').',
+            UPLOAD_ERR_FORM_SIZE => 'El PDF supera el tamaño máximo del formulario.',
+            UPLOAD_ERR_NO_FILE   => 'No seleccionaste ningún archivo.',
+            UPLOAD_ERR_PARTIAL   => 'La subida se interrumpió; vuelve a intentarlo.',
+        ];
+        flash('error', $map[$err] ?? 'No se pudo recibir el PDF (código ' . $err . ').');
+        return;
+    }
+    $tmp = $_FILES['pdf']['tmp_name'];
+    if (strtolower(pathinfo($_FILES['pdf']['name'], PATHINFO_EXTENSION)) !== 'pdf') {
+        flash('error', 'El archivo debe ser un .pdf.'); return;
+    }
+    // Verificar la firma real del archivo (%PDF-), no solo la extensión.
+    if (strncmp((string)file_get_contents($tmp, false, null, 0, 5), '%PDF-', 5) !== 0) {
+        flash('error', 'El archivo no es un PDF válido.'); return;
+    }
+    $dir = dirname(config()['paths']['layersjs']) . '/pdf';
+    if (!is_dir($dir) && !@mkdir($dir, 0775, true)) {
+        flash('error', 'No se pudo crear la carpeta pdf/.'); return;
+    }
+    $dest = $dir . '/atlas_municipal.pdf';
+    if (!move_uploaded_file($tmp, $dest)) {
+        flash('error', 'No se pudo guardar el PDF (revisa permisos de la carpeta pdf/).'); return;
+    }
+    @chmod($dest, 0644);
+    flash('ok', 'Documento del Atlas actualizado. Se enlaza desde el botón “información” del visor.');
 }
 
 function theme_add(string $name, string $icon): void {
