@@ -1,7 +1,7 @@
 /**
  * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.
  * No editar a mano: usar https://<host>/atlas-apaseo-gde/admin/
- * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-06T23:49:54+00:00
+ * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-07T18:14:10+00:00
  */
 window.MUNICIPIO_LAYERS = {
     "extents": {
@@ -88,6 +88,12 @@ window.MUNICIPIO_LAYERS = {
             2326157.8525215313,
             -11185652.672412163,
             2358301.2894429476
+        ],
+        "caminos": [
+            -11218905.908091355,
+            2325792.3370610727,
+            -11186057.22364267,
+            2359949.6096555707
         ]
     },
     "groups": [
@@ -236,7 +242,16 @@ window.MUNICIPIO_LAYERS = {
                     "name": "Bienes Expuestos",
                     "icon": "fa-building-shield",
                     "expanded": false,
-                    "layers": []
+                    "layers": [
+                        {
+                            "name": "Caminos",
+                            "layer": "caminos",
+                            "visible": false,
+                            "styleType": "classified",
+                            "color": "#1e73be",
+                            "width": 2
+                        }
+                    ]
                 },
                 {
                     "id": "vulnerabilidad",

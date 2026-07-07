@@ -313,6 +313,24 @@
                 2358301.2894429476
             ],
             "order": 10
+        },
+        {
+            "layer": "caminos",
+            "name": "Caminos",
+            "theme": "bienes-expuestos",
+            "visible": false,
+            "style": "apaseo_gde:caminos",
+            "geom": "MULTILINESTRING",
+            "style_type": "classified",
+            "color": "#1e73be",
+            "width": 2,
+            "extent": [
+                -11218905.908091355,
+                2325792.3370610727,
+                -11186057.22364267,
+                2359949.6096555707
+            ],
+            "order": 0
         }
     ],
     "basemap": {
