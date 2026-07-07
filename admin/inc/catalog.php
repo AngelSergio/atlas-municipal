@@ -180,9 +180,25 @@ function regenerate_layers_js(?array $c = null): bool {
         ];
     }
 
+    // Análisis ciudadano: capas agrupadas por papel (role), con el campo elegido.
+    // El módulo assets/js/analisis-demografico.js lee esto en vez de nombres fijos.
+    $analisis = ['colonia' => [], 'poblacion' => [], 'peligro' => [], 'equipamiento' => []];
+    foreach ($c['layers'] as $l) {
+        $a    = $l['analisis'] ?? null;
+        $role = is_array($a) ? (string)($a['role'] ?? '') : '';
+        if ($role === '' || !isset($analisis[$role])) continue;
+        $analisis[$role][] = [
+            'layer' => $l['layer'],
+            'name'  => $l['name'],
+            'field' => is_array($a) ? (string)($a['field'] ?? '') : '',
+            'geom'  => (string)($l['geom'] ?? ''),
+        ];
+    }
+
     $struct = [
-        'extents' => (object)$extents,
-        'groups'  => $groups,
+        'extents'  => (object)$extents,
+        'groups'   => $groups,
+        'analisis' => $analisis,
     ];
 
     $json = json_encode($struct, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

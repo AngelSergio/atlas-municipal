@@ -327,6 +327,34 @@ view_header('Capas');
                             <input type="number" name="width" value="<?= h((string)$curW) ?>" step="0.5" min="0" max="20" class="lw" title="Grosor de línea/borde">
                             <button class="btn small">Aplicar estilo</button>
                         </form>
+                        <?php
+                            $an      = $l['analisis'] ?? [];
+                            $anRole  = is_array($an) ? ($an['role'] ?? '') : '';
+                            $anField = is_array($an) ? ($an['field'] ?? '') : '';
+                            $cols    = pg_columns($l['layer']);
+                            $roleOpts = ['' => '— No usar —', 'colonia' => 'Colonia (contexto)', 'poblacion' => 'Población (contexto)', 'peligro' => 'Peligro', 'equipamiento' => 'Equipamiento expuesto'];
+                        ?>
+                        <form method="post" class="layer-analysis ajax-form" title="Papel de esta capa en el Análisis de riesgo por ubicación">
+                            <input type="hidden" name="action" value="layer_analysis">
+                            <input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><?= csrf_field() ?>
+                            <span class="la-label"><i class="fa-solid fa-magnifying-glass-location"></i> Análisis</span>
+                            <select name="role" class="la-role">
+                                <?php foreach ($roleOpts as $rk => $rlab): ?>
+                                    <option value="<?= h($rk) ?>" <?= $rk === $anRole ? 'selected' : '' ?>><?= h($rlab) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <?php if ($cols): ?>
+                                <select name="field" class="la-field" title="Campo (población a sumar, nombre de colonia, o nivel de peligro)">
+                                    <option value="">— Campo (auto) —</option>
+                                    <?php foreach ($cols as $col): ?>
+                                        <option value="<?= h($col) ?>" <?= $col === $anField ? 'selected' : '' ?>><?= h($col) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php else: ?>
+                                <input type="text" name="field" value="<?= h($anField) ?>" class="la-field" placeholder="campo (opcional)">
+                            <?php endif; ?>
+                            <button class="btn small">Guardar</button>
+                        </form>
                         <div class="layer-foot">
                             <form method="post" class="del" onsubmit="return confirm('¿Eliminar <?= h($l['layer']) ?> del catálogo?\n\nMarca PURGAR antes para borrarla también de GeoServer y PostGIS (irreversible).');">
                                 <input type="hidden" name="action" value="layer_delete"><input type="hidden" name="layer" value="<?= h($l['layer']) ?>"><?= csrf_field() ?>

@@ -9,60 +9,43 @@
   const MUNI = (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.municipio) || 'el municipio';
 
   const GEOM_CANDIDATES = ['geom', 'the_geom', 'geometry', 'GEOMETRY', 'GEOM'];
-  const CONTEXT_LAYERS = ['Manzanas_INEGI_2020', 'manzanas_densidad_poblacion'];
-  const COLONIA_LAYERS = ['COLONIAS_CYA'];
+  // ---- Configuración del análisis por PAPELES, asignada desde el panel admin ----
+  // (window.MUNICIPIO_LAYERS.analisis). Cada municipio marca qué capa cumple cada
+  // papel y con qué campo. Si no hay config, se usan los valores heredados (Celaya).
+  const AN = (window.MUNICIPIO_LAYERS && window.MUNICIPIO_LAYERS.analisis) || {};
+  const anRole = (k) => (Array.isArray(AN[k]) ? AN[k] : []);
+  const anHasConfig = ['colonia', 'poblacion', 'peligro', 'equipamiento'].some(k => anRole(k).length);
 
-  const INTERSECT_RISK_LAYERS = [];
+  const CONTEXT_LAYERS = anHasConfig ? anRole('poblacion').map(x => x.layer)
+                                     : ['Manzanas_INEGI_2020', 'manzanas_densidad_poblacion'];
+  const COLONIA_LAYERS = anHasConfig ? anRole('colonia').map(x => x.layer) : ['COLONIAS_CYA'];
+  // Campos elegidos en el panel (población a sumar / nombre de colonia).
+  const POBLACION_FIELDS = anRole('poblacion').map(x => x.field).filter(Boolean);
+  const COLONIA_FIELDS   = anRole('colonia').map(x => x.field).filter(Boolean);
 
-  const PROXIMITY_LAYERS = [
-    {
-      key: 'Gasolineras_celaya',
-      queryKeys: ['Gasolineras_celaya'],
-      title: 'Gasolineras',
-      kind: 'risk',
-      icon: 'fa-gas-pump'
-    },
-    {
-      key: 'Gaseras_celaya',
-      queryKeys: ['Gaseras_celaya', 'Gaseras', 'GASERAS', 'gaseras_celaya'],
-      title: 'Gaseras',
-      kind: 'risk',
-      icon: 'fa-industry'
-    },
-    {
-      key: 'Fallas_Celaya_2020',
-      queryKeys: ['Fallas_Celaya_2020', 'FALLAS_CELAYA_2020', 'Fallas Celaya 2020'],
-      title: 'Fallas Celaya 2020',
-      kind: 'risk',
-      icon: 'fa-wave-square'
-    },
-    {
-      key: 'Encharcamientos',
-      queryKeys: ['Encharcamientos', 'ENCHARCAMIENTOS', 'encharcamientos'],
-      title: 'Encharcamientos',
-      kind: 'risk',
-      icon: 'fa-tint'
-    },
-    {
-      key: 'Rio_Laja',
-      queryKeys: ['Rio_Laja'],
-      title: 'Río Laja',
-      kind: 'risk',
-      icon: 'fa-water',
-      countTowardsTotals: true,
-      showCount: false,
+  const PROXIMITY_LAYERS_DEFAULT = [
+    { key: 'Gasolineras_celaya', queryKeys: ['Gasolineras_celaya'], title: 'Gasolineras', kind: 'risk', icon: 'fa-gas-pump' },
+    { key: 'Gaseras_celaya', queryKeys: ['Gaseras_celaya', 'Gaseras', 'GASERAS', 'gaseras_celaya'], title: 'Gaseras', kind: 'risk', icon: 'fa-industry' },
+    { key: 'Fallas_Celaya_2020', queryKeys: ['Fallas_Celaya_2020', 'FALLAS_CELAYA_2020', 'Fallas Celaya 2020'], title: 'Fallas Celaya 2020', kind: 'risk', icon: 'fa-wave-square' },
+    { key: 'Encharcamientos', queryKeys: ['Encharcamientos', 'ENCHARCAMIENTOS', 'encharcamientos'], title: 'Encharcamientos', kind: 'risk', icon: 'fa-tint' },
+    { key: 'Rio_Laja', queryKeys: ['Rio_Laja'], title: 'Río Laja', kind: 'risk', icon: 'fa-water', countTowardsTotals: true, showCount: false,
       detailFormatter: (matches) => matches.selectionMode === 'polygon'
         ? 'Se localiza dentro del polígono dibujado.'
-        : `Se localiza dentro del radio. El punto más cercano está a ${formatDistance(matches.nearest.distance)}.`
-    },
-    {
-      key: 'refugios_temporales_celaya',
-      queryKeys: ['refugios_temporales_celaya'],
-      title: 'Refugios temporales',
-      kind: 'support',
-      icon: 'fa-house'
-    }
+        : `Se localiza dentro del radio. El punto más cercano está a ${formatDistance(matches.nearest.distance)}.` },
+    { key: 'refugios_temporales_celaya', queryKeys: ['refugios_temporales_celaya'], title: 'Refugios temporales', kind: 'support', icon: 'fa-house' }
   ];
+
+  const ICON_BY_ROLE = { peligro: 'fa-triangle-exclamation', equipamiento: 'fa-building-shield' };
+  const PROXIMITY_LAYERS = anHasConfig
+    ? [].concat(
+        anRole('peligro').map(x => ({ key: x.layer, queryKeys: [x.layer], title: x.name, kind: 'risk', icon: ICON_BY_ROLE.peligro, field: x.field, geom: x.geom })),
+        anRole('equipamiento').map(x => ({ key: x.layer, queryKeys: [x.layer], title: x.name, kind: 'support', icon: ICON_BY_ROLE.equipamiento, field: x.field, geom: x.geom }))
+      )
+    : PROXIMITY_LAYERS_DEFAULT;
+
+  // Texto de la lista de peligros (para mensajes), derivado de la config.
+  const RISK_TITLES = PROXIMITY_LAYERS.filter(d => d.kind === 'risk').map(d => d.title);
+  const riskListText = RISK_TITLES.length ? RISK_TITLES.join(', ') : 'las capas de peligro del Atlas';
 
   let map;
   let ol;
@@ -279,7 +262,7 @@
 
       <div class="analisis-body" id="analisis-body">
         <div class="analisis-intro">
-          Para comenzar, da clic en <strong>Seleccionar un punto</strong> o en <strong>Mi ubicación</strong> para revisar riesgos cercanos por gasolineras, gaseras, Fallas Celaya 2020, Encharcamientos y Río Laja. Usa la <strong>X</strong> para cerrar y limpiar el análisis.
+          Para comenzar, da clic en <strong>Seleccionar un punto</strong> o en <strong>Mi ubicación</strong> para revisar riesgos cercanos por peligros del Atlas. Usa la <strong>X</strong> para cerrar y limpiar el análisis.
         </div>
 
         <div class="analisis-section-card">
@@ -1203,13 +1186,13 @@
 
     const coloniaNames = Array.from(new Set(
       coloniaProps
-        .map(props => firstValue(props, ['NOMBRE', 'NOM_COL', 'NOMBRE_COL', 'COLONIA', 'nombre', 'nom_col', 'nombre_col', 'colonia', 'asentamiento']))
+        .map(props => firstValue(props, [...COLONIA_FIELDS, 'NOMBRE', 'NOM_COL', 'NOMBRE_COL', 'COLONIA', 'nombre', 'nom_col', 'nombre_col', 'colonia', 'asentamiento']))
         .map(value => String(value || '').trim())
         .filter(Boolean)
     ));
     const coloniaFallback = firstValue(primary, ['colonia', 'nom_col', 'nombre_col', 'asentamiento']) || 'Sin dato';
     const hasCoverage = features.length > 0;
-    const poblacionTotal = sumByCandidates(['POBTOT', 'pobtot', 'poblacion_total', 'pob_total', 'tot_pob', 'p_total'], 'POBTOT');
+    const poblacionTotal = sumByCandidates([...POBLACION_FIELDS, 'POBTOT', 'pobtot', 'poblacion_total', 'pob_total', 'tot_pob', 'p_total'], POBLACION_FIELDS[0] || 'POBTOT');
     const poblacionFemenina = sumByCandidates(['POBFEM', 'pobfem', 'p_fem', 'pob_fem', 'poblacion_femenina', 'mujeres']);
     const poblacionMasculina = sumByCandidates(['POBMAS', 'pobmas', 'p_mas', 'pob_mas', 'poblacion_masculina', 'hombres']);
     const poblacionMayor60 = sumByCandidates(['P_60YMAS', 'P 60YMAS', 'P-60YMAS', 'P_60Y_MAS', 'P60YMAS', 'p_60ymas', 'p 60ymas', 'pob_60ymas', 'pob_mayor_60', 'poblacion_mayor_60', 'mayores_60', 'edad_60_mas'], 'P_60YMAS');
@@ -1327,6 +1310,9 @@
 
   async function fetchSupportRegistryFeatures() {
     if (Array.isArray(supportRegistryCache)) return supportRegistryCache;
+    // El registro de refugios es específico de Celaya; si el municipio usa la config
+    // por papeles y no lo definió, se omite (no hay capa que consultar).
+    if (anHasConfig) { supportRegistryCache = []; return supportRegistryCache; }
     if (supportRegistryPromise) return supportRegistryPromise;
 
     supportRegistryPromise = queryAllLayer(['refugios_temporales_celaya'], 25)
@@ -1631,11 +1617,11 @@
       const areaText = formatAreaM2(calculateGeometryArea(geometry));
       text = riskCount
         ? `Dentro del polígono dibujado (${areaText}) se localizaron ${riskCount} elemento(s) de riesgo.`
-        : `Dentro del polígono dibujado (${areaText}) no se localizaron gasolineras, gaseras, Fallas Celaya 2020, Encharcamientos ni Río Laja.`;
+        : `Dentro del polígono dibujado (${areaText}) no se localizaron peligros del Atlas.`;
     } else {
       text = nearestRisk
         ? `Se localizaron ${riskCount} elemento(s) de riesgo dentro de ${radius} m. El más cercano está a ${formatDistance(nearestRisk.distance)}.`
-        : `No se localizaron gasolineras, gaseras, Fallas Celaya 2020, Encharcamientos ni Río Laja dentro de ${radius} m del punto consultado.`;
+        : `No se localizaron peligros del Atlas dentro de ${radius} m del punto consultado.`;
     }
 
     return {
@@ -1668,12 +1654,12 @@
       if (mode !== 'polygon' && riskNearby[0] && riskNearby[0].distance <= 100) {
         recs.push('La proximidad a infraestructura de riesgo es alta; revisa con mayor atención el entorno inmediato del punto consultado.');
       }
-      recs.push('Considera la cercanía de gasolineras, gaseras, Fallas Celaya 2020, Encharcamientos y Río Laja como factores de exposición dentro del entorno analizado.');
+      recs.push('Considera la cercanía de peligros del Atlas como factores de exposición dentro del entorno analizado.');
       recs.push('En caso de incidente, atiende indicaciones oficiales y evita acercarte a zonas operativas o acordonadas.');
     } else {
       recs.push(mode === 'polygon'
-        ? 'No se detectaron gasolineras, gaseras, Fallas Celaya 2020, Encharcamientos ni Río Laja dentro del polígono dibujado; puedes trazar un área mayor para revisar más entorno.'
-        : 'No se detectaron gasolineras, gaseras, Fallas Celaya 2020, Encharcamientos ni Río Laja dentro del radio elegido; puedes ampliar el radio para revisar un entorno mayor.');
+        ? 'No se detectaron peligros del Atlas dentro del polígono dibujado; puedes trazar un área mayor para revisar más entorno.'
+        : 'No se detectaron peligros del Atlas dentro del radio elegido; puedes ampliar el radio para revisar un entorno mayor.');
     }
 
     return recs.slice(0, 5);
@@ -1731,7 +1717,7 @@
       detail: item.showCount === false
         ? (item.detail || (isPolygon ? 'Se localiza dentro del polígono dibujado.' : `Se localiza dentro del radio. El punto más cercano está a ${formatDistance(item.distance)} del punto.`))
         : (isPolygon ? `${item.count || 0} dentro del polígono dibujado.` : `${item.count || 0} dentro del radio. La más cercana está a ${formatDistance(item.distance)} del punto.`)
-    })) : [{ icon: 'fa-circle-info', title: isPolygon ? 'Sin infraestructura de riesgo dentro del polígono' : 'Sin infraestructura de riesgo dentro del radio', detail: isPolygon ? 'No se localizaron gasolineras, gaseras, Fallas Celaya 2020, Encharcamientos ni Río Laja dentro del polígono dibujado.' : `No se localizaron gasolineras, gaseras, Fallas Celaya 2020, Encharcamientos ni Río Laja dentro de ${report.radiusMeters} m.` }], true);
+    })) : [{ icon: 'fa-circle-info', title: isPolygon ? 'Sin infraestructura de riesgo dentro del polígono' : 'Sin infraestructura de riesgo dentro del radio', detail: isPolygon ? 'No se localizaron peligros del Atlas dentro del polígono dibujado.' : `No se localizaron peligros del Atlas dentro de ${report.radiusMeters} m.` }], true);
 
     renderSupportIntro(report);
     renderList('analisis-support-nearby-list', getSupportDisplayItems(report), true);
@@ -2050,8 +2036,8 @@
     const riskTextItems = (riskItems.length ? riskItems : [{
       title: isPolygon ? 'Sin infraestructura de riesgo dentro del polígono' : 'Sin infraestructura de riesgo dentro del radio',
       detail: isPolygon
-        ? 'No se localizaron gasolineras, gaseras, Fallas Celaya 2020, Encharcamientos ni Río Laja dentro del polígono dibujado.'
-        : `No se localizaron gasolineras, gaseras, Fallas Celaya 2020, Encharcamientos ni Río Laja dentro de ${report.radiusMeters} m.`
+        ? 'No se localizaron peligros del Atlas dentro del polígono dibujado.'
+        : `No se localizaron peligros del Atlas dentro de ${report.radiusMeters} m.`
     }]).map(item => {
       const countTxt = item.showCount === false ? '' : `: ${Number(item.count) || 0}`;
       const distTxt = isPolygon ? '' : (item.distance != null ? ` — más cercana a ${formatDistance(item.distance)}` : '');

@@ -146,6 +146,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect('index.php');
     }
 
+    if ($action === 'layer_analysis') {
+        layer_analysis(
+            (string)($_POST['layer'] ?? ''),
+            (string)($_POST['role'] ?? ''),
+            (string)($_POST['field'] ?? '')
+        );
+        if (is_ajax()) ajax_ok();
+        redirect('index.php');
+    }
+
     if ($action === 'layer_move') {
         $ok = layer_move((string)($_POST['layer'] ?? ''), (string)($_POST['dir'] ?? ''));
         if ($ok) flash('ok', 'Orden actualizado.');
@@ -426,6 +436,24 @@ function layer_style(string $layer, string $type, string $color, float $width): 
     // Regenerar para que el metadato del visor (styleType/color/width) no quede desfasado.
     regenerate_layers_js($c);
     flash('ok', "Estilo de '$layer' actualizado. Recarga el visor (Ctrl+F5) para verlo.");
+}
+
+/** Asigna (o limpia) el papel de una capa en el análisis ciudadano + el campo elegido. */
+function layer_analysis(string $layer, string $role, string $field): void {
+    if ($layer === '') return;
+    $c = catalog_load();
+    $i = catalog_find($c, $layer);
+    if ($i < 0) { flash('error', 'Capa no encontrada en el catálogo.'); return; }
+
+    $roles = ['colonia', 'poblacion', 'peligro', 'equipamiento'];
+    if ($role === '' || !in_array($role, $roles, true)) {
+        unset($c['layers'][$i]['analisis']);           // quitar del análisis
+    } else {
+        $c['layers'][$i]['analisis'] = ['role' => $role, 'field' => trim($field)];
+    }
+    catalog_save($c);
+    regenerate_layers_js($c);
+    flash('ok', "Análisis de '$layer' actualizado. Recarga el visor (Ctrl+F5).");
 }
 
 function layer_move(string $layer, string $dir): bool {
