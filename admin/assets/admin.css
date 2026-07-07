@@ -169,6 +169,9 @@ input[type=checkbox]{width:1.05rem;height:1.05rem;accent-color:var(--primary);cu
 .import-meta{list-style:none;margin:0 0 .9rem;padding:0;font-size:.86rem;color:var(--text)}
 .import-meta li{padding:.15rem 0}
 .import-result .btn.primary{width:auto}
+.import-publish{margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--border)}
+.import-publish .btn.primary{width:100%;margin-top:.8rem}
+.import-meta code{background:rgba(0,0,0,.05);padding:.05rem .3rem;border-radius:4px}
 
 /* ---------- Flash ---------- */
 .flash{

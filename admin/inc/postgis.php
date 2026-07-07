@@ -60,6 +60,17 @@ function pg_extent_3857(string $table): ?array {
     return [ (float)$r['a'], (float)$r['b'], (float)$r['c'], (float)$r['d'] ];
 }
 
+/** Nombres reales de columnas de una tabla (ogr2ogr suele minusculizarlos). */
+function pg_columns(string $table): array {
+    $q = pg_query_params(pg_rw(),
+        "SELECT column_name FROM information_schema.columns WHERE table_schema='public' AND table_name=$1",
+        [$table]);
+    if (!$q) return [];
+    $cols = [];
+    while ($r = pg_fetch_assoc($q)) $cols[] = $r['column_name'];
+    return $cols;
+}
+
 /** Extent en EPSG:4326 [minx,miny,maxx,maxy] (para recortar importaciones al municipio). */
 function pg_extent_4326(string $table): ?array {
     if (!pg_table_exists($table)) return null;

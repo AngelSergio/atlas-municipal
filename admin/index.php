@@ -76,6 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect('index.php');
     }
 
+    if ($action === 'import_publish') {
+        import_publish_handle();
+        redirect('index.php');
+    }
+
     if ($action === 'atlas_pdf') {
         atlas_pdf_handle();
         redirect('index.php');
@@ -233,65 +238,78 @@ function publish_handle(): void {
             }
         }
 
-        // Evitar pisar una capa existente sin querer.
-        if (pg_table_exists($table) && empty($_POST['overwrite'])) {
-            flash('error', "La capa '$table' ya existe en PostGIS. Marca 'sobrescribir' para reemplazarla.");
-            return;
-        }
-
-        $srcEpsg = preg_replace('/\D/', '', (string)($_POST['src_epsg'] ?? ''));
-        $srcEnc  = (string)($_POST['src_encoding'] ?? '');
-        $load = pg_load_file($src, $table, $srcEpsg ?: null, $srcEnc ?: null);
-        if (!$load['ok']) {
-            flash('error', 'ogr2ogr no cargó datos. ' . h(substr($load['log'], -300)));
-            return;
-        }
-
-        // Permiso de lectura para GeoServer.
-        pg_grant_select($table);
-
-        // Publicar en GeoServer.
-        $pub = gs_publish_featuretype($table, $title);
-        if (!$pub['ok'] && $pub['code'] !== 409) { // 409 = ya existía
-            flash('error', "GeoServer no publicó la capa (HTTP {$pub['code']}). " . h(substr($pub['body'], 0, 200)));
-            return;
-        }
-
-        // Estilo.
-        $geom  = pg_geom_type($table);
-        $stype = ($_POST['style_type'] ?? '') !== '' ? (string)$_POST['style_type'] : sld_suggest_type($geom);
-        $allowed = sld_allowed_types($geom);
-        if (!isset($allowed[$stype])) $stype = array_key_first($allowed);
-        $color = (string)($_POST['color'] ?? '#1e73be');
-        $width = (float)($_POST['width'] ?? 2);
-        if ($width <= 0) $width = 2;
-        $styleName = $table;
-        $sld = sld_generate($styleName, $stype, $color, $width);
-        $st = gs_apply_style($table, $styleName, $sld);
-        $styleRef = $st['ok'] ? config()['geoserver']['workspace'] . ':' . $styleName : '';
-
-        // Extent para el zoom del visor.
-        $extent = pg_extent_3857($table);
-
-        // Catálogo + regeneración.
-        catalog_upsert([
-            'layer'      => $table,
-            'name'       => $title,
-            'theme'      => $theme,
-            'visible'    => isset($_POST['visible']),
-            'style'      => $styleRef,
-            'geom'       => $geom,
-            'style_type' => $stype,
-            'color'      => $color,
-            'width'      => $width,
-            'extent'     => $extent,
+        $res = publish_source($src, $table, $title, $theme, [
+            'overwrite'    => !empty($_POST['overwrite']),
+            'src_epsg'     => preg_replace('/\D/', '', (string)($_POST['src_epsg'] ?? '')),
+            'src_encoding' => (string)($_POST['src_encoding'] ?? ''),
+            'visible'      => isset($_POST['visible']),
+            'style_type'   => (string)($_POST['style_type'] ?? ''),
+            'color'        => (string)($_POST['color'] ?? '#1e73be'),
+            'width'        => (float)($_POST['width'] ?? 2),
         ]);
-
-        flash('ok', "Capa '$table' publicada ({$load['rows']} elementos, geom $geom)"
-            . ($st['ok'] ? ' con estilo aplicado.' : ' — ESTILO no aplicado (revisa GeoServer).'));
+        if (!$res['ok']) { flash('error', $res['error']); return; }
+        flash('ok', "Capa '{$res['table']}' publicada ({$res['rows']} elementos, geom {$res['geom']})"
+            . ($res['style_ok'] ? ' con estilo aplicado.' : ' — ESTILO no aplicado (revisa GeoServer).'));
     } finally {
         rrmdir($work);
     }
+}
+
+/**
+ * Núcleo de publicación reutilizable: carga un archivo geoespacial a PostGIS, lo
+ * publica en GeoServer, aplica un estilo (plano por preset, o CLASIFICADO desde un
+ * renderer ArcGIS) y lo registra en el catálogo. Lo usan publish_handle (subida
+ * manual) e import_publish_handle (publicar desde el importador con su estilo).
+ * $opts: overwrite, src_epsg, src_encoding, visible, style_type, color, width, renderer.
+ */
+function publish_source(string $src, string $table, string $title, string $theme, array $opts = []): array {
+    if (pg_table_exists($table) && empty($opts['overwrite'])) {
+        return ['ok' => false, 'error' => "La capa '$table' ya existe en PostGIS. Marca 'sobrescribir' para reemplazarla."];
+    }
+    $load = pg_load_file($src, $table, ($opts['src_epsg'] ?? '') ?: null, ($opts['src_encoding'] ?? '') ?: null);
+    if (!$load['ok']) return ['ok' => false, 'error' => 'ogr2ogr no cargó datos. ' . h(substr($load['log'], -300))];
+
+    pg_grant_select($table);
+
+    $pub = gs_publish_featuretype($table, $title);
+    if (!$pub['ok'] && $pub['code'] !== 409) {
+        return ['ok' => false, 'error' => "GeoServer no publicó la capa (HTTP {$pub['code']}). " . h(substr($pub['body'], 0, 200))];
+    }
+
+    $geom      = pg_geom_type($table);
+    $styleName = $table;
+
+    // Estilo: primero se intenta el renderer clasificado (importación); si no, preset plano.
+    $sld = null; $stype = null;
+    if (!empty($opts['renderer']) && is_array($opts['renderer'])) {
+        $sld = sld_from_arcgis_renderer($opts['renderer'], $styleName, $geom, pg_columns($table));
+        if ($sld !== null) $stype = 'classified';
+    }
+    $color = (string)($opts['color'] ?? '#1e73be');
+    $width = (float)($opts['width'] ?? 2); if ($width <= 0) $width = 2;
+    if ($sld === null) {
+        $stype = ($opts['style_type'] ?? '') !== '' ? (string)$opts['style_type'] : sld_suggest_type($geom);
+        $allowed = sld_allowed_types($geom);
+        if (!isset($allowed[$stype])) $stype = array_key_first($allowed);
+        $sld = sld_generate($styleName, $stype, $color, $width);
+    }
+    $st = gs_apply_style($table, $styleName, $sld);
+    $styleRef = $st['ok'] ? config()['geoserver']['workspace'] . ':' . $styleName : '';
+
+    catalog_upsert([
+        'layer'      => $table,
+        'name'       => $title,
+        'theme'      => $theme,
+        'visible'    => !empty($opts['visible']),
+        'style'      => $styleRef,
+        'geom'       => $geom,
+        'style_type' => $stype,
+        'color'      => $color,
+        'width'      => $width,
+        'extent'     => pg_extent_3857($table),
+    ]);
+
+    return ['ok' => true, 'rows' => $load['rows'], 'geom' => $geom, 'table' => $table, 'style_ok' => $st['ok']];
 }
 
 /** Sube/reemplaza el PDF oficial del Atlas que enlaza el botón "información" del visor. */

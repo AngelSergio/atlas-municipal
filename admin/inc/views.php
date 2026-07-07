@@ -177,18 +177,43 @@ view_header('Capas');
             </div>
             <button class="btn primary" id="import-submit"><i class="fa-solid fa-cloud-arrow-down"></i> Importar y convertir</button>
         </form>
-        <?php if (!empty($_SESSION['import_result'])): $ir = $_SESSION['import_result']; ?>
+        <?php if (!empty($_SESSION['import_result'])): $ir = $_SESSION['import_result']; $hasClass = !empty($ir['renderer']) && (int)$ir['categories'] > 0; ?>
         <div class="import-result">
-            <h3><i class="fa-solid fa-circle-check"></i> Capa lista para publicar</h3>
+            <h3><i class="fa-solid fa-circle-check"></i> Capa lista</h3>
             <ul class="import-meta">
                 <li><strong>Nombre:</strong> <?= h($ir['name'] !== '' ? $ir['name'] : '(sin nombre)') ?></li>
                 <li><strong>Entidades:</strong> <?= (int)$ir['features'] ?></li>
                 <li><strong>Geometría:</strong> <?= h($ir['geom']) ?></li>
+                <?php if ($hasClass): ?>
+                <li><strong>Clasificación:</strong> <?= (int)$ir['categories'] ?> categorías por <code><?= h($ir['classField']) ?></code> <span class="hint">(se conserva el color y la leyenda)</span></li>
+                <?php endif; ?>
             </ul>
-            <a class="btn primary" href="index.php?action=import_download&amp;token=<?= h($ir['token']) ?>">
-                <i class="fa-solid fa-download"></i> Descargar <?= h($ir['filename']) ?>
-            </a>
-            <p class="hint" style="margin-top:.6rem">Después ve a <strong>“Publicar capa”</strong> y sube el GeoJSON descargado.</p>
+
+            <form method="post" class="import-publish">
+                <input type="hidden" name="action" value="import_publish">
+                <input type="hidden" name="token" value="<?= h($ir['token']) ?>"><?= csrf_field() ?>
+                <div class="row2">
+                    <label>Nombre visible
+                        <input type="text" name="title" value="<?= h($ir['name']) ?>" required>
+                    </label>
+                    <label>Tema
+                        <select name="theme" required>
+                            <?php foreach ($themes as $t): ?>
+                                <option value="<?= h($t['id']) ?>"><?= h($t['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+                </div>
+                <label class="inline"><input type="checkbox" name="visible"> Visible al cargar el visor</label>
+                <button class="btn primary"><i class="fa-solid fa-map-location-dot"></i>
+                    Publicar <?= $hasClass ? 'con estilo original' : 'en el visor' ?>
+                </button>
+            </form>
+
+            <p class="hint" style="margin-top:.8rem">
+                <i class="fa-solid fa-download"></i>
+                ¿Prefieres revisarla antes? <a href="index.php?action=import_download&amp;token=<?= h($ir['token']) ?>">Descarga el GeoJSON</a> y publícalo manualmente en “Publicar capa”.
+            </p>
         </div>
         <?php endif; ?>
     </section>

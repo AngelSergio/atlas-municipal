@@ -105,14 +105,26 @@ function import_fetch_geojson(string $queryUrl, string $metaUrl, string $work, ?
         ];
     }
 
-    // Metadatos: nombre legible y campo de OBJECTID.
+    // Metadatos: nombre, campo de OBJECTID y renderer (clasificación de colores).
     $name = ''; $oidField = 'OBJECTID';
+    $renderer = null; $classField = ''; $categories = 0;
     $meta = import_http_get($metaUrl . '?f=json', 40);
     if ($meta['ok']) {
         $md = json_decode($meta['body'], true);
         if (is_array($md)) {
             $name = (string)($md['name'] ?? '');
             if (!empty($md['objectIdField'])) $oidField = (string)$md['objectIdField'];
+            $r = $md['drawingInfo']['renderer'] ?? null;
+            if (is_array($r)) {
+                $renderer = $r;
+                if (($r['type'] ?? '') === 'uniqueValue') {
+                    $classField = (string)($r['field1'] ?? '');
+                    $categories = count($r['uniqueValueInfos'] ?? []);
+                } elseif (($r['type'] ?? '') === 'classBreaks') {
+                    $classField = (string)($r['field'] ?? '');
+                    $categories = count($r['classBreakInfos'] ?? []);
+                }
+            }
         }
     }
 
@@ -205,7 +217,8 @@ function import_fetch_geojson(string $queryUrl, string $metaUrl, string $work, ?
                 'esriGeometryPolyline' => 'Line', 'esriGeometryPolygon' => 'Polygon'];
     $geom = $geomMap[$geomEsri] ?? $geomEsri;
     return ['ok' => true, 'path' => $geojsonPath, 'name' => $name,
-            'features' => $collected, 'geom' => $geom, 'truncated' => $truncated];
+            'features' => $collected, 'geom' => $geom, 'truncated' => $truncated,
+            'renderer' => $renderer, 'classField' => $classField, 'categories' => $categories];
 }
 
 /**
@@ -347,13 +360,17 @@ function import_handle(): void {
         if (!copy($res['path'], $finalPath)) { flash('error', 'No se pudo guardar el archivo para descarga.'); return; }
 
         $_SESSION['import_result'] = [
-            'token'    => $token,
-            'path'     => $finalPath,
-            'filename' => $finalName,
-            'name'     => $res['name'],
-            'features' => $res['features'],
-            'geom'     => $res['geom'],
-            'source'   => $href,
+            'token'      => $token,
+            'path'       => $finalPath,
+            'filename'   => $finalName,
+            'name'       => $res['name'],
+            'features'   => $res['features'],
+            'geom'       => $res['geom'],
+            'source'     => $href,
+            'renderer'   => $res['renderer'] ?? null,
+            'classField' => $res['classField'] ?? '',
+            'categories' => $res['categories'] ?? 0,
+            'table'      => pg_safe_table(catalog_slug($res['name'] !== '' ? $res['name'] : 'capa_importada')),
         ];
         $warn = !empty($res['truncated'])
             ? ' AVISO: el servicio limitó la descarga; podrían faltar entidades.' : '';
@@ -363,6 +380,43 @@ function import_handle(): void {
     } finally {
         rrmdir($work);
     }
+}
+
+/**
+ * Publica directamente la capa recién importada, conservando su clasificación
+ * original (colores + leyenda) si el servicio traía un renderer. Reutiliza el
+ * núcleo publish_source() del controlador.
+ */
+function import_publish_handle(): void {
+    @set_time_limit(600);
+    $r   = $_SESSION['import_result'] ?? null;
+    $tok = (string)($_POST['token'] ?? '');
+    if (!$r || !hash_equals((string)($r['token'] ?? ''), $tok) || !is_file((string)($r['path'] ?? ''))) {
+        flash('error', 'No hay una importación reciente para publicar. Vuelve a importar la capa.');
+        return;
+    }
+    $themes = array_column(catalog_load()['themes'], 'id');
+    $theme  = (string)($_POST['theme'] ?? '');
+    if (!in_array($theme, $themes, true)) { flash('error', 'Selecciona un tema válido.'); return; }
+
+    $title = trim((string)($_POST['title'] ?? '')) ?: ($r['name'] !== '' ? $r['name'] : 'Capa importada');
+    $base  = trim((string)($_POST['layer_name'] ?? '')) ?: ($r['table'] ?? '');
+    $table = pg_safe_table($base);
+    if ($table === '') { flash('error', 'Nombre técnico de capa inválido.'); return; }
+
+    $res = publish_source($r['path'], $table, $title, $theme, [
+        'overwrite' => true,   // re-publicar desde el importador sobrescribe
+        'visible'   => !empty($_POST['visible']),
+        'renderer'  => $r['renderer'] ?? null,
+    ]);
+    if (!$res['ok']) { flash('error', $res['error']); return; }
+
+    $styleMsg = !empty($r['renderer'])
+        ? " con su clasificación original ({$r['categories']} categorías por “{$r['classField']}”)."
+        : ($res['style_ok'] ? ' con estilo básico.' : '.');
+    flash('ok', "Capa '{$res['table']}' publicada ({$res['rows']} elementos)" . $styleMsg
+        . ' Recarga el visor (Ctrl+F5) para verla.');
+    unset($_SESSION['import_result']);   // ya publicada
 }
 
 /** Handler GET de descarga del GeoJSON importado (valida token contra la sesión). */
