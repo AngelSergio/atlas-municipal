@@ -1,7 +1,7 @@
 /**
  * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.
  * No editar a mano: usar https://<host>/atlas-apaseo-gde/admin/
- * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-07T18:14:10+00:00
+ * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-07T20:58:43+00:00
  */
 window.MUNICIPIO_LAYERS = {
     "extents": {
@@ -83,17 +83,35 @@ window.MUNICIPIO_LAYERS = {
             -11100556.982910873,
             2473208.394414112
         ],
-        "sierra_de_los_agustino_2": [
-            -11215437.205247167,
-            2326157.8525215313,
-            -11185652.672412163,
-            2358301.2894429476
-        ],
         "caminos": [
             -11218905.908091355,
             2325792.3370610727,
             -11186057.22364267,
             2359949.6096555707
+        ],
+        "escuelas": [
+            -11216943.182850456,
+            2328195.1217681197,
+            -11186803.987063395,
+            2358193.0449959487
+        ],
+        "sierra_de_los_agustino": [
+            -11215437.205247167,
+            2326157.8525215313,
+            -11185652.672412163,
+            2358301.2894429476
+        ],
+        "carreteras": [
+            -11220478.8915934,
+            2317408.6832784135,
+            -11179054.422228802,
+            2362093.6020532576
+        ],
+        "manzanas_geoestadisticas": [
+            -11207620.373327425,
+            2338882.813919044,
+            -11187666.528680714,
+            2339479.057543071
         ]
     },
     "groups": [
@@ -190,6 +208,14 @@ window.MUNICIPIO_LAYERS = {
                             "styleType": "poly-outline",
                             "color": "#000000",
                             "width": 3
+                        },
+                        {
+                            "name": "Manzanas",
+                            "layer": "manzanas_geoestadisticas",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#000000",
+                            "width": 2
                         }
                     ]
                 },
@@ -200,10 +226,10 @@ window.MUNICIPIO_LAYERS = {
                     "expanded": false,
                     "layers": [
                         {
-                            "name": "Inestabilidad en Laderas (Los Agustinos)",
-                            "layer": "sierra_de_los_agustino_2",
+                            "name": "Inestabilidad en Laderas (Sierra de los Agustinos)",
+                            "layer": "sierra_de_los_agustino",
                             "visible": false,
-                            "styleType": "poly-outline",
+                            "styleType": "classified",
                             "color": "#1e73be",
                             "width": 2
                         }
@@ -214,7 +240,32 @@ window.MUNICIPIO_LAYERS = {
                     "name": "Fenómenos Hidrometeorológicos",
                     "icon": "fa-cloud-showers-heavy",
                     "expanded": false,
-                    "layers": []
+                    "layers": [
+                        {
+                            "name": "Zonas Inundación Pluvial",
+                            "layer": "zonas_inundacion_pluvial_apaseo",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#00c0c0",
+                            "width": 2
+                        },
+                        {
+                            "name": "Zonas Inundación Fluvial",
+                            "layer": "zonas_inundacion_fluvial_apaseo",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#a0a000",
+                            "width": 2
+                        },
+                        {
+                            "name": "Puntos de Riesgo de Inundación",
+                            "layer": "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#1e73be",
+                            "width": 2
+                        }
+                    ]
                 },
                 {
                     "id": "fenomenos-quimico-tecnologicos",
@@ -250,6 +301,22 @@ window.MUNICIPIO_LAYERS = {
                             "styleType": "classified",
                             "color": "#1e73be",
                             "width": 2
+                        },
+                        {
+                            "name": "Escuelas",
+                            "layer": "escuelas",
+                            "visible": false,
+                            "styleType": "classified",
+                            "color": "#1e73be",
+                            "width": 2
+                        },
+                        {
+                            "name": "Carreteras",
+                            "layer": "carreteras",
+                            "visible": false,
+                            "styleType": "classified",
+                            "color": "#1e73be",
+                            "width": 2
                         }
                     ]
                 },
@@ -265,32 +332,7 @@ window.MUNICIPIO_LAYERS = {
                     "name": "Riesgos / Escenarios",
                     "icon": "fa-exclamation-circle",
                     "expanded": false,
-                    "layers": [
-                        {
-                            "name": "Zonas Inundación Pluvial",
-                            "layer": "zonas_inundacion_pluvial_apaseo",
-                            "visible": false,
-                            "styleType": "poly-outline",
-                            "color": "#00c0c0",
-                            "width": 2
-                        },
-                        {
-                            "name": "Zonas Inundación Fluvial",
-                            "layer": "zonas_inundacion_fluvial_apaseo",
-                            "visible": false,
-                            "styleType": "poly-outline",
-                            "color": "#a0a000",
-                            "width": 2
-                        },
-                        {
-                            "name": "Puntos de Riesgo de Inundación",
-                            "layer": "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
-                            "visible": false,
-                            "styleType": "point",
-                            "color": "#1e73be",
-                            "width": 2
-                        }
-                    ]
+                    "layers": []
                 },
                 {
                     "id": "obras",
@@ -308,5 +350,63 @@ window.MUNICIPIO_LAYERS = {
             "expanded": false,
             "isBasemapGroup": true
         }
-    ]
+    ],
+    "analisis": {
+        "colonia": [
+            {
+                "layer": "colonias_apaseo",
+                "name": "Colonias",
+                "field": "nombre",
+                "geom": "MULTIPOLYGON"
+            }
+        ],
+        "poblacion": [
+            {
+                "layer": "manzanas_geoestadisticas",
+                "name": "Manzanas",
+                "field": "pobtot",
+                "geom": "MULTIPOLYGON"
+            }
+        ],
+        "peligro": [
+            {
+                "layer": "red_hidrografica",
+                "name": "Hidrografía",
+                "field": "",
+                "geom": "MULTILINESTRING"
+            },
+            {
+                "layer": "zonas_inundacion_pluvial_apaseo",
+                "name": "Zonas Inundación Pluvial",
+                "field": "peligro",
+                "geom": "MULTIPOLYGON"
+            },
+            {
+                "layer": "zonas_inundacion_fluvial_apaseo",
+                "name": "Zonas Inundación Fluvial",
+                "field": "peligro",
+                "geom": "MULTIPOLYGON"
+            },
+            {
+                "layer": "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
+                "name": "Puntos de Riesgo de Inundación",
+                "field": "peligro",
+                "geom": "MULTIPOINT"
+            },
+            {
+                "layer": "sierra_de_los_agustino",
+                "name": "Inestabilidad en Laderas (Sierra de los Agustinos)",
+                "field": "intensidad",
+                "geom": "MULTIPOLYGON"
+            }
+        ],
+        "equipamiento": [
+            {
+                "layer": "escuelas",
+                "name": "Escuelas",
+                "field": "nombre_ct",
+                "geom": "MULTIPOINT"
+            }
+        ]
+    }
 };
