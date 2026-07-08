@@ -1240,6 +1240,14 @@
       }));
   }
 
+  // Valor legible de un campo del rasgo (para nombrar el más cercano en el reporte).
+  function featureFieldValue(feature, field) {
+    if (!feature || !field) return '';
+    const props = feature.properties || (feature.getProperties ? feature.getProperties() : {}) || {};
+    const v = props[field];
+    return (v === null || v === undefined) ? '' : String(v).trim();
+  }
+
   function buildNearbyHits(results, coordinate, radius, geometry, mode) {
     const point = coordinate;
     return results.map(item => {
@@ -1250,11 +1258,13 @@
       matches.selectionMode = mode;
       const showCount = item.def.showCount !== false;
       const countValue = showCount ? matches.count : null;
+      // Nombre del rasgo más cercano según el campo elegido en el panel (papel de análisis).
+      const nearestName = featureFieldValue(matches.nearest && matches.nearest.feature, item.def.field);
       const detail = typeof item.def.detailFormatter === 'function'
         ? item.def.detailFormatter(matches)
         : (mode === 'polygon'
-          ? `${matches.count} dentro del polígono dibujado.`
-          : `${matches.count} dentro del radio. El más cercano está a ${formatDistance(matches.nearest.distance)}.`);
+          ? `${matches.count} dentro del polígono dibujado${nearestName ? `. El más cercano: ${nearestName}` : ''}.`
+          : `${matches.count} dentro del radio. El más cercano${nearestName ? ` (${nearestName})` : ''} está a ${formatDistance(matches.nearest.distance)}.`);
       return {
         key: item.def.key,
         title: item.def.title,
@@ -1265,6 +1275,7 @@
         countTowardsTotals: item.def.countTowardsTotals !== false,
         showCount,
         distance: matches.nearest.distance,
+        nearestName,
         detail
       };
     }).filter(Boolean).sort((a, b) => a.distance - b.distance);
