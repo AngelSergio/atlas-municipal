@@ -454,7 +454,7 @@ function layer_analysis(string $layer, string $role, string $field): void {
     $i = catalog_find($c, $layer);
     if ($i < 0) { flash('error', 'Capa no encontrada en el catálogo.'); return; }
 
-    $roles = ['colonia', 'poblacion', 'peligro', 'equipamiento'];
+    $roles = ['colonia', 'poblacion', 'peligro', 'equipamiento', 'apoyo'];
     if ($role === '' || !in_array($role, $roles, true)) {
         unset($c['layers'][$i]['analisis']);           // quitar del análisis
     } else {

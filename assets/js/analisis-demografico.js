@@ -14,7 +14,7 @@
   // papel y con qué campo. Si no hay config, se usan los valores heredados (Celaya).
   const AN = (window.MUNICIPIO_LAYERS && window.MUNICIPIO_LAYERS.analisis) || {};
   const anRole = (k) => (Array.isArray(AN[k]) ? AN[k] : []);
-  const anHasConfig = ['colonia', 'poblacion', 'peligro', 'equipamiento'].some(k => anRole(k).length);
+  const anHasConfig = ['colonia', 'poblacion', 'peligro', 'equipamiento', 'apoyo'].some(k => anRole(k).length);
 
   const CONTEXT_LAYERS = anHasConfig ? anRole('poblacion').map(x => x.layer)
                                      : ['Manzanas_INEGI_2020', 'manzanas_densidad_poblacion'];
@@ -35,11 +35,13 @@
     { key: 'refugios_temporales_celaya', queryKeys: ['refugios_temporales_celaya'], title: 'Refugios temporales', kind: 'support', icon: 'fa-house' }
   ];
 
-  const ICON_BY_ROLE = { peligro: 'fa-triangle-exclamation', equipamiento: 'fa-building-shield' };
+  const ICON_BY_ROLE = { peligro: 'fa-triangle-exclamation', equipamiento: 'fa-building-shield', apoyo: 'fa-life-ring' };
   const PROXIMITY_LAYERS = anHasConfig
     ? [].concat(
         anRole('peligro').map(x => ({ key: x.layer, queryKeys: [x.layer], title: x.name, kind: 'risk', icon: ICON_BY_ROLE.peligro, field: x.field, geom: x.geom })),
-        anRole('equipamiento').map(x => ({ key: x.layer, queryKeys: [x.layer], title: x.name, kind: 'support', icon: ICON_BY_ROLE.equipamiento, field: x.field, geom: x.geom }))
+        anRole('equipamiento').map(x => ({ key: x.layer, queryKeys: [x.layer], title: x.name, kind: 'support', icon: ICON_BY_ROLE.equipamiento, field: x.field, geom: x.geom })),
+        // Apoyo/Refugio: recurso de respuesta (kind 'apoyo'). NO eleva el nivel de riesgo.
+        anRole('apoyo').map(x => ({ key: x.layer, queryKeys: [x.layer], title: x.name, kind: 'apoyo', icon: ICON_BY_ROLE.apoyo, field: x.field, geom: x.geom }))
       )
     : PROXIMITY_LAYERS_DEFAULT;
 
@@ -318,6 +320,12 @@
             <div class="analisis-section-intro analisis-support-intro" id="analisis-support-intro"></div>
             <div class="analisis-list" id="analisis-support-nearby-list"></div>
           </div>
+          ${anRole('apoyo').length ? `
+          <div class="analisis-section-card">
+            <div class="analisis-section-title"><i class="fas fa-life-ring"></i> Recursos de apoyo cercanos</div>
+            <div class="analisis-section-intro analisis-apoyo-intro" id="analisis-apoyo-intro"></div>
+            <div class="analisis-list" id="analisis-apoyo-nearby-list"></div>
+          </div>` : ''}
 
           <div class="analisis-section-card">
             <div class="analisis-section-title"><i class="fas fa-circle-info"></i> Recomendaciones</div>
@@ -1454,6 +1462,33 @@
     host.textContent = buildSupportIntroText(report);
   }
 
+  // Recursos de apoyo (papel "apoyo": refugios, bomberos, PC…). Informativos: NO elevan el nivel.
+  function getApoyoDisplayItems(report) {
+    const isPolygon = report?.selectionMode === 'polygon';
+    const apoyo = (report?.nearby || []).filter(item => item.kind === 'apoyo');
+    if (apoyo.length) {
+      return apoyo.map(item => ({
+        icon: item.icon || 'fa-life-ring',
+        title: item.showCount === false ? item.title : `${item.title}: ${item.count || 0}`,
+        detail: item.detail || (isPolygon ? 'Dentro del polígono dibujado.' : `El más cercano está a ${formatDistance(item.distance)}.`)
+      }));
+    }
+    return [{
+      icon: 'fa-circle-info',
+      title: isPolygon ? 'Sin recursos de apoyo en el polígono' : 'Sin recursos de apoyo en el radio',
+      detail: 'No se localizaron refugios, bomberos u otros recursos de apoyo dentro del área analizada.'
+    }];
+  }
+
+  function renderApoyoIntro(report) {
+    const host = document.getElementById('analisis-apoyo-intro');
+    if (!host) return;
+    const apoyo = (report?.nearby || []).filter(item => item.kind === 'apoyo');
+    host.textContent = apoyo.length
+      ? 'Recursos de respuesta cercanos (refugios, bomberos, Protección Civil…) disponibles ante una emergencia. No aumentan el nivel de riesgo.'
+      : 'No se localizaron recursos de apoyo dentro del área analizada.';
+  }
+
   function getFeaturesWithinRadius(features, point, radius) {
     let nearest = { distance: Infinity, feature: null };
     let count = 0;
@@ -1777,6 +1812,9 @@
 
     renderSupportIntro(report);
     renderList('analisis-support-nearby-list', getSupportDisplayItems(report), true);
+
+    renderApoyoIntro(report);
+    renderList('analisis-apoyo-nearby-list', getApoyoDisplayItems(report), true);
 
     renderList('analisis-recommendations-list', report.recommendations.map(text => ({ icon: 'fa-check', title: text, detail: '' })), false);
   }
@@ -2107,6 +2145,15 @@
       return `${item.title}${detailTxt}`;
     }));
     y = drawSectionList(ctx, supportSectionTitle(), supportTextItems, page.margin, y, page.contentWidth);
+
+    if (anRole('apoyo').length) {
+      const apoyoTextItems = ['Recursos de respuesta cercanos (refugios, bomberos, PC…); no aumentan el nivel de riesgo.']
+        .concat(getApoyoDisplayItems(report).map(item => {
+          const detailTxt = item.detail ? ` · ${item.detail}` : '';
+          return `${item.title}${detailTxt}`;
+        }));
+      y = drawSectionList(ctx, 'Recursos de apoyo cercanos', apoyoTextItems, page.margin, y, page.contentWidth);
+    }
 
     y = drawSectionList(ctx, 'Recomendaciones', report.recommendations, page.margin, y, page.contentWidth);
 

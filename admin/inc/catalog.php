@@ -182,7 +182,7 @@ function regenerate_layers_js(?array $c = null): bool {
 
     // Análisis ciudadano: capas agrupadas por papel (role), con el campo elegido.
     // El módulo assets/js/analisis-demografico.js lee esto en vez de nombres fijos.
-    $analisis = ['colonia' => [], 'poblacion' => [], 'peligro' => [], 'equipamiento' => []];
+    $analisis = ['colonia' => [], 'poblacion' => [], 'peligro' => [], 'equipamiento' => [], 'apoyo' => []];
     foreach ($c['layers'] as $l) {
         $a    = $l['analisis'] ?? null;
         $role = is_array($a) ? (string)($a['role'] ?? '') : '';

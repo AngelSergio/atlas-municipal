@@ -332,7 +332,7 @@ view_header('Capas');
                             $anRole  = is_array($an) ? ($an['role'] ?? '') : '';
                             $anField = is_array($an) ? ($an['field'] ?? '') : '';
                             $cols    = pg_columns($l['layer']);
-                            $roleOpts = ['' => '— No usar —', 'colonia' => 'Colonia (contexto)', 'poblacion' => 'Población (contexto)', 'peligro' => 'Peligro', 'equipamiento' => 'Equipamiento expuesto'];
+                            $roleOpts = ['' => '— No usar —', 'colonia' => 'Colonia (contexto)', 'poblacion' => 'Población (contexto)', 'peligro' => 'Peligro', 'equipamiento' => 'Equipamiento expuesto', 'apoyo' => 'Apoyo / Refugio'];
                         ?>
                         <form method="post" class="layer-analysis ajax-form" title="Papel de esta capa en el Análisis de riesgo por ubicación">
                             <input type="hidden" name="action" value="layer_analysis">

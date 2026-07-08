@@ -22,8 +22,9 @@ cumple cada una. Esto se asigna **desde el panel admin → pestaña Capas**, en 
 |---|---|---|
 | **Colonia** | Dice en qué colonia/asentamiento cae el punto | Nombre de la colonia |
 | **Población** | Suma población del entorno (radio/polígono) | Campo numérico (`pobtot`) |
-| **Peligro** | Si es polígono, revisa si el punto cae dentro; si es punto/línea, cercanía | (opcional) nivel de peligro |
-| **Equipamiento expuesto** | Infraestructura cercana en riesgo (escuelas, hospitales…) | (opcional) nombre |
+| **Peligro** | Si es polígono, revisa si el punto cae dentro; si es punto/línea, cercanía. **Eleva el nivel** | (opcional) nombre del rasgo cercano |
+| **Equipamiento expuesto** | Infraestructura **vulnerable** cercana (escuelas, hospitales…). Es exposición: **eleva el nivel** | (opcional) nombre |
+| **Apoyo / Refugio** | **Recurso de respuesta** cercano (refugios, bomberos, PC). Informativo: **NO eleva** el nivel | (opcional) nombre |
 | *— No usar —* | La capa no participa en el análisis | — |
 
 **Mínimo recomendado:** una capa de *Población* o *Colonia* (contexto) + al menos una de
