@@ -1,7 +1,9 @@
 (function () {
     const CESIUM_VERSION = '1.139.1';
     const CESIUM_BASE_URL = `https://cesium.com/downloads/cesiumjs/releases/${CESIUM_VERSION}/Build/Cesium/`;
-    const CESIUM_ION_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI2OTJhNDMyYS1mNzdhLTQ2MzItOGJlOS1iMGZiYmQzYTU1MWYiLCJpZCI6NDM4MDkyLCJzdWIiOiJhbmdlbHNlcmdpbyIsImlzcyI6Imh0dHBzOi8vYXBpLmNlc2l1bS5jb20iLCJhdWQiOiJhdGxhcy1tdW5pY2lwYWwtY2VzaXVtIiwiaWF0IjoxNzgwMDk3NTYyfQ.lk79bwoXbJKDWyQUVX3PE4MhEFH9ArcigrPB7KQ1m1k';
+    // Token de Cesium ion: se toma de municipio.config.js (portable por municipio).
+    const CESIUM_ION_TOKEN = (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.servicios
+        && window.MUNICIPIO_CONFIG.servicios.cesiumToken) || '';
 
     // Vista 3D derivada del tema del municipio (window.MUNICIPIO_CONFIG.mapa).
     const _mcfgMapa = (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.mapa) || {};

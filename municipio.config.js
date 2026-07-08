@@ -12,6 +12,13 @@ window.MUNICIPIO_CONFIG = {
     workspace: 'apaseo_gde'
   },
 
+  // Llaves de servicios externos (tokens de CLIENTE: viajan en el visor, no son secretos).
+  // Reemplazar por las del municipio. Vacío = esa función se desactiva.
+  servicios: {
+    cesiumToken:  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI2OTJhNDMyYS1mNzdhLTQ2MzItOGJlOS1iMGZiYmQzYTU1MWYiLCJpZCI6NDM4MDkyLCJzdWIiOiJhbmdlbHNlcmdpbyIsImlzcyI6Imh0dHBzOi8vYXBpLmNlc2l1bS5jb20iLCJhdWQiOiJhdGxhcy1tdW5pY2lwYWwtY2VzaXVtIiwiaWF0IjoxNzgwMDk3NTYyfQ.lk79bwoXbJKDWyQUVX3PE4MhEFH9ArcigrPB7KQ1m1k', // Cesium ion (vista 3D) — https://ion.cesium.com/tokens
+    googleApiKey: ''   // Google (búsqueda de direcciones / Street View) — pendiente: llave propia de Apaseo
+  },
+
   // Capa de límite municipal: se dibuja siempre encima y se protege del modo radio.
   limiteMunicipalLayer: 'limite_municipal',
 
