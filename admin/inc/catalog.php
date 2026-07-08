@@ -204,7 +204,7 @@ function regenerate_layers_js(?array $c = null): bool {
     $json = json_encode($struct, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     $banner = "/**\n"
         . " * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.\n"
-        . " * No editar a mano: usar https://<host>/atlas-apaseo-gde/admin/\n"
+        . " * No editar a mano: usar el panel admin en <host>/<app>/admin/\n"
         . " * Fuente: admin/data/catalog.json   |   Regenerado: " . date('c') . "\n"
         . " */\n";
     $js = $banner . "window.MUNICIPIO_LAYERS = " . $json . ";\n";

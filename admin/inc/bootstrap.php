@@ -25,12 +25,25 @@ function config(): array {
     return $cfg;
 }
 
+/* ---- Rutas base derivadas de la URL (independientes del nombre de la carpeta) ----
+   El panel siempre se sirve bajo <app>/admin/, así que la ruta se obtiene del propio
+   SCRIPT_NAME. Así renombrar la carpeta del proyecto no requiere editar código. */
+function admin_url_base(): string {           // p. ej. /atlas-apaseo-gde/admin
+    $dir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
+    return $dir === '' ? '' : $dir;
+}
+function app_url_base(): string {              // p. ej. /atlas-apaseo-gde
+    $base = admin_url_base();
+    $parent = rtrim(str_replace('\\', '/', dirname($base)), '/');
+    return ($parent === '' || $parent === '.') ? '' : $parent;
+}
+
 /* ---- Sesión endurecida ---- */
 if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_NONE) {
     session_name('ATLASADMIN');
     session_set_cookie_params([
         'lifetime' => 0,
-        'path'     => '/atlas-apaseo-gde/admin/',
+        'path'     => admin_url_base() . '/',   // cookie limitada al panel, sin hardcodear el nombre
         'secure'   => true,
         'httponly' => true,
         'samesite' => 'Strict',

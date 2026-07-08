@@ -7,12 +7,13 @@ function view_header(string $title): void {
     echo '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">';
     echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
     echo '<title>' . h($title) . ' · Atlas ' . h($muni) . '</title>';
-    echo '<link rel="icon" href="/atlas-apaseo-gde/assets/images/branding/favicon-32.png">';
-    echo '<link rel="stylesheet" href="/atlas-apaseo-gde/assets/vendor/fontawesome/css/all.min.css">';
+    $app = app_url_base();
+    echo '<link rel="icon" href="' . h($app) . '/assets/images/branding/favicon-32.png">';
+    echo '<link rel="stylesheet" href="' . h($app) . '/assets/vendor/fontawesome/css/all.min.css">';
     echo '<link rel="stylesheet" href="assets/admin.css">';
     echo '<script>document.documentElement.classList.add("js")</script></head><body>';
     echo '<header class="topbar"><div class="brand">';
-    echo '<img src="/atlas-apaseo-gde/assets/images/branding/apaseo-pc.png" alt="" class="logo">';
+    echo '<img src="' . h($app) . '/assets/images/branding/apaseo-pc.png" alt="" class="logo">';
     echo '<div><strong>Panel administrativo</strong><span>Atlas de Peligros y Riesgos · ' . h($muni) . '</span></div></div>';
     if (is_authenticated()) {
         echo '<form method="post" class="logout"><input type="hidden" name="action" value="logout">' . csrf_field();
@@ -78,7 +79,7 @@ view_header('Capas');
         <h1>Gestión de capas</h1>
         <p class="muted">Sube, organiza y estiliza las capas que se muestran en el visor público.</p>
     </div>
-    <a class="btn ghost" href="/atlas-apaseo-gde/" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Abrir visor</a>
+    <a class="btn ghost" href="<?= h(app_url_base()) ?>/" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Abrir visor</a>
 </div>
 <nav class="tab-nav" role="tablist" aria-label="Secciones del panel">
     <button type="button" class="tab-btn active" data-tab="publicar"><i class="fa-solid fa-cloud-arrow-up"></i> Publicar capa</button>
@@ -370,7 +371,7 @@ view_header('Capas');
         <form method="post" class="regen">
             <input type="hidden" name="action" value="regenerate"><?= csrf_field() ?>
             <button class="btn ghost"><i class="fa-solid fa-arrows-rotate"></i> Regenerar municipio.layers.js</button>
-            <a class="btn ghost" href="/atlas-apaseo-gde/" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Abrir visor</a>
+            <a class="btn ghost" href="<?= h(app_url_base()) ?>/" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Abrir visor</a>
         </form>
     </section>
     </div>
