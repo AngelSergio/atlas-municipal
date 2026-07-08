@@ -1,7 +1,7 @@
 /**
  * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.
  * No editar a mano: usar https://<host>/atlas-apaseo-gde/admin/
- * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-07T20:58:43+00:00
+ * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-08T05:06:15+00:00
  */
 window.MUNICIPIO_LAYERS = {
     "extents": {
@@ -112,6 +112,24 @@ window.MUNICIPIO_LAYERS = {
             2338882.813919044,
             -11187666.528680714,
             2339479.057543071
+        ],
+        "hidrocarburos": [
+            -11215973.030965593,
+            2328616.9331498276,
+            -11185916.768410746,
+            2356023.5299345064
+        ],
+        "refugios_temporales": [
+            -11216762.286129007,
+            2330541.940340782,
+            -11204873.364573648,
+            2358288.2606899156
+        ],
+        "bomberos": [
+            -11217040.614984402,
+            2338046.631683587,
+            -11208662.908480069,
+            2358300.795380932
         ]
     },
     "groups": [
@@ -123,6 +141,153 @@ window.MUNICIPIO_LAYERS = {
             "iconCollapsed": "fa-folder",
             "expanded": true,
             "children": [
+                {
+                    "id": "fenomenos-geologicos",
+                    "name": "Fenómenos Geológicos",
+                    "icon": "fa-hill-rockslide",
+                    "expanded": false,
+                    "layers": [
+                        {
+                            "name": "Inestabilidad en Laderas (Sierra de los Agustinos)",
+                            "layer": "sierra_de_los_agustino",
+                            "visible": false,
+                            "styleType": "classified",
+                            "color": "#1e73be",
+                            "width": 2
+                        }
+                    ]
+                },
+                {
+                    "id": "fenomenos-hidrometeorologicos",
+                    "name": "Fenómenos Hidrometeorológicos",
+                    "icon": "fa-cloud-showers-heavy",
+                    "expanded": false,
+                    "layers": [
+                        {
+                            "name": "Zonas Inundación Pluvial",
+                            "layer": "zonas_inundacion_pluvial_apaseo",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#00c0c0",
+                            "width": 2
+                        },
+                        {
+                            "name": "Zonas Inundación Fluvial",
+                            "layer": "zonas_inundacion_fluvial_apaseo",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#a0a000",
+                            "width": 2
+                        },
+                        {
+                            "name": "Puntos de Riesgo de Inundación",
+                            "layer": "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#1e73be",
+                            "width": 2
+                        }
+                    ]
+                },
+                {
+                    "id": "fenomenos-quimico-tecnologicos",
+                    "name": "Fenómenos Químico-Tecnológicos",
+                    "icon": "fa-industry",
+                    "expanded": false,
+                    "layers": [
+                        {
+                            "name": "Hidrocarburos",
+                            "layer": "hidrocarburos",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#1e73be",
+                            "width": 3
+                        }
+                    ]
+                },
+                {
+                    "id": "fenomenos-sanitario-ecologicos",
+                    "name": "Fenómenos Sanitario-Ecológicos",
+                    "icon": "fa-biohazard",
+                    "expanded": false,
+                    "layers": []
+                },
+                {
+                    "id": "fenomenos-socio-organizativos",
+                    "name": "Fenómenos Socio-Organizativos",
+                    "icon": "fa-people-group",
+                    "expanded": false,
+                    "layers": []
+                },
+                {
+                    "id": "bienes-expuestos",
+                    "name": "Bienes Expuestos",
+                    "icon": "fa-building-shield",
+                    "expanded": false,
+                    "layers": [
+                        {
+                            "name": "Caminos",
+                            "layer": "caminos",
+                            "visible": false,
+                            "styleType": "classified",
+                            "color": "#1e73be",
+                            "width": 2
+                        },
+                        {
+                            "name": "Escuelas",
+                            "layer": "escuelas",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#812913",
+                            "width": 3
+                        },
+                        {
+                            "name": "Carreteras",
+                            "layer": "carreteras",
+                            "visible": false,
+                            "styleType": "classified",
+                            "color": "#1e73be",
+                            "width": 2
+                        },
+                        {
+                            "name": "Refugios Temporales",
+                            "layer": "refugios_temporales",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#be1e1e",
+                            "width": 4
+                        },
+                        {
+                            "name": "Bomberos",
+                            "layer": "bomberos",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#be4e1e",
+                            "width": 4
+                        }
+                    ]
+                },
+                {
+                    "id": "vulnerabilidad",
+                    "name": "Vulnerabilidad",
+                    "icon": "fa-house-crack",
+                    "expanded": false,
+                    "layers": []
+                },
+                {
+                    "id": "riesgos",
+                    "name": "Riesgos / Escenarios",
+                    "icon": "fa-exclamation-circle",
+                    "expanded": false,
+                    "layers": []
+                },
+                {
+                    "id": "obras",
+                    "name": "Obras de Mitigación",
+                    "icon": "fa-helmet-safety",
+                    "expanded": false,
+                    "layers": []
+                },
                 {
                     "id": "medio-sociodemografico",
                     "name": "Base Territorial",
@@ -186,6 +351,14 @@ window.MUNICIPIO_LAYERS = {
                             "width": 2
                         },
                         {
+                            "name": "Manzanas",
+                            "layer": "manzanas_geoestadisticas",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#000000",
+                            "width": 2
+                        },
+                        {
                             "name": "Colonias y Localidades",
                             "layer": "limites_colonias",
                             "visible": false,
@@ -208,138 +381,8 @@ window.MUNICIPIO_LAYERS = {
                             "styleType": "poly-outline",
                             "color": "#000000",
                             "width": 3
-                        },
-                        {
-                            "name": "Manzanas",
-                            "layer": "manzanas_geoestadisticas",
-                            "visible": false,
-                            "styleType": "poly-outline",
-                            "color": "#000000",
-                            "width": 2
                         }
                     ]
-                },
-                {
-                    "id": "fenomenos-geologicos",
-                    "name": "Fenómenos Geológicos",
-                    "icon": "fa-hill-rockslide",
-                    "expanded": false,
-                    "layers": [
-                        {
-                            "name": "Inestabilidad en Laderas (Sierra de los Agustinos)",
-                            "layer": "sierra_de_los_agustino",
-                            "visible": false,
-                            "styleType": "classified",
-                            "color": "#1e73be",
-                            "width": 2
-                        }
-                    ]
-                },
-                {
-                    "id": "fenomenos-hidrometeorologicos",
-                    "name": "Fenómenos Hidrometeorológicos",
-                    "icon": "fa-cloud-showers-heavy",
-                    "expanded": false,
-                    "layers": [
-                        {
-                            "name": "Zonas Inundación Pluvial",
-                            "layer": "zonas_inundacion_pluvial_apaseo",
-                            "visible": false,
-                            "styleType": "poly-outline",
-                            "color": "#00c0c0",
-                            "width": 2
-                        },
-                        {
-                            "name": "Zonas Inundación Fluvial",
-                            "layer": "zonas_inundacion_fluvial_apaseo",
-                            "visible": false,
-                            "styleType": "poly-outline",
-                            "color": "#a0a000",
-                            "width": 2
-                        },
-                        {
-                            "name": "Puntos de Riesgo de Inundación",
-                            "layer": "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
-                            "visible": false,
-                            "styleType": "point",
-                            "color": "#1e73be",
-                            "width": 2
-                        }
-                    ]
-                },
-                {
-                    "id": "fenomenos-quimico-tecnologicos",
-                    "name": "Fenómenos Químico-Tecnológicos",
-                    "icon": "fa-industry",
-                    "expanded": false,
-                    "layers": []
-                },
-                {
-                    "id": "fenomenos-sanitario-ecologicos",
-                    "name": "Fenómenos Sanitario-Ecológicos",
-                    "icon": "fa-biohazard",
-                    "expanded": false,
-                    "layers": []
-                },
-                {
-                    "id": "fenomenos-socio-organizativos",
-                    "name": "Fenómenos Socio-Organizativos",
-                    "icon": "fa-people-group",
-                    "expanded": false,
-                    "layers": []
-                },
-                {
-                    "id": "bienes-expuestos",
-                    "name": "Bienes Expuestos",
-                    "icon": "fa-building-shield",
-                    "expanded": false,
-                    "layers": [
-                        {
-                            "name": "Caminos",
-                            "layer": "caminos",
-                            "visible": false,
-                            "styleType": "classified",
-                            "color": "#1e73be",
-                            "width": 2
-                        },
-                        {
-                            "name": "Escuelas",
-                            "layer": "escuelas",
-                            "visible": false,
-                            "styleType": "classified",
-                            "color": "#1e73be",
-                            "width": 2
-                        },
-                        {
-                            "name": "Carreteras",
-                            "layer": "carreteras",
-                            "visible": false,
-                            "styleType": "classified",
-                            "color": "#1e73be",
-                            "width": 2
-                        }
-                    ]
-                },
-                {
-                    "id": "vulnerabilidad",
-                    "name": "Vulnerabilidad",
-                    "icon": "fa-house-crack",
-                    "expanded": false,
-                    "layers": []
-                },
-                {
-                    "id": "riesgos",
-                    "name": "Riesgos / Escenarios",
-                    "icon": "fa-exclamation-circle",
-                    "expanded": false,
-                    "layers": []
-                },
-                {
-                    "id": "obras",
-                    "name": "Obras de Mitigación",
-                    "icon": "fa-helmet-safety",
-                    "expanded": false,
-                    "layers": []
                 }
             ]
         },
@@ -398,6 +441,12 @@ window.MUNICIPIO_LAYERS = {
                 "name": "Inestabilidad en Laderas (Sierra de los Agustinos)",
                 "field": "intensidad",
                 "geom": "MULTIPOLYGON"
+            },
+            {
+                "layer": "hidrocarburos",
+                "name": "Hidrocarburos",
+                "field": "razon_soci",
+                "geom": "MULTIPOINT"
             }
         ],
         "equipamiento": [
@@ -405,6 +454,20 @@ window.MUNICIPIO_LAYERS = {
                 "layer": "escuelas",
                 "name": "Escuelas",
                 "field": "nombre_ct",
+                "geom": "MULTIPOINT"
+            }
+        ],
+        "apoyo": [
+            {
+                "layer": "refugios_temporales",
+                "name": "Refugios Temporales",
+                "field": "nombre",
+                "geom": "MULTIPOINT"
+            },
+            {
+                "layer": "bomberos",
+                "name": "Bomberos",
+                "field": "razon_soc",
                 "geom": "MULTIPOINT"
             }
         ]

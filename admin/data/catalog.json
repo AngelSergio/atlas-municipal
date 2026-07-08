@@ -1,12 +1,6 @@
 {
     "themes": [
         {
-            "id": "medio-sociodemografico",
-            "name": "Base Territorial",
-            "icon": "fa-earth-americas",
-            "expanded": true
-        },
-        {
             "id": "fenomenos-geologicos",
             "name": "Fenómenos Geológicos",
             "icon": "fa-hill-rockslide",
@@ -59,6 +53,12 @@
             "name": "Obras de Mitigación",
             "icon": "fa-helmet-safety",
             "expanded": false
+        },
+        {
+            "id": "medio-sociodemografico",
+            "name": "Base Territorial",
+            "icon": "fa-earth-americas",
+            "expanded": true
         }
     ],
     "layers": [
@@ -67,7 +67,7 @@
             "name": "Límite Municipal",
             "theme": "medio-sociodemografico",
             "visible": true,
-            "order": 8,
+            "order": 9,
             "style": "apaseo_gde:limite_municipal",
             "geom": "MULTIPOLYGON",
             "style_type": "poly-outline",
@@ -96,7 +96,7 @@
                 -11095358.654396243,
                 2492256.177443656
             ],
-            "order": 9
+            "order": 10
         },
         {
             "layer": "localidades",
@@ -248,7 +248,7 @@
                 -11185851.393960528,
                 2356601.0394009617
             ],
-            "order": 7
+            "order": 8
         },
         {
             "layer": "zonas_inundacion_pluvial_apaseo",
@@ -341,9 +341,9 @@
             "visible": false,
             "style": "apaseo_gde:escuelas",
             "geom": "MULTIPOINT",
-            "style_type": "classified",
-            "color": "#1e73be",
-            "width": 2,
+            "style_type": "point",
+            "color": "#812913",
+            "width": 3,
             "extent": [
                 -11216943.182850456,
                 2328195.1217681197,
@@ -412,10 +412,76 @@
                 -11187666.528680714,
                 2339479.057543071
             ],
-            "order": 10,
+            "order": 7,
             "analisis": {
                 "role": "poblacion",
                 "field": "pobtot"
+            }
+        },
+        {
+            "layer": "hidrocarburos",
+            "name": "Hidrocarburos",
+            "theme": "fenomenos-quimico-tecnologicos",
+            "visible": false,
+            "style": "apaseo_gde:hidrocarburos",
+            "geom": "MULTIPOINT",
+            "style_type": "point",
+            "color": "#1e73be",
+            "width": 3,
+            "extent": [
+                -11215973.030965593,
+                2328616.9331498276,
+                -11185916.768410746,
+                2356023.5299345064
+            ],
+            "order": 0,
+            "analisis": {
+                "role": "peligro",
+                "field": "razon_soci"
+            }
+        },
+        {
+            "layer": "refugios_temporales",
+            "name": "Refugios Temporales",
+            "theme": "bienes-expuestos",
+            "visible": false,
+            "style": "apaseo_gde:refugios_temporales",
+            "geom": "MULTIPOINT",
+            "style_type": "point",
+            "color": "#be1e1e",
+            "width": 4,
+            "extent": [
+                -11216762.286129007,
+                2330541.940340782,
+                -11204873.364573648,
+                2358288.2606899156
+            ],
+            "order": 3,
+            "analisis": {
+                "role": "apoyo",
+                "field": "nombre"
+            }
+        },
+        {
+            "layer": "bomberos",
+            "name": "Bomberos",
+            "theme": "bienes-expuestos",
+            "visible": false,
+            "style": "apaseo_gde:bomberos",
+            "geom": "MULTIPOINT",
+            "style_type": "point",
+            "color": "#be4e1e",
+            "width": 4,
+            "extent": [
+                -11217040.614984402,
+                2338046.631683587,
+                -11208662.908480069,
+                2358300.795380932
+            ],
+            "order": 4,
+            "analisis": {
+                "role": "apoyo",
+                "field": "razon_soc"
             }
         }
     ],
