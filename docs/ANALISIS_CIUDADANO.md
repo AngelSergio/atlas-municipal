@@ -36,6 +36,19 @@ regenera a `municipio.layers.js` bajo `window.MUNICIPIO_LAYERS.analisis`, agrupa
 papel. El módulo lee de ahí; **no hay nombres de capa hardcodeados**. Si un municipio no
 define nada, el módulo cae a los valores heredados del visor original (Celaya).
 
+### Cómo se calcula el nivel de atención (Riesgo = Peligro × Exposición)
+
+1. **Base por peligro** (cercanía/contención):
+   - Punto: **Alto** si un peligro está a ≤100 m; **Medio** si ≤250 m o hay ≥2 peligros; si no, **Bajo**.
+   - Polígono: **Alto** con ≥3 peligros, **Medio** con ≥1.
+2. **Escalada por exposición**: si hay un peligro presente **y** el entorno tiene
+   **población considerable** (≥1000 hab.) **o** **equipamiento sensible cercano**
+   (escuela/hospital…), el nivel **sube un escalón** (Bajo→Medio, Medio→Alto). Sin
+   peligro no hay riesgo, aunque haya mucha gente. La escalada se explica en el reporte.
+
+Colonia y Población también aparecen como **contexto** (ubicación y magnitud de
+la exposición), aunque solo la población participa además en la escalada.
+
 ---
 
 ## 2. Configuración actual de Apaseo el Grande

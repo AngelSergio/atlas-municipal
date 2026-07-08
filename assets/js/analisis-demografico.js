@@ -1623,6 +1623,19 @@
     } else if (nearestRisk && nearestRisk.distance <= 100) level = 'Alto';
     else if (nearestRisk && (nearestRisk.distance <= 250 || riskCount >= 2)) level = 'Medio';
 
+    // EXPOSICIÓN (Riesgo = Peligro × Exposición): la población del entorno y el
+    // equipamiento sensible cercano (escuelas, hospitales…) elevan el nivel, pero
+    // SOLO si hay un peligro presente — sin peligro no hay riesgo aunque haya gente.
+    const exposedPopulation = Number(context?.poblacionTotal || 0);
+    const exposedEquipment = supportCount || 0;
+    const hazardPresent = !!nearestRisk || riskCount > 0;
+    const highExposure = exposedPopulation >= 1000 || exposedEquipment >= 1;
+    let escalatedByExposure = false;
+    if (hazardPresent && highExposure && level !== 'Alto') {
+      level = (level === 'Bajo') ? 'Medio' : 'Alto';
+      escalatedByExposure = true;
+    }
+
     let text;
     if (mode === 'polygon') {
       const areaText = formatAreaM2(calculateGeometryArea(geometry));
@@ -1643,7 +1656,9 @@
       supportCount,
       nearbyCount: riskCount,
       contextPopulationCount: Number(context?.poblacionTotal || 0),
-      contextHousingCount: Number(context?.viviendasHabitadas || 0)
+      contextHousingCount: Number(context?.viviendasHabitadas || 0),
+      escalatedByExposure,
+      exposedEquipment
     };
   }
 
@@ -1659,6 +1674,12 @@
       }
     } else {
       recs.push('La información de población y vivienda no está disponible para esta ubicación en la fuente Manzanas INEGI 2020, porque esta fuente tiene cobertura en localidades urbanas.');
+    }
+
+    if (summary?.escalatedByExposure) {
+      recs.push(summary.exposedEquipment > 0
+        ? 'El nivel de atención se elevó por la exposición: el peligro coincide con población e infraestructura sensible (escuelas, hospitales u otro equipamiento) en el entorno.'
+        : 'El nivel de atención se elevó por la exposición: el peligro coincide con una zona de población considerable en el entorno.');
     }
 
     if (riskNearby.length) {
