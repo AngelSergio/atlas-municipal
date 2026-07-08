@@ -11,7 +11,7 @@ if (PHP_SAPI !== 'cli' && empty($_SERVER['HTTPS'])) {
     exit;
 }
 
-const CONFIG_FILE = '/etc/atlas-apaseo/config.php';
+const CONFIG_FILE = '/etc/atlas-villagran/config.php';
 
 function config(): array {
     static $cfg = null;
