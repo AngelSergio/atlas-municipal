@@ -1,7 +1,7 @@
 /**
  * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.
  * No editar a mano: usar el panel admin en <host>/<app>/admin/
- * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-08T08:54:45+00:00
+ * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-08T09:59:23+00:00
  */
 window.MUNICIPIO_LAYERS = {
     "extents": {
@@ -82,6 +82,42 @@ window.MUNICIPIO_LAYERS = {
             2332764.3207080597,
             -11230640.707456382,
             2341245.617298147
+        ],
+        "refugios": [
+            -11243123.8547826,
+            2334575.6090231473,
+            -11242723.104615742,
+            2335388.6310253986
+        ],
+        "instalaciones_pc": [
+            -11243023.667240886,
+            2334944.0794055583,
+            -11243023.667240886,
+            2334944.0794055583
+        ],
+        "comandancias": [
+            -11243686.018211104,
+            2333495.2017826824,
+            -11243686.018211104,
+            2333495.2017826824
+        ],
+        "carreteras": [
+            -11254066.581306262,
+            2333335.295311314,
+            -11231404.817876862,
+            2341946.160319278
+        ],
+        "caminos": [
+            -11254850.925605336,
+            2332455.374952833,
+            -11230638.588384576,
+            2342066.8660399336
+        ],
+        "subcuencas": [
+            -11255723.340973705,
+            2332125.1012683683,
+            -11230638.422134956,
+            2343253.848185778
         ]
     },
     "groups": [
@@ -183,6 +219,30 @@ window.MUNICIPIO_LAYERS = {
                             "styleType": "point",
                             "color": "#ef6c00",
                             "width": 1
+                        },
+                        {
+                            "name": "Albergues y Refugios (INEGI)",
+                            "layer": "refugios",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#c0392b",
+                            "width": 1
+                        },
+                        {
+                            "name": "Instalaciones de Protección Civil (INEGI)",
+                            "layer": "instalaciones_pc",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#e67e22",
+                            "width": 1
+                        },
+                        {
+                            "name": "Comandancias de Seguridad Pública (INEGI)",
+                            "layer": "comandancias",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#34495e",
+                            "width": 1
                         }
                     ]
                 },
@@ -219,14 +279,6 @@ window.MUNICIPIO_LAYERS = {
                             "visible": true,
                             "styleType": "poly-outline",
                             "color": "#941414",
-                            "width": 3
-                        },
-                        {
-                            "name": "Limite Estatal",
-                            "layer": "guanajuato",
-                            "visible": true,
-                            "styleType": "poly-outline",
-                            "color": "#be1e1e",
                             "width": 3
                         },
                         {
@@ -268,6 +320,38 @@ window.MUNICIPIO_LAYERS = {
                             "styleType": "line",
                             "color": "#795548",
                             "width": 0.8
+                        },
+                        {
+                            "name": "Limite Estatal",
+                            "layer": "guanajuato",
+                            "visible": true,
+                            "styleType": "poly-outline",
+                            "color": "#be1e1e",
+                            "width": 3
+                        },
+                        {
+                            "name": "Carreteras (INEGI)",
+                            "layer": "carreteras",
+                            "visible": false,
+                            "styleType": "line",
+                            "color": "#4a4a4a",
+                            "width": 1.4
+                        },
+                        {
+                            "name": "Caminos (INEGI)",
+                            "layer": "caminos",
+                            "visible": false,
+                            "styleType": "line",
+                            "color": "#8d8d8d",
+                            "width": 0.9
+                        },
+                        {
+                            "name": "Subcuencas (INEGI)",
+                            "layer": "subcuencas",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#2980b9",
+                            "width": 1.2
                         }
                     ]
                 }
@@ -337,6 +421,18 @@ window.MUNICIPIO_LAYERS = {
                 "layer": "bomberos",
                 "name": "Bomberos (DENUE)",
                 "field": "nom_estab",
+                "geom": "MULTIPOINT"
+            },
+            {
+                "layer": "refugios",
+                "name": "Albergues y Refugios (INEGI)",
+                "field": "nombre",
+                "geom": "MULTIPOINT"
+            },
+            {
+                "layer": "instalaciones_pc",
+                "name": "Instalaciones de Protección Civil (INEGI)",
+                "field": "nombre",
                 "geom": "MULTIPOINT"
             }
         ]

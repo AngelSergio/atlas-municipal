@@ -140,7 +140,7 @@
                 -11095358.654396243,
                 2492256.177443656
             ],
-            "order": 0
+            "order": 5
         },
         {
             "layer": "escuelas",
@@ -250,7 +250,7 @@
                 "role": "colonia",
                 "field": "nomgeo"
             },
-            "order": 1
+            "order": 0
         },
         {
             "layer": "agebs_urbanas",
@@ -268,7 +268,7 @@
                 -11234144.494005505,
                 2340671.368300249
             ],
-            "order": 2
+            "order": 1
         },
         {
             "layer": "agebs_rurales",
@@ -286,7 +286,7 @@
                 -11230638.422134958,
                 2343253.848185773
             ],
-            "order": 3
+            "order": 2
         },
         {
             "layer": "manzanas",
@@ -308,7 +308,7 @@
                 "role": "poblacion",
                 "field": "pobtot"
             },
-            "order": 4
+            "order": 3
         },
         {
             "layer": "vialidad",
@@ -326,7 +326,123 @@
                 -11230640.707456382,
                 2341245.617298147
             ],
+            "order": 4
+        },
+        {
+            "layer": "refugios",
+            "name": "Albergues y Refugios (INEGI)",
+            "theme": "bienes-expuestos",
+            "visible": false,
+            "style": "villagran:refugios",
+            "geom": "MULTIPOINT",
+            "style_type": "point",
+            "color": "#c0392b",
+            "width": 1,
+            "extent": [
+                -11243123.8547826,
+                2334575.6090231473,
+                -11242723.104615742,
+                2335388.6310253986
+            ],
+            "analisis": {
+                "role": "apoyo",
+                "field": "nombre"
+            },
+            "order": 3
+        },
+        {
+            "layer": "instalaciones_pc",
+            "name": "Instalaciones de Protección Civil (INEGI)",
+            "theme": "bienes-expuestos",
+            "visible": false,
+            "style": "villagran:instalaciones_pc",
+            "geom": "MULTIPOINT",
+            "style_type": "point",
+            "color": "#e67e22",
+            "width": 1,
+            "extent": [
+                -11243023.667240886,
+                2334944.0794055583,
+                -11243023.667240886,
+                2334944.0794055583
+            ],
+            "analisis": {
+                "role": "apoyo",
+                "field": "nombre"
+            },
+            "order": 4
+        },
+        {
+            "layer": "comandancias",
+            "name": "Comandancias de Seguridad Pública (INEGI)",
+            "theme": "bienes-expuestos",
+            "visible": false,
+            "style": "villagran:comandancias",
+            "geom": "MULTIPOINT",
+            "style_type": "point",
+            "color": "#34495e",
+            "width": 1,
+            "extent": [
+                -11243686.018211104,
+                2333495.2017826824,
+                -11243686.018211104,
+                2333495.2017826824
+            ],
             "order": 5
+        },
+        {
+            "layer": "carreteras",
+            "name": "Carreteras (INEGI)",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "villagran:carreteras",
+            "geom": "MULTILINESTRING",
+            "style_type": "line",
+            "color": "#4a4a4a",
+            "width": 1.4,
+            "extent": [
+                -11254066.581306262,
+                2333335.295311314,
+                -11231404.817876862,
+                2341946.160319278
+            ],
+            "order": 6
+        },
+        {
+            "layer": "caminos",
+            "name": "Caminos (INEGI)",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "villagran:caminos",
+            "geom": "MULTILINESTRING",
+            "style_type": "line",
+            "color": "#8d8d8d",
+            "width": 0.9,
+            "extent": [
+                -11254850.925605336,
+                2332455.374952833,
+                -11230638.588384576,
+                2342066.8660399336
+            ],
+            "order": 7
+        },
+        {
+            "layer": "subcuencas",
+            "name": "Subcuencas (INEGI)",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "villagran:subcuencas",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#2980b9",
+            "width": 1.2,
+            "extent": [
+                -11255723.340973705,
+                2332125.1012683683,
+                -11230638.422134956,
+                2343253.848185778
+            ],
+            "order": 8
         }
     ],
     "basemap": {
