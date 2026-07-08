@@ -67,422 +67,62 @@
             "name": "Límite Municipal",
             "theme": "medio-sociodemografico",
             "visible": true,
-            "order": 9,
-            "style": "apaseo_gde:limite_municipal",
+            "style": "villagran:limite_municipal",
             "geom": "MULTIPOLYGON",
             "style_type": "poly-outline",
-            "color": "#1e73be",
+            "color": "#9c3f86",
             "width": 3,
             "extent": [
-                -11217092.9685,
-                2328133.4185,
-                -11185615.2763,
-                2358316.6365
-            ]
-        },
-        {
-            "layer": "guanajuato",
-            "name": "Límite Estatal",
-            "theme": "medio-sociodemografico",
-            "visible": true,
-            "style": "apaseo_gde:guanajuato",
-            "geom": "MULTIPOLYGON",
-            "style_type": "poly-outline",
-            "color": "#000000",
-            "width": 3,
-            "extent": [
-                -11365389.64496024,
-                2262697.847432676,
-                -11095358.654396243,
-                2492256.177443656
-            ],
-            "order": 10
-        },
-        {
-            "layer": "localidades",
-            "name": "Localidades",
-            "theme": "medio-sociodemografico",
-            "visible": false,
-            "style": "apaseo_gde:localidades",
-            "geom": "MULTIPOLYGON",
-            "style_type": "poly-outline",
-            "color": "#007f00",
-            "width": 2,
-            "extent": [
-                -11216862.295533799,
-                2329684.029902734,
-                -11185851.393960528,
-                2356601.0394009617
-            ],
-            "order": 5
-        },
-        {
-            "layer": "colonias_apaseo",
-            "name": "Colonias",
-            "theme": "medio-sociodemografico",
-            "visible": false,
-            "style": "apaseo_gde:colonias_apaseo",
-            "geom": "MULTIPOLYGON",
-            "style_type": "poly-outline",
-            "color": "#800080",
-            "width": 2,
-            "extent": [
-                -11210298.372325286,
-                2329693.4362538564,
-                -11193679.395487286,
-                2344504.4344541943
-            ],
-            "order": 6,
-            "analisis": {
-                "role": "colonia",
-                "field": "nombre"
-            }
-        },
-        {
-            "layer": "agebs_rurales",
-            "name": "AGEBS Rurales",
-            "theme": "medio-sociodemografico",
-            "visible": false,
-            "style": "apaseo_gde:agebs_rurales",
-            "geom": "MULTIPOLYGON",
-            "style_type": "poly-outline",
-            "color": "#008080",
-            "width": 2,
-            "extent": [
-                -11217092.968529863,
-                2328133.4185421593,
-                -11185615.276285773,
-                2358316.636473352
-            ],
-            "order": 1
-        },
-        {
-            "layer": "agebs_urbanos",
-            "name": "AGEBS Urbanos",
-            "theme": "medio-sociodemografico",
-            "visible": false,
-            "style": "apaseo_gde:agebs_urbanos",
-            "geom": "MULTIPOLYGON",
-            "style_type": "poly-outline",
-            "color": "#2020c0",
-            "width": 2,
-            "extent": [
-                -11210359.374547314,
-                2329684.029902734,
-                -11185851.393960528,
-                2344508.2888988256
-            ],
-            "order": 2
-        },
-        {
-            "layer": "calles_apaseo",
-            "name": "Calles y Avenidas",
-            "theme": "medio-sociodemografico",
-            "visible": false,
-            "style": "apaseo_gde:calles_apaseo",
-            "geom": "MULTILINESTRING",
-            "style_type": "line",
-            "color": "#bf0000",
-            "width": 2,
-            "extent": [
-                -11216862.295641294,
-                2329684.0297227846,
-                -11185851.39406919,
-                2356601.039219044
-            ],
-            "order": 3
-        },
-        {
-            "layer": "red_vial_apaseo",
-            "name": "Red Vial",
-            "theme": "medio-sociodemografico",
-            "visible": false,
-            "style": "apaseo_gde:red_vial_apaseo",
-            "geom": "MULTILINESTRING",
-            "style_type": "line",
-            "color": "#bf00bf",
-            "width": 2,
-            "extent": [
-                -11217092.339603703,
-                2328149.475276915,
-                -11185615.549284955,
-                2356341.091403779
-            ],
-            "order": 4
-        },
-        {
-            "layer": "red_hidrografica",
-            "name": "Hidrografía",
-            "theme": "medio-sociodemografico",
-            "visible": false,
-            "style": "apaseo_gde:red_hidrografica",
-            "geom": "MULTILINESTRING",
-            "style_type": "line",
-            "color": "#1fbfbf",
-            "width": 2,
-            "extent": [
-                -11215432.120010009,
-                2305482.183210761,
-                -11140517.945087604,
-                2383724.635410001
-            ],
-            "order": 0,
-            "analisis": {
-                "role": "peligro",
-                "field": ""
-            }
-        },
-        {
-            "layer": "limites_colonias",
-            "name": "Colonias y Localidades",
-            "theme": "medio-sociodemografico",
-            "visible": false,
-            "style": "apaseo_gde:limites_colonias",
-            "geom": "MULTIPOLYGON",
-            "style_type": "poly-outline",
-            "color": "#bfbf00",
-            "width": 2,
-            "extent": [
-                -11216862.295533799,
-                2329326.1058907732,
-                -11185851.393960528,
-                2356601.0394009617
-            ],
-            "order": 8
-        },
-        {
-            "layer": "zonas_inundacion_pluvial_apaseo",
-            "name": "Zonas Inundación Pluvial",
-            "theme": "fenomenos-hidrometeorologicos",
-            "visible": false,
-            "style": "apaseo_gde:zonas_inundacion_pluvial_apaseo",
-            "geom": "MULTIPOLYGON",
-            "style_type": "poly-outline",
-            "color": "#00c0c0",
-            "width": 2,
-            "extent": [
-                -11208366.218482355,
-                2338183.156891668,
-                -11199781.698328704,
-                2352814.5194257703
-            ],
-            "order": 10,
-            "analisis": {
-                "role": "peligro",
-                "field": "peligro"
-            }
-        },
-        {
-            "layer": "zonas_inundacion_fluvial_apaseo",
-            "name": "Zonas Inundación Fluvial",
-            "theme": "fenomenos-hidrometeorologicos",
-            "visible": false,
-            "style": "apaseo_gde:zonas_inundacion_fluvial_apaseo",
-            "geom": "MULTIPOLYGON",
-            "style_type": "poly-outline",
-            "color": "#a0a000",
-            "width": 2,
-            "extent": [
-                -11211811.55166267,
-                2336214.1683035195,
-                -11189026.655465532,
-                2352807.359573696
-            ],
-            "order": 11,
-            "analisis": {
-                "role": "peligro",
-                "field": "peligro"
-            }
-        },
-        {
-            "layer": "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
-            "name": "Puntos de Riesgo de Inundación",
-            "theme": "fenomenos-hidrometeorologicos",
-            "visible": false,
-            "style": "apaseo_gde:puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
-            "geom": "MULTIPOINT",
-            "style_type": "point",
-            "color": "#1e73be",
-            "width": 2,
-            "extent": [
-                -11356480.49228996,
-                2270235.3924478125,
-                -11100556.982910873,
-                2473208.394414112
-            ],
-            "order": 12,
-            "analisis": {
-                "role": "peligro",
-                "field": "peligro"
-            }
-        },
-        {
-            "layer": "caminos",
-            "name": "Caminos",
-            "theme": "bienes-expuestos",
-            "visible": false,
-            "style": "apaseo_gde:caminos",
-            "geom": "MULTILINESTRING",
-            "style_type": "classified",
-            "color": "#1e73be",
-            "width": 2,
-            "extent": [
-                -11218905.908091355,
-                2325792.3370610727,
-                -11186057.22364267,
-                2359949.6096555707
+                -11255723.340973705,
+                2332125.1012683683,
+                -11230638.422134956,
+                2343253.848185778
             ],
             "order": 0
         },
         {
-            "layer": "escuelas",
-            "name": "Escuelas",
-            "theme": "bienes-expuestos",
+            "layer": "inundacion_fluvial",
+            "name": "Inundación fluvial (CENAPRED)",
+            "theme": "fenomenos-hidrometeorologicos",
             "visible": false,
-            "style": "apaseo_gde:escuelas",
-            "geom": "MULTIPOINT",
-            "style_type": "point",
-            "color": "#812913",
-            "width": 3,
-            "extent": [
-                -11216943.182850456,
-                2328195.1217681197,
-                -11186803.987063395,
-                2358193.0449959487
-            ],
-            "order": 1,
-            "analisis": {
-                "role": "equipamiento",
-                "field": "nombre_ct"
-            }
-        },
-        {
-            "layer": "sierra_de_los_agustino",
-            "name": "Inestabilidad en Laderas (Sierra de los Agustinos)",
-            "theme": "fenomenos-geologicos",
-            "visible": false,
-            "style": "apaseo_gde:sierra_de_los_agustino",
+            "style": "villagran:inundacion_fluvial",
             "geom": "MULTIPOLYGON",
-            "style_type": "classified",
-            "color": "#1e73be",
-            "width": 2,
+            "style_type": "poly-fill",
+            "color": "#1f6fb2",
+            "width": 1,
             "extent": [
-                -11215437.205247167,
-                2326157.8525215313,
-                -11185652.672412163,
-                2358301.2894429476
+                -11231401.876901446,
+                2336531.9163003787,
+                -11230648.119051186,
+                2336811.2026478765
             ],
-            "order": 0,
             "analisis": {
                 "role": "peligro",
-                "field": "intensidad"
-            }
+                "field": "peligro"
+            },
+            "order": 0
         },
         {
-            "layer": "carreteras",
-            "name": "Carreteras",
-            "theme": "bienes-expuestos",
+            "layer": "inundacion_pluvial",
+            "name": "Inundación pluvial (CENAPRED)",
+            "theme": "fenomenos-hidrometeorologicos",
             "visible": false,
-            "style": "apaseo_gde:carreteras",
-            "geom": "MULTILINESTRING",
-            "style_type": "classified",
-            "color": "#1e73be",
-            "width": 2,
-            "extent": [
-                -11220478.8915934,
-                2317408.6832784135,
-                -11179054.422228802,
-                2362093.6020532576
-            ],
-            "order": 2
-        },
-        {
-            "layer": "manzanas_geoestadisticas",
-            "name": "Manzanas",
-            "theme": "medio-sociodemografico",
-            "visible": false,
-            "style": "apaseo_gde:manzanas_geoestadisticas",
+            "style": "villagran:inundacion_pluvial",
             "geom": "MULTIPOLYGON",
-            "style_type": "poly-outline",
-            "color": "#000000",
-            "width": 2,
+            "style_type": "poly-fill",
+            "color": "#1f6fb2",
+            "width": 1,
             "extent": [
-                -11207620.373327425,
-                2338882.813919044,
-                -11187666.528680714,
-                2339479.057543071
+                -11251365.447422672,
+                2334661.0413085693,
+                -11250335.276387041,
+                2335213.859856573
             ],
-            "order": 7,
-            "analisis": {
-                "role": "poblacion",
-                "field": "pobtot"
-            }
-        },
-        {
-            "layer": "hidrocarburos",
-            "name": "Hidrocarburos",
-            "theme": "fenomenos-quimico-tecnologicos",
-            "visible": false,
-            "style": "apaseo_gde:hidrocarburos",
-            "geom": "MULTIPOINT",
-            "style_type": "point",
-            "color": "#1e73be",
-            "width": 3,
-            "extent": [
-                -11215973.030965593,
-                2328616.9331498276,
-                -11185916.768410746,
-                2356023.5299345064
-            ],
-            "order": 0,
             "analisis": {
                 "role": "peligro",
-                "field": "razon_soci"
-            }
-        },
-        {
-            "layer": "refugios_temporales",
-            "name": "Refugios Temporales",
-            "theme": "bienes-expuestos",
-            "visible": false,
-            "style": "apaseo_gde:refugios_temporales",
-            "geom": "MULTIPOINT",
-            "style_type": "point",
-            "color": "#be1e1e",
-            "width": 4,
-            "extent": [
-                -11216762.286129007,
-                2330541.940340782,
-                -11204873.364573648,
-                2358288.2606899156
-            ],
-            "order": 3,
-            "analisis": {
-                "role": "apoyo",
-                "field": "nombre"
-            }
-        },
-        {
-            "layer": "bomberos",
-            "name": "Bomberos",
-            "theme": "bienes-expuestos",
-            "visible": false,
-            "style": "apaseo_gde:bomberos",
-            "geom": "MULTIPOINT",
-            "style_type": "point",
-            "color": "#be4e1e",
-            "width": 4,
-            "extent": [
-                -11217040.614984402,
-                2338046.631683587,
-                -11208662.908480069,
-                2358300.795380932
-            ],
-            "order": 4,
-            "analisis": {
-                "role": "apoyo",
-                "field": "razon_soc"
-            }
+                "field": "peligro"
+            },
+            "order": 1
         }
     ],
     "basemap": {
