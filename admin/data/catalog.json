@@ -70,7 +70,7 @@
             "style": "villagran:limite_municipal",
             "geom": "MULTIPOLYGON",
             "style_type": "poly-outline",
-            "color": "#9c3f86",
+            "color": "#941414",
             "width": 3,
             "extent": [
                 -11255723.340973705,
@@ -123,6 +123,112 @@
                 "field": "peligro"
             },
             "order": 1
+        },
+        {
+            "layer": "guanajuato",
+            "name": "Limite Estatal",
+            "theme": "medio-sociodemografico",
+            "visible": true,
+            "style": "villagran:guanajuato",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#be1e1e",
+            "width": 3,
+            "extent": [
+                -11365389.64496024,
+                2262697.847432676,
+                -11095358.654396243,
+                2492256.177443656
+            ],
+            "order": 0
+        },
+        {
+            "layer": "escuelas",
+            "name": "Escuelas (DENUE)",
+            "theme": "bienes-expuestos",
+            "visible": false,
+            "style": "villagran:escuelas",
+            "geom": "MULTIPOINT",
+            "style_type": "point",
+            "color": "#2e7d32",
+            "width": 1,
+            "extent": [
+                -11251899.699009415,
+                2333088.9531588573,
+                -11233108.54483625,
+                2340493.2191936844
+            ],
+            "analisis": {
+                "role": "equipamiento",
+                "field": "nom_estab"
+            },
+            "order": 0
+        },
+        {
+            "layer": "unidades_salud",
+            "name": "Unidades y servicios de salud (DENUE)",
+            "theme": "bienes-expuestos",
+            "visible": false,
+            "style": "villagran:unidades_salud",
+            "geom": "MULTIPOINT",
+            "style_type": "point",
+            "color": "#1565c0",
+            "width": 1,
+            "extent": [
+                -11251397.688180953,
+                2333458.9325901293,
+                -11234430.58846725,
+                2340061.4619409125
+            ],
+            "analisis": {
+                "role": "equipamiento",
+                "field": "nom_estab"
+            },
+            "order": 1
+        },
+        {
+            "layer": "hidrocarburos",
+            "name": "Hidrocarburos: gasolineras y gas L.P. (DENUE)",
+            "theme": "fenomenos-quimico-tecnologicos",
+            "visible": false,
+            "style": "villagran:hidrocarburos",
+            "geom": "MULTIPOINT",
+            "style_type": "point",
+            "color": "#e53935",
+            "width": 1,
+            "extent": [
+                -11250211.652477415,
+                2333365.302879251,
+                -11233162.419017013,
+                2335473.60580811
+            ],
+            "analisis": {
+                "role": "peligro",
+                "field": "nom_estab"
+            },
+            "order": 0
+        },
+        {
+            "layer": "bomberos",
+            "name": "Bomberos (DENUE)",
+            "theme": "bienes-expuestos",
+            "visible": false,
+            "style": "villagran:bomberos",
+            "geom": "MULTIPOINT",
+            "style_type": "point",
+            "color": "#ef6c00",
+            "width": 1,
+            "extent": [
+                -11243003.443828993,
+                2334922.332314105,
+                -11243003.443828993,
+                2334922.332314105
+            ],
+            "analisis": {
+                "role": "apoyo",
+                "field": "nom_estab"
+            },
+            "order": 2
         }
     ],
     "basemap": {

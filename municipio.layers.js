@@ -1,7 +1,7 @@
 /**
  * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.
  * No editar a mano: usar el panel admin en <host>/<app>/admin/
- * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-08T08:25:24+00:00
+ * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-08T08:36:17+00:00
  */
 window.MUNICIPIO_LAYERS = {
     "extents": {
@@ -22,6 +22,36 @@ window.MUNICIPIO_LAYERS = {
             2334661.0413085693,
             -11250335.276387041,
             2335213.859856573
+        ],
+        "guanajuato": [
+            -11365389.64496024,
+            2262697.847432676,
+            -11095358.654396243,
+            2492256.177443656
+        ],
+        "escuelas": [
+            -11251899.699009415,
+            2333088.9531588573,
+            -11233108.54483625,
+            2340493.2191936844
+        ],
+        "unidades_salud": [
+            -11251397.688180953,
+            2333458.9325901293,
+            -11234430.58846725,
+            2340061.4619409125
+        ],
+        "hidrocarburos": [
+            -11250211.652477415,
+            2333365.302879251,
+            -11233162.419017013,
+            2335473.60580811
+        ],
+        "bomberos": [
+            -11243003.443828993,
+            2334922.332314105,
+            -11243003.443828993,
+            2334922.332314105
         ]
     },
     "groups": [
@@ -69,7 +99,16 @@ window.MUNICIPIO_LAYERS = {
                     "name": "Fenómenos Químico-Tecnológicos",
                     "icon": "fa-industry",
                     "expanded": false,
-                    "layers": []
+                    "layers": [
+                        {
+                            "name": "Hidrocarburos: gasolineras y gas L.P. (DENUE)",
+                            "layer": "hidrocarburos",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#e53935",
+                            "width": 1
+                        }
+                    ]
                 },
                 {
                     "id": "fenomenos-sanitario-ecologicos",
@@ -90,7 +129,32 @@ window.MUNICIPIO_LAYERS = {
                     "name": "Bienes Expuestos",
                     "icon": "fa-building-shield",
                     "expanded": false,
-                    "layers": []
+                    "layers": [
+                        {
+                            "name": "Escuelas (DENUE)",
+                            "layer": "escuelas",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#2e7d32",
+                            "width": 1
+                        },
+                        {
+                            "name": "Unidades y servicios de salud (DENUE)",
+                            "layer": "unidades_salud",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#1565c0",
+                            "width": 1
+                        },
+                        {
+                            "name": "Bomberos (DENUE)",
+                            "layer": "bomberos",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#ef6c00",
+                            "width": 1
+                        }
+                    ]
                 },
                 {
                     "id": "vulnerabilidad",
@@ -124,7 +188,15 @@ window.MUNICIPIO_LAYERS = {
                             "layer": "limite_municipal",
                             "visible": true,
                             "styleType": "poly-outline",
-                            "color": "#9c3f86",
+                            "color": "#941414",
+                            "width": 3
+                        },
+                        {
+                            "name": "Limite Estatal",
+                            "layer": "guanajuato",
+                            "visible": true,
+                            "styleType": "poly-outline",
+                            "color": "#be1e1e",
                             "width": 3
                         }
                     ]
@@ -154,9 +226,35 @@ window.MUNICIPIO_LAYERS = {
                 "name": "Inundación pluvial (CENAPRED)",
                 "field": "peligro",
                 "geom": "MULTIPOLYGON"
+            },
+            {
+                "layer": "hidrocarburos",
+                "name": "Hidrocarburos: gasolineras y gas L.P. (DENUE)",
+                "field": "nom_estab",
+                "geom": "MULTIPOINT"
             }
         ],
-        "equipamiento": [],
-        "apoyo": []
+        "equipamiento": [
+            {
+                "layer": "escuelas",
+                "name": "Escuelas (DENUE)",
+                "field": "nom_estab",
+                "geom": "MULTIPOINT"
+            },
+            {
+                "layer": "unidades_salud",
+                "name": "Unidades y servicios de salud (DENUE)",
+                "field": "nom_estab",
+                "geom": "MULTIPOINT"
+            }
+        ],
+        "apoyo": [
+            {
+                "layer": "bomberos",
+                "name": "Bomberos (DENUE)",
+                "field": "nom_estab",
+                "geom": "MULTIPOINT"
+            }
+        ]
     }
 };
