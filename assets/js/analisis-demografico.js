@@ -314,7 +314,7 @@
           </div>
 
           <div class="analisis-section-card">
-            <div class="analisis-section-title"><i class="fas fa-house"></i> Refugios temporales de ${MUNI}</div>
+            <div class="analisis-section-title"><i class="fas ${anHasConfig ? 'fa-building-shield' : 'fa-house'}"></i> ${supportSectionTitle()}</div>
             <div class="analisis-section-intro analisis-support-intro" id="analisis-support-intro"></div>
             <div class="analisis-list" id="analisis-support-nearby-list"></div>
           </div>
@@ -1406,17 +1406,41 @@
     return items.sort((a, b) => a.title.localeCompare(b.title, 'es', { sensitivity: 'base' }));
   }
 
+  // Título de la sección: equipamiento expuesto (config por papeles) o refugios (Celaya).
+  function supportSectionTitle() {
+    return anHasConfig ? 'Equipamiento expuesto cercano' : `Refugios temporales de ${MUNI}`;
+  }
+
   function getSupportDisplayItems(report) {
+    const isPolygon = report?.selectionMode === 'polygon';
+    // Papel "equipamiento": rasgos expuestos cercanos (escuelas, hospitales…).
+    const support = (report?.nearby || []).filter(item => item.kind === 'support');
+    if (support.length) {
+      return support.map(item => ({
+        icon: item.icon || 'fa-building-shield',
+        title: item.showCount === false ? item.title : `${item.title}: ${item.count || 0}`,
+        detail: item.detail || (isPolygon ? 'Dentro del polígono dibujado.' : `El más cercano está a ${formatDistance(item.distance)}.`)
+      }));
+    }
+    // Retrocompatibilidad: registro de refugios (Celaya).
     const registry = Array.isArray(report?.supportRegistry) ? report.supportRegistry : [];
     if (registry.length) return registry;
     return [{
       icon: 'fa-circle-info',
-      title: 'Refugios temporales no disponibles',
-      detail: `No fue posible cargar el catálogo de refugios temporales de ${MUNI} para consulta.`
+      title: anHasConfig ? 'Sin equipamiento expuesto en el área' : 'Refugios temporales no disponibles',
+      detail: anHasConfig
+        ? 'No se localizó equipamiento (escuelas, hospitales u otro) dentro del área analizada.'
+        : `No fue posible cargar el catálogo de refugios temporales de ${MUNI} para consulta.`
     }];
   }
 
   function buildSupportIntroText(report) {
+    if (anHasConfig) {
+      const support = (report?.nearby || []).filter(item => item.kind === 'support');
+      return support.length
+        ? 'Infraestructura y equipamiento del entorno que podría verse afectado por los peligros cercanos.'
+        : 'No se localizó equipamiento expuesto (escuelas, hospitales u otro) en el área analizada.';
+    }
     const count = Array.isArray(report?.supportRegistry) ? report.supportRegistry.length : 0;
     if (count > 0) {
       return `En ${MUNI} se cuenta con ${count} refugios temporales. Pueden habilitarse en caso de emergencia, desastre o contingencia para brindar protección temporal a la población que no tenga acceso a una habitación segura.`;
@@ -2082,7 +2106,7 @@
       const detailTxt = item.detail ? ` · ${item.detail}` : '';
       return `${item.title}${detailTxt}`;
     }));
-    y = drawSectionList(ctx, `Refugios temporales de ${MUNI}`, supportTextItems, page.margin, y, page.contentWidth);
+    y = drawSectionList(ctx, supportSectionTitle(), supportTextItems, page.margin, y, page.contentWidth);
 
     y = drawSectionList(ctx, 'Recomendaciones', report.recommendations, page.margin, y, page.contentWidth);
 
