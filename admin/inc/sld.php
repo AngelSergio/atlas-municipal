@@ -131,9 +131,12 @@ function sld_symbolizer_from_arcgis($symbol, string $pgGeom): string {
  * Devuelve el SLD, o null si no hay clasificación traducible (el llamador usa estilo plano).
  * Los <Title> de cada regla generan la leyenda en GeoServer (GetLegendGraphic).
  */
-function sld_from_arcgis_renderer(array $renderer, string $styleName, string $pgGeom, array $columns = []): ?string {
+function sld_from_arcgis_renderer(array $renderer, string $styleName, string $pgGeom, array $columns = [], array $presentValues = []): ?string {
     $type  = $renderer['type'] ?? '';
     $rules = '';
+    // Si se pasan las categorías presentes en los datos, la leyenda se poda a esas
+    // (evita mostrar categorías nacionales sin rasgos en el municipio, p. ej. refinerías).
+    $present = $presentValues ? array_flip(array_map('strval', $presentValues)) : null;
 
     // Resuelve el nombre del campo al de la columna real en PostGIS: ogr2ogr suele
     // minusculizar (TIPO → tipo). Se busca sin distinguir mayúsculas; si no hay lista
@@ -150,6 +153,7 @@ function sld_from_arcgis_renderer(array $renderer, string $styleName, string $pg
         $fieldX = htmlspecialchars($resolveField($field), ENT_QUOTES, 'UTF-8');
         foreach ($infos as $u) {
             $val   = (string)($u['value'] ?? '');
+            if ($present !== null && !isset($present[$val])) continue;   // categoría sin rasgos en el municipio
             $valX  = htmlspecialchars($val, ENT_QUOTES, 'UTF-8');
             $label = htmlspecialchars((string)($u['label'] ?? $val), ENT_QUOTES, 'UTF-8');
             $sym   = sld_symbolizer_from_arcgis($u['symbol'] ?? null, $pgGeom);

@@ -71,6 +71,18 @@ function pg_columns(string $table): array {
     return $cols;
 }
 
+/** Valores distintos (no nulos) de una columna — para podar la leyenda a lo presente. */
+function pg_distinct_values(string $table, string $col): array {
+    if (!pg_table_exists($table)) return [];
+    $id  = pg_ident(pg_rw(), $col);
+    $sql = "SELECT DISTINCT $id AS v FROM " . pg_ident(pg_rw(), $table) . " WHERE $id IS NOT NULL LIMIT 1000";
+    $q = pg_query(pg_rw(), $sql);
+    if (!$q) return [];
+    $out = [];
+    while ($r = pg_fetch_assoc($q)) $out[] = (string)$r['v'];
+    return $out;
+}
+
 /** Extent en EPSG:4326 [minx,miny,maxx,maxy] (para recortar importaciones al municipio). */
 function pg_extent_4326(string $table): ?array {
     if (!pg_table_exists($table)) return null;

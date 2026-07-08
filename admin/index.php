@@ -292,7 +292,16 @@ function publish_source(string $src, string $table, string $title, string $theme
     // Estilo: primero se intenta el renderer clasificado (importación); si no, preset plano.
     $sld = null; $stype = null;
     if (!empty($opts['renderer']) && is_array($opts['renderer'])) {
-        $sld = sld_from_arcgis_renderer($opts['renderer'], $styleName, $geom, pg_columns($table));
+        $cols = pg_columns($table);
+        // Podar la leyenda a las categorías realmente presentes (uniqueValue).
+        $present = [];
+        $r = $opts['renderer'];
+        if (($r['type'] ?? '') === 'uniqueValue' && !empty($r['field1'])) {
+            $field = strtolower((string)$r['field1']);
+            foreach ($cols as $c) if (strcasecmp($c, (string)$r['field1']) === 0) { $field = $c; break; }
+            $present = pg_distinct_values($table, $field);
+        }
+        $sld = sld_from_arcgis_renderer($r, $styleName, $geom, $cols, $present);
         if ($sld !== null) $stype = 'classified';
     }
     $color = (string)($opts['color'] ?? '#1e73be');
