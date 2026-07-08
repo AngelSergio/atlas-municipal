@@ -26,6 +26,12 @@ function mcfgRecurso(key, fallback = '') {
     return (C && C.recursos && C.recursos[key] !== undefined) ? C.recursos[key] : fallback;
 }
 
+// Color primario del municipio para estilos dibujados en el mapa (medición,
+// rutas, análisis, perfil de terreno…). Estos se pintan con ol.style.Stroke/
+// Fill directamente en canvas/WebGL, fuera del alcance de las variables CSS,
+// así que se leen aquí una sola vez de MUNICIPIO_CONFIG.
+const THEME_PRIMARY = (window.MUNICIPIO_CONFIG && window.MUNICIPIO_CONFIG.colores && window.MUNICIPIO_CONFIG.colores.primary) || '#1e73be';
+
 function fetchWithTimeout(url, options = {}, ms = 20000) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), ms);
@@ -1035,7 +1041,7 @@ function createWMSLayers() {
                         layerKey: layerKey,
                         // Metadatos para el orden/contorno en vivo (vienen de municipio.layers.js).
                         styleType: layerDef.styleType || '',
-                        color: layerDef.color || '#1e73be',
+                        color: layerDef.color || THEME_PRIMARY,
                         width: layerDef.width || 2
                     }
                 });
@@ -1072,7 +1078,7 @@ function createWMSLayers() {
                             name: layerDef.name,
                             layerKey: layerKey,
                             styleType: layerDef.styleType || '',
-                            color: layerDef.color || '#1e73be',
+                            color: layerDef.color || THEME_PRIMARY,
                             width: layerDef.width || 2
                         }
                     });
@@ -1170,7 +1176,7 @@ function effectiveStyleType(key) {
 
 /** SLD 1.0.0 mínimo que replica los presets poly-outline/poly-fill de admin/inc/sld.php. */
 function buildPolygonSld(layerName, type, color, width) {
-    const c = /^#[0-9a-fA-F]{6}$/.test(color) ? color : '#1e73be';
+    const c = /^#[0-9a-fA-F]{6}$/.test(color) ? color : THEME_PRIMARY;
     const w = (Number(width) > 0 ? Number(width) : 2).toFixed(1);
     const sym = type === 'poly-fill'
         ? `<PolygonSymbolizer><Fill><CssParameter name="fill">${c}</CssParameter><CssParameter name="fill-opacity">0.45</CssParameter></Fill><Stroke><CssParameter name="stroke">${c}</CssParameter><CssParameter name="stroke-width">${w}</CssParameter></Stroke></PolygonSymbolizer>`
@@ -2985,7 +2991,7 @@ function setupEventListeners() {
                     return new ol.style.Style({
                         image: new ol.style.Circle({
                             radius: 8.5,
-                            fill: new ol.style.Fill({ color: '#1e73be' }),
+                            fill: new ol.style.Fill({ color: THEME_PRIMARY }),
                             stroke: new ol.style.Stroke({ color: '#ffffff', width: 3 })
                         })
                     });
@@ -4189,10 +4195,10 @@ function getMeasureDistanceStyles(feature) {
             stroke: new ol.style.Stroke({ color: 'rgba(147, 29, 61, 0.18)', width: 7, lineCap: 'round', lineJoin: 'round' })
         }),
         new ol.style.Style({
-            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.8, lineCap: 'round', lineJoin: 'round' }),
+            stroke: new ol.style.Stroke({ color: THEME_PRIMARY, width: 2.8, lineCap: 'round', lineJoin: 'round' }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#1e73be' }),
+                fill: new ol.style.Fill({ color: THEME_PRIMARY }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         }),
@@ -4243,7 +4249,7 @@ function getMeasureDistanceStyles(feature) {
                 text: new ol.style.Text({
                     text: formatMeasureDistance(segmentLength),
                     font: '700 12px Arial, sans-serif',
-                    fill: new ol.style.Fill({ color: '#1e73be' }),
+                    fill: new ol.style.Fill({ color: THEME_PRIMARY }),
                     stroke: new ol.style.Stroke({ color: '#ffffff', width: 3.5 }),
                     backgroundFill: new ol.style.Fill({ color: 'rgba(255,255,255,0.96)' }),
                     backgroundStroke: new ol.style.Stroke({ color: 'rgba(147,29,61,0.18)', width: 1.2 }),
@@ -4298,10 +4304,10 @@ function getMeasurePolygonStyles(feature) {
         }),
         new ol.style.Style({
             fill: new ol.style.Fill({ color: 'rgba(147, 29, 61, 0.18)' }),
-            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.6, lineCap: 'round', lineJoin: 'round' }),
+            stroke: new ol.style.Stroke({ color: THEME_PRIMARY, width: 2.6, lineCap: 'round', lineJoin: 'round' }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#1e73be' }),
+                fill: new ol.style.Fill({ color: THEME_PRIMARY }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         }),
@@ -4352,7 +4358,7 @@ function getMeasurePolygonStyles(feature) {
             text: new ol.style.Text({
                 text: formatMeasureDistance(segmentLength),
                 font: '700 12px Arial, sans-serif',
-                fill: new ol.style.Fill({ color: '#1e73be' }),
+                fill: new ol.style.Fill({ color: THEME_PRIMARY }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 3.5 }),
                 backgroundFill: new ol.style.Fill({ color: 'rgba(255,255,255,0.96)' }),
                 backgroundStroke: new ol.style.Stroke({ color: 'rgba(147,29,61,0.18)', width: 1.2 }),
@@ -4391,7 +4397,7 @@ function getMeasurePolygonStyles(feature) {
                 text: `Área: ${formatMeasureArea(area)}
 Perímetro: ${formatMeasureDistance(perimeter)}`,
                 font: '700 12px Arial, sans-serif',
-                fill: new ol.style.Fill({ color: '#1e73be' }),
+                fill: new ol.style.Fill({ color: THEME_PRIMARY }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 3.2 }),
                 backgroundFill: new ol.style.Fill({ color: 'rgba(255,255,255,0.97)' }),
                 backgroundStroke: new ol.style.Stroke({ color: 'rgba(147,29,61,0.22)', width: 1.2 }),
@@ -4607,10 +4613,10 @@ function ensureObjectAnalysisLayer() {
         source: objectAnalysisSource,
         style: new ol.style.Style({
             fill: new ol.style.Fill({ color: 'rgba(147, 29, 61, 0.18)' }),
-            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.5 }),
+            stroke: new ol.style.Stroke({ color: THEME_PRIMARY, width: 2.5 }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#1e73be' }),
+                fill: new ol.style.Fill({ color: THEME_PRIMARY }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         })
@@ -4752,10 +4758,10 @@ function startObjectAnalysisDraw() {
         type: 'Polygon',
         style: new ol.style.Style({
             fill: new ol.style.Fill({ color: 'rgba(147, 29, 61, 0.18)' }),
-            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.5, lineDash: [10, 8] }),
+            stroke: new ol.style.Stroke({ color: THEME_PRIMARY, width: 2.5, lineDash: [10, 8] }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#1e73be' }),
+                fill: new ol.style.Fill({ color: THEME_PRIMARY }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         })
@@ -4893,10 +4899,10 @@ function getProfileDirectionAngle(geometry, fraction) {
 
 function getProfileDrawSketchStyle() {
     return new ol.style.Style({
-        stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.5, lineDash: [10, 8], lineCap: 'round', lineJoin: 'round' }),
+        stroke: new ol.style.Stroke({ color: THEME_PRIMARY, width: 2.5, lineDash: [10, 8], lineCap: 'round', lineJoin: 'round' }),
         image: new ol.style.Circle({
             radius: 5,
-            fill: new ol.style.Fill({ color: '#1e73be' }),
+            fill: new ol.style.Fill({ color: THEME_PRIMARY }),
             stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
         })
     });
@@ -4908,10 +4914,10 @@ function getProfileAnimatedStyles(feature) {
             stroke: new ol.style.Stroke({ color: 'rgba(147, 29, 61, 0.18)', width: 7, lineCap: 'round', lineJoin: 'round' })
         }),
         new ol.style.Style({
-            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.8, lineCap: 'round', lineJoin: 'round' }),
+            stroke: new ol.style.Stroke({ color: THEME_PRIMARY, width: 2.8, lineCap: 'round', lineJoin: 'round' }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#1e73be' }),
+                fill: new ol.style.Fill({ color: THEME_PRIMARY }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         }),
@@ -4961,7 +4967,7 @@ function getProfileAnimatedStyles(feature) {
                 rotation: angle + (Math.PI / 2),
                 angle: 0,
                 fill: new ol.style.Fill({ color: index === 0 ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.72)' }),
-                stroke: new ol.style.Stroke({ color: '#1e73be', width: index === 0 ? 2.3 : 1.4 })
+                stroke: new ol.style.Stroke({ color: THEME_PRIMARY, width: index === 0 ? 2.3 : 1.4 })
             })
         }));
     });
@@ -5437,10 +5443,10 @@ function ensureTerrain3DLayer() {
         source: terrain3DSource,
         style: new ol.style.Style({
             fill: new ol.style.Fill({ color: 'rgba(147, 29, 61, 0.12)' }),
-            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.5, lineDash: [8, 6] }),
+            stroke: new ol.style.Stroke({ color: THEME_PRIMARY, width: 2.5, lineDash: [8, 6] }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#1e73be' }),
+                fill: new ol.style.Fill({ color: THEME_PRIMARY }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         })
@@ -5745,10 +5751,10 @@ async function startTerrain3DDraw() {
         type: 'Polygon',
         style: new ol.style.Style({
             fill: new ol.style.Fill({ color: 'rgba(147, 29, 61, 0.12)' }),
-            stroke: new ol.style.Stroke({ color: '#1e73be', width: 2.5, lineDash: [10, 8] }),
+            stroke: new ol.style.Stroke({ color: THEME_PRIMARY, width: 2.5, lineDash: [10, 8] }),
             image: new ol.style.Circle({
                 radius: 5,
-                fill: new ol.style.Fill({ color: '#1e73be' }),
+                fill: new ol.style.Fill({ color: THEME_PRIMARY }),
                 stroke: new ol.style.Stroke({ color: '#ffffff', width: 1.5 })
             })
         })
