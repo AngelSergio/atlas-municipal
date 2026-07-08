@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 function view_header(string $title): void {
-    $muni = 'Apaseo el Grande';
+    $muni = config()['municipio'] ?? 'Apaseo el Grande';
     echo '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">';
     echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
     echo '<title>' . h($title) . ' · Atlas ' . h($muni) . '</title>';
@@ -27,7 +27,7 @@ function view_header(string $title): void {
 }
 
 function view_footer(): void {
-    echo '</main><footer class="foot">Protección Civil · ' . h('Apaseo el Grande') . ' — acceso restringido</footer></body></html>';
+    echo '</main><footer class="foot">Protección Civil · ' . h(config()['municipio'] ?? 'Apaseo el Grande') . ' — acceso restringido</footer></body></html>';
 }
 
 /* ---------- Enrutado de vistas ---------- */
