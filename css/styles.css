@@ -1,14 +1,15 @@
 :root {
-    /* Redefinición de variables para tema claro basado en azul institucional, blanco y gris */
-    --primary: #1e73be;         /* Azul principal (Apaseo el Grande) */
-    --primary-dark: #155a94;    /* Variante oscura para hover */
-    --primary-light: #52aae9;   /* Tono claro para acentos */
+    /* Valores por defecto; municipio-theme.js los sobreescribe en runtime desde
+       MUNICIPIO_CONFIG.colores (ver municipio.config.js). Instancia: Villagrán. */
+    --primary: #6a1c32;         /* Vino institucional */
+    --primary-dark: #42111f;    /* Variante oscura para hover */
+    --primary-light: #d9839b;   /* Tono claro para acentos */
     --bg-dark: #F5F5F5;         /* Fondo general claro */
     --bg-panel: #FFFFFF;        /* Paneles blancos */
     --bg-card: #F7F7F7;         /* Tarjetas ligeramente gris claro */
     --text-primary: #2E2E2E;    /* Texto principal oscuro */
     --text-secondary: #666666;  /* Texto secundario gris medio */
-    --accent: #2d9bea;          /* Acento derivado del primario */
+    --accent: #9f2447;          /* Acento derivado del primario */
     --success: #10b981;         /* Mantener éxito */
     --warning: #f59e0b;         /* Mantener advertencia */
     --border: rgba(0,0,0,0.1); /* Bordes sutiles */
@@ -106,7 +107,7 @@ body.sidebar-collapsed {
     height: 60px;
     background:
         radial-gradient(1100px 78px at 50% -10%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.015) 42%, transparent 68%),
-        linear-gradient(180deg, #1f5f97 0%, #174b79 56%, #113c62 100%);
+        linear-gradient(180deg, #971f41 0%, #791733 56%, #621128 100%);
     display: flex;
     align-items: center;
     padding: 0;
@@ -235,9 +236,9 @@ body.sidebar-collapsed {
     background: linear-gradient(
         180deg,
         #ffffff        0%,
-        #e9f2fb       28%,
-        #d5ebff       52%,
-        #e9f2fb       76%,
+        #fbe9ee       28%,
+        #ffd5e1       52%,
+        #fbe9ee       76%,
         #e8b8b8      100%
     );
     -webkit-background-clip: text;
@@ -391,12 +392,12 @@ body.atlas-cesium-active .ol-print-dialog {
 /* Estado activo: pill blanco sobre el fondo del grupo */
 .header-btn.active {
     background: rgba(255,255,255,0.96);
-    color: #1a568a;
+    color: #8a1a3a;
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.22);
     transform: translateY(0);
 }
-.header-btn.active i { color: #1a568a; }
+.header-btn.active i { color: #8a1a3a; }
 
 /* ── Botón 3D: igual que los demás botones del pill ── */
 .header-btn-3d {
@@ -561,7 +562,7 @@ body.atlas-cesium-active .ol-print-dialog {
     pointer-events: none;
 }
 .atlas-cesium-geocoder__status.is-error {
-    color: #d1eaff;
+    color: #ffd1df;
 }
 .atlas-cesium-geocoder__status.is-info {
     color: rgba(255,255,255,0.72);
@@ -975,7 +976,7 @@ body.atlas-cesium-active .ol-print-dialog {
     border-radius: 999px;
     background: rgba(255, 248, 236, 0.96);
     border: 1.25px solid rgba(122, 22, 50, 0.28);
-    color: #17558b;
+    color: #8b1738;
     font-size: 0.56rem;
     font-weight: 800;
     line-height: 1;
@@ -1107,7 +1108,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 .sidebar-topbar {
     height: 38px;
     min-height: 38px;
-    background: linear-gradient(180deg, #1c598e 0%, #195182 100%);
+    background: linear-gradient(180deg, #8e1c3d 0%, #821937 100%);
     position: relative;
     border-right: 1px solid rgba(255,255,255,0.06);
 }
@@ -1338,7 +1339,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     display: flex;
     align-items: center;
     padding: 8px 11px;
-    background: linear-gradient(180deg, #226097 0%, #1d578a 100%);
+    background: linear-gradient(180deg, #972243 0%, #8a1d3c 100%);
     border: 1px solid rgba(122, 21, 50, 0.62);
     border-radius: 10px;
     box-shadow: 0 2px 7px rgba(122, 21, 50, 0.10);
@@ -1350,7 +1351,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 }
 
 .layer-group-header:hover {
-    background: linear-gradient(180deg, #1d5a8f 0%, #1a5182 100%);
+    background: linear-gradient(180deg, #8f1d3e 0%, #821a37 100%);
     box-shadow: 0 4px 10px rgba(122, 21, 50, 0.14);
 }
 
@@ -1367,7 +1368,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 
 .layer-group-header .icon {
     margin-right: 8px;
-    color: #b2d6f6;
+    color: #f6b2c5;
     font-size: 1.2rem;
 }
 
@@ -2053,7 +2054,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     height: 18px;
     border: none;
     border-radius: 3px;
-    background: #1b80d8;
+    background: #d81b51;
     color: #fff;
     font-size: 11px;
     line-height: 18px;
@@ -2063,7 +2064,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 }
 
 .geocoder-selection-close:hover {
-    background: #1771bf;
+    background: #bf1747;
 }
 
 .geocoder-selection-marker {
@@ -2164,7 +2165,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     padding: 3px 6px;
     background: #eeeeee;
     font-weight: 700;
-    color: #12538c;
+    color: #8c1235;
     border-bottom: 1px solid rgba(0,0,0,0.12);
     font-size: 0.92rem;
     text-align: center;
@@ -2179,7 +2180,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     justify-self: center;
     align-self: center;
     margin: 0;
-    color: #0f497b;
+    color: #7b0f2e;
     font-weight: 800;
 }
 
@@ -2568,7 +2569,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
 .basemap-traffic-global-title {
     font-size: 0.84rem;
     font-weight: 700;
-    color: #184c7a;
+    color: #7a1834;
     line-height: 1.05;
 }
 
@@ -3659,7 +3660,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     min-width: 0;
 }
 .sidebar-tip__body i {
-    color: #1a568a;
+    color: #8a1a3a;
     font-size: 0.85rem;
     margin-top: 2px;
     flex-shrink: 0;
@@ -3671,7 +3672,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     gap: 6px;
     border: 1px solid rgba(138,26,55,0.14);
     background: #ffffff;
-    color: #1a568a;
+    color: #8a1a3a;
     font-size: 0.70rem;
     font-weight: 700;
     padding: 3px 10px;
@@ -3693,13 +3694,13 @@ body.sidebar-collapsed .header-sidebar-toggle {
     height: 13px;
     border-radius: 50%;
     background: rgba(138,26,55,0.09);
-    color: #1a568a;
+    color: #8a1a3a;
     font-size: 0.60rem;
     font-weight: 800;
     flex-shrink: 0;
 }
 .sidebar-tip__guide-link:hover {
-    color: #14456f;
+    color: #6f142e;
     background: #ffffff;
     border-color: rgba(138,26,55,0.22);
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -3718,7 +3719,7 @@ body.sidebar-collapsed .header-sidebar-toggle {
     margin-top: 2px;
     transition: color 0.15s;
 }
-.sidebar-tip__close:hover { color: #1a568a; }
+.sidebar-tip__close:hover { color: #8a1a3a; }
 
 /* ── Tooltips mejorados en botones del header ── */
 /* Tooltip de botones — manejado por JS (ver initHeaderTooltips) */
@@ -3997,7 +3998,7 @@ body.ol-street-view--activated .legend-panel.collapsed {
 .legend-item-title {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #0f497b;
+    color: #7b0f2e;
     margin-bottom: 8px;
     line-height: 1.25;
 }
@@ -4037,7 +4038,7 @@ body.ol-street-view--activated .legend-panel.collapsed {
     border: 1px solid rgba(15, 73, 123, 0.25);
     border-radius: 6px;
     background: #fff;
-    color: #0f497b;
+    color: #7b0f2e;
     font-size: 0.8rem;
     line-height: 1;
     cursor: pointer;
@@ -4052,8 +4053,8 @@ body.ol-street-view--activated .legend-panel.collapsed {
     cursor: default;
 }
 .legend-tool-style.is-fill {
-    background: #0f497b;
-    border-color: #0f497b;
+    background: #7b0f2e;
+    border-color: #7b0f2e;
     color: #fff;
 }
 
@@ -4072,12 +4073,12 @@ body.ol-street-view--activated .legend-panel.collapsed {
 }
 
 .legend-content::-webkit-scrollbar-thumb {
-    background: #0f497b;
+    background: #7b0f2e;
     border-radius: 10px;
 }
 
 .legend-content {
-    scrollbar-color: #0f497b rgba(0,0,0,0.06);
+    scrollbar-color: #7b0f2e rgba(0,0,0,0.06);
     scrollbar-width: thin;
 }
 
@@ -4256,7 +4257,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
         top: var(--header-h);
         left: 0; right: 0;
         z-index: 1399;
-        background: var(--primary-dark, #1e73be);
+        background: var(--primary-dark, #42111f);
         padding: 10px 12px 12px;
         flex-wrap: wrap;
         gap: 6px;
@@ -4878,8 +4879,8 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
 
 /* ── Variables de diseño del panel ───────────────────── */
 #q9-info-panel {
-    --q9-primary: var(--primary, #1e73be);
-    --q9-primary-dk: var(--primary-dark, #155a94);
+    --q9-primary: var(--primary, #6a1c32);
+    --q9-primary-dk: var(--primary-dark, #42111f);
     --q9-radius: 14px;
     --q9-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 8px 28px rgba(0,0,0,0.14);
 
@@ -5469,14 +5470,14 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
         border-radius: 10px !important;
         border: 1px solid rgba(123, 15, 40, 0.14) !important;
         background: rgba(255,255,255,0.94) !important;
-        color: #154b7b !important;
+        color: #7b1532 !important;
         box-shadow: 0 8px 18px rgba(72, 10, 28, 0.10) !important;
     }
 
     .ol-zoom button:hover,
     .ol-zoom-general-control button:hover {
         background: #ffffff !important;
-        color: #113d64 !important;
+        color: #641128 !important;
     }
 
     /* Panel lateral: inicio más limpio */
@@ -5489,7 +5490,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
     .sidebar-topbar {
         height: 42px;
         min-height: 42px;
-        background: linear-gradient(180deg, #17568d 0%, #134673 100%);
+        background: linear-gradient(180deg, #8d1739 0%, #73132e 100%);
         border-right: 1px solid rgba(255,255,255,0.08);
         border-bottom: 1px solid rgba(84, 11, 30, 0.26);
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
@@ -5497,7 +5498,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
 
     .sidebar-header {
         padding: 20px 12px 8px;
-        background: linear-gradient(180deg, #ffffff 0%, #f3f8fc 100%);
+        background: linear-gradient(180deg, #ffffff 0%, #fcf3f6 100%);
         border-bottom: 1px solid rgba(91, 12, 33, 0.08);
     }
 
@@ -6182,12 +6183,12 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
 .legend-panel.collapsed .legend-header .close-btn {
     border: 1px solid rgba(123, 15, 40, 0.14);
     background: rgba(255,255,255,0.94);
-    color: #154b7b;
+    color: #7b1532;
     box-shadow: 0 8px 18px rgba(72, 10, 28, 0.10);
 }
 .legend-panel.collapsed .legend-header .close-btn:hover {
     background: #ffffff;
-    color: #113d64;
+    color: #641128;
 }
 
 #btn-geocoder-close.locating {
@@ -6202,7 +6203,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
   overflow: hidden;
 }
 .ol-legend .header, .legend .header, .leyenda .header, #legend .header, #leyenda .header {
-  background: linear-gradient(180deg,#00417a,#00305a);
+  background: linear-gradient(180deg,#7a0023,#5a001a);
   color: #fff;
   font-weight: 600;
   letter-spacing: .3px;
@@ -6309,7 +6310,7 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
 .header-btn-3d.active,
 .header-btn-3d.active:hover {
     background: rgba(255,255,255,0.96) !important;
-    color: #1a568a !important;
+    color: #8a1a3a !important;
     border-radius: 6px;
     border: none !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.22) !important;
@@ -6344,16 +6345,16 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
 .geocoder-close {
     width: 34px !important;
     height: 34px !important;
-    color: #154b7b !important;
+    color: #7b1532 !important;
 }
 
 .geocoder-close:hover {
     background: #ffffff !important;
-    color: #113d64 !important;
+    color: #641128 !important;
 }
 
 .geocoder-field > i {
-    color: #154b7b !important;
+    color: #7b1532 !important;
 }
 
 .geocoder-input {
