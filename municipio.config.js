@@ -27,12 +27,12 @@ window.MUNICIPIO_CONFIG = {
   limiteMunicipalLayer: 'limite_municipal',
 
   mapa: {
-    center:          [-100.9825, 20.5175], // [longitud, latitud] WGS84 — centro del municipio de Villagrán
+    center:          [-100.99921, 20.54485], // [longitud, latitud] WGS84 — centro del municipio de Villagrán
     zoom:            12,
-    // Extensión del municipio (EPSG:3857). [CONFIRMAR] recalcular con la capa real limite_municipal.
-    homeExtent3857:  [-11252730.7253, 2324634.4763, -11229910.2297, 2344246.2711],
+    // Extensión del municipio (EPSG:3857), derivada de la capa real limite_municipal (INEGI 11044).
+    homeExtent3857:  [-11255723.5498, 2332124.9953, -11230637.8139, 2343254.0004],
     // Mismo extent en grados [oeste, sur, este, norte] — usado por la vista 3D (Cesium)
-    homeExtentWGS84: [-101.08500, 20.43500, -100.88000, 20.60000],
+    homeExtentWGS84: [-101.111885, 20.498041, -100.886536, 20.591656],
     // Vista inicial de la cámara 3D
     vista3D: { height: 42000, pitch: -55 }
   },
