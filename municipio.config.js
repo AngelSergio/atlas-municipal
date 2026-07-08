@@ -50,12 +50,12 @@ window.MUNICIPIO_CONFIG = {
   logoEscudo:    'assets/images/branding/villagran-pc.png',
   logoMunicipio: 'assets/images/branding/villagran-logo.png', // logo institucional del municipio (corazón/arcos)
 
-  // Paleta derivada del logo municipal: magenta (primario) + vino/cantera (acento).
+  // Paleta institucional: vino (#6a1c32) y variaciones del mismo tono.
   colores: {
-    primary:      '#9c3f86',
-    primaryDark:  '#742e63',
-    primaryLight: '#c78ab9',
-    accent:       '#8a3b2c'
+    primary:      '#6a1c32',
+    primaryDark:  '#42111f',
+    primaryLight: '#d9839b',
+    accent:       '#9f2447'
   },
 
   contacto: {

@@ -11,6 +11,7 @@ function view_header(string $title): void {
     echo '<link rel="icon" href="' . h($app) . '/assets/images/branding/favicon-32.png">';
     echo '<link rel="stylesheet" href="' . h($app) . '/assets/vendor/fontawesome/css/all.min.css">';
     echo '<link rel="stylesheet" href="assets/admin.css">';
+    echo admin_theme_css();
     echo '<script>document.documentElement.classList.add("js")</script></head><body>';
     echo '<header class="topbar"><div class="brand">';
     $logo = config()['logo'] ?? 'assets/images/branding/apaseo-pc.png';

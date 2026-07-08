@@ -62,6 +62,40 @@ if (PHP_SAPI !== 'cli') {
 /* ---- Helpers ---- */
 function h($s): string { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
+/**
+ * <style> con las variables CSS de admin.css sobreescritas desde
+ * config()['colores'] (mismo formato que municipio.config.js: primary,
+ * primaryDark, primaryLight). Deriva también los tintes/sombras que
+ * admin.css espera como var(--primary-tint-06|18, --primary-shadow).
+ * Si la instancia no declara 'colores', no imprime nada y admin.css usa
+ * su azul por defecto (Apaseo) sin cambios.
+ */
+function admin_theme_css(): string {
+    $c = config()['colores'] ?? null;
+    if (!$c || empty($c['primary'])) return '';
+    $hex2rgb = function (string $hex): array {
+        $hex = ltrim($hex, '#');
+        if (!preg_match('/^[0-9a-fA-F]{6}$/', $hex)) return [30, 115, 190];
+        return [hexdec(substr($hex, 0, 2)), hexdec(substr($hex, 2, 2)), hexdec(substr($hex, 4, 2))];
+    };
+    $primary      = $c['primary'];
+    $primaryDark  = $c['primaryDark'] ?? $primary;
+    $primaryLight = $c['primaryLight'] ?? $primary;
+    [$pr, $pg, $pb] = $hex2rgb($primary);
+    [$dr, $dg, $db] = $hex2rgb($primaryDark);
+
+    $vars = sprintf(
+        '--primary:%s;--primary-dark:%s;--primary-light:%s;'
+        . '--primary-tint-06:rgba(%d,%d,%d,.06);--primary-tint-18:rgba(%d,%d,%d,.18);'
+        . '--primary-shadow:rgba(%d,%d,%d,.28);',
+        h($primary), h($primaryDark), h($primaryLight), $pr, $pg, $pb, $pr, $pg, $pb, $dr, $dg, $db
+    );
+    if (!empty($c['primary50']))  $vars .= '--primary-50:' . h($c['primary50']) . ';';
+    if (!empty($c['primary100'])) $vars .= '--primary-100:' . h($c['primary100']) . ';';
+
+    return '<style>:root{' . $vars . '}</style>';
+}
+
 function redirect(string $to): void { header('Location: ' . $to); exit; }
 
 function csrf_token(): string {

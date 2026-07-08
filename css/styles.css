@@ -4878,8 +4878,8 @@ body.ol-street-view--activated.traffic-overlay-active .ol-street-view--map {
 
 /* ── Variables de diseño del panel ───────────────────── */
 #q9-info-panel {
-    --q9-primary: #1e73be;
-    --q9-primary-dk: #155a94;
+    --q9-primary: var(--primary, #1e73be);
+    --q9-primary-dk: var(--primary-dark, #155a94);
     --q9-radius: 14px;
     --q9-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 8px 28px rgba(0,0,0,0.14);
 
