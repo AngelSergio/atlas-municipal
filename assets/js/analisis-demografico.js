@@ -1489,9 +1489,20 @@
       : 'No se localizaron recursos de apoyo dentro del área analizada.';
   }
 
+  // Clave de UBICACIÓN de un rasgo (su primera coordenada, redondeada a ~1 m). Sirve para
+  // no contar dos veces registros co-localizados (p. ej. escuelas con un registro por
+  // nivel/turno en el mismo punto): el conteo refleja ubicaciones, como se ven en el mapa.
+  function locationKey(geometry) {
+    try {
+      const c = geometry.getFirstCoordinate ? geometry.getFirstCoordinate() : null;
+      if (c && c.length >= 2) return `${Math.round(c[0])},${Math.round(c[1])}`;
+    } catch (_e) {}
+    return 'k' + Math.random();
+  }
+
   function getFeaturesWithinRadius(features, point, radius) {
     let nearest = { distance: Infinity, feature: null };
-    let count = 0;
+    const seen = new Set();
     (features || []).forEach(feature => {
       try {
         const geometry = feature.getGeometry();
@@ -1501,24 +1512,28 @@
         const dy = closest[1] - point[1];
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist <= radius) {
-          count += 1;
+          seen.add(locationKey(geometry));   // dedupe por ubicación
           if (dist < nearest.distance) {
             nearest = { distance: dist, feature };
           }
         }
       } catch (_e) {}
     });
-    return { count, nearest, present: count > 0 };
+    return { count: seen.size, nearest, present: seen.size > 0 };
   }
 
   function getFeaturesWithinGeometry(features, geometry, returnMatches) {
     const matches = [];
+    const seen = new Set();
     const polygonGeom = geometry || null;
     (features || []).forEach(feature => {
       try {
         const featureGeometry = feature?.getGeometry?.();
         if (!featureGeometry || !polygonGeom) return;
         if (exactGeometryIntersectsSelection(featureGeometry, polygonGeom)) {
+          const key = locationKey(featureGeometry);
+          if (seen.has(key)) return;   // dedupe por ubicación
+          seen.add(key);
           matches.push(feature);
         }
       } catch (_e) {}
