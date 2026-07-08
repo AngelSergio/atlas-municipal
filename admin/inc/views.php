@@ -13,7 +13,8 @@ function view_header(string $title): void {
     echo '<link rel="stylesheet" href="assets/admin.css">';
     echo '<script>document.documentElement.classList.add("js")</script></head><body>';
     echo '<header class="topbar"><div class="brand">';
-    echo '<img src="' . h($app) . '/assets/images/branding/apaseo-pc.png" alt="" class="logo">';
+    $logo = config()['logo'] ?? 'assets/images/branding/apaseo-pc.png';
+    echo '<img src="' . h($app) . '/' . h(ltrim($logo, '/')) . '" alt="" class="logo">';
     echo '<div><strong>Panel administrativo</strong><span>Atlas de Peligros y Riesgos · ' . h($muni) . '</span></div></div>';
     if (is_authenticated()) {
         echo '<form method="post" class="logout"><input type="hidden" name="action" value="logout">' . csrf_field();
