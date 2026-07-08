@@ -1,7 +1,7 @@
 /**
  * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.
  * No editar a mano: usar el panel admin en <host>/<app>/admin/
- * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-08T08:36:17+00:00
+ * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-08T08:54:45+00:00
  */
 window.MUNICIPIO_LAYERS = {
     "extents": {
@@ -52,6 +52,36 @@ window.MUNICIPIO_LAYERS = {
             2334922.332314105,
             -11243003.443828993,
             2334922.332314105
+        ],
+        "localidades": [
+            -11252218.100514652,
+            2332764.320815083,
+            -11230640.70745555,
+            2341246.3566977987
+        ],
+        "agebs_urbanas": [
+            -11252218.100514652,
+            2333346.778679353,
+            -11234144.494005505,
+            2340671.368300249
+        ],
+        "agebs_rurales": [
+            -11255723.34097371,
+            2332125.101268372,
+            -11230638.422134958,
+            2343253.848185773
+        ],
+        "manzanas": [
+            -11252205.891078433,
+            2332771.160414037,
+            -11230641.621006478,
+            2341242.874350007
+        ],
+        "vialidad": [
+            -11252218.100514652,
+            2332764.3207080597,
+            -11230640.707456382,
+            2341245.617298147
         ]
     },
     "groups": [
@@ -198,6 +228,46 @@ window.MUNICIPIO_LAYERS = {
                             "styleType": "poly-outline",
                             "color": "#be1e1e",
                             "width": 3
+                        },
+                        {
+                            "name": "Localidades",
+                            "layer": "localidades",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#8e24aa",
+                            "width": 1.5
+                        },
+                        {
+                            "name": "AGEB urbanas",
+                            "layer": "agebs_urbanas",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#00838f",
+                            "width": 1
+                        },
+                        {
+                            "name": "AGEB rurales",
+                            "layer": "agebs_rurales",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#558b2f",
+                            "width": 1
+                        },
+                        {
+                            "name": "Manzanas (Censo 2020)",
+                            "layer": "manzanas",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#607d8b",
+                            "width": 0.8
+                        },
+                        {
+                            "name": "Vialidad (ejes)",
+                            "layer": "vialidad",
+                            "visible": false,
+                            "styleType": "line",
+                            "color": "#795548",
+                            "width": 0.8
                         }
                     ]
                 }
@@ -212,8 +282,22 @@ window.MUNICIPIO_LAYERS = {
         }
     ],
     "analisis": {
-        "colonia": [],
-        "poblacion": [],
+        "colonia": [
+            {
+                "layer": "localidades",
+                "name": "Localidades",
+                "field": "nomgeo",
+                "geom": "MULTIPOLYGON"
+            }
+        ],
+        "poblacion": [
+            {
+                "layer": "manzanas",
+                "name": "Manzanas (Censo 2020)",
+                "field": "pobtot",
+                "geom": "MULTIPOLYGON"
+            }
+        ],
         "peligro": [
             {
                 "layer": "inundacion_fluvial",

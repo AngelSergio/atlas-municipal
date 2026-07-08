@@ -229,6 +229,104 @@
                 "field": "nom_estab"
             },
             "order": 2
+        },
+        {
+            "layer": "localidades",
+            "name": "Localidades",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "villagran:localidades",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#8e24aa",
+            "width": 1.5,
+            "extent": [
+                -11252218.100514652,
+                2332764.320815083,
+                -11230640.70745555,
+                2341246.3566977987
+            ],
+            "analisis": {
+                "role": "colonia",
+                "field": "nomgeo"
+            },
+            "order": 1
+        },
+        {
+            "layer": "agebs_urbanas",
+            "name": "AGEB urbanas",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "villagran:agebs_urbanas",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#00838f",
+            "width": 1,
+            "extent": [
+                -11252218.100514652,
+                2333346.778679353,
+                -11234144.494005505,
+                2340671.368300249
+            ],
+            "order": 2
+        },
+        {
+            "layer": "agebs_rurales",
+            "name": "AGEB rurales",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "villagran:agebs_rurales",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#558b2f",
+            "width": 1,
+            "extent": [
+                -11255723.34097371,
+                2332125.101268372,
+                -11230638.422134958,
+                2343253.848185773
+            ],
+            "order": 3
+        },
+        {
+            "layer": "manzanas",
+            "name": "Manzanas (Censo 2020)",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "villagran:manzanas",
+            "geom": "MULTIPOLYGON",
+            "style_type": "poly-outline",
+            "color": "#607d8b",
+            "width": 0.8,
+            "extent": [
+                -11252205.891078433,
+                2332771.160414037,
+                -11230641.621006478,
+                2341242.874350007
+            ],
+            "analisis": {
+                "role": "poblacion",
+                "field": "pobtot"
+            },
+            "order": 4
+        },
+        {
+            "layer": "vialidad",
+            "name": "Vialidad (ejes)",
+            "theme": "medio-sociodemografico",
+            "visible": false,
+            "style": "villagran:vialidad",
+            "geom": "MULTILINESTRING",
+            "style_type": "line",
+            "color": "#795548",
+            "width": 0.8,
+            "extent": [
+                -11252218.100514652,
+                2332764.3207080597,
+                -11230640.707456382,
+                2341245.617298147
+            ],
+            "order": 5
         }
     ],
     "basemap": {
