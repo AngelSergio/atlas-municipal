@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 function view_header(string $title): void {
-    $muni = 'Apaseo el Grande';
+    $muni = config()['municipio'] ?? 'Apaseo el Grande';
     echo '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">';
     echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
     echo '<title>' . h($title) . ' · Atlas ' . h($muni) . '</title>';
@@ -11,9 +11,11 @@ function view_header(string $title): void {
     echo '<link rel="icon" href="' . h($app) . '/assets/images/branding/favicon-32.png">';
     echo '<link rel="stylesheet" href="' . h($app) . '/assets/vendor/fontawesome/css/all.min.css">';
     echo '<link rel="stylesheet" href="assets/admin.css">';
+    echo admin_theme_css();
     echo '<script>document.documentElement.classList.add("js")</script></head><body>';
     echo '<header class="topbar"><div class="brand">';
-    echo '<img src="' . h($app) . '/assets/images/branding/apaseo-pc.png" alt="" class="logo">';
+    $logo = config()['logo'] ?? 'assets/images/branding/apaseo-pc.png';
+    echo '<img src="' . h($app) . '/' . h(ltrim($logo, '/')) . '" alt="" class="logo">';
     echo '<div><strong>Panel administrativo</strong><span>Atlas de Peligros y Riesgos · ' . h($muni) . '</span></div></div>';
     if (is_authenticated()) {
         echo '<form method="post" class="logout"><input type="hidden" name="action" value="logout">' . csrf_field();
@@ -27,7 +29,7 @@ function view_header(string $title): void {
 }
 
 function view_footer(): void {
-    echo '</main><footer class="foot">Protección Civil · ' . h('Apaseo el Grande') . ' — acceso restringido</footer></body></html>';
+    echo '</main><footer class="foot">Protección Civil · ' . h(config()['municipio'] ?? 'Apaseo el Grande') . ' — acceso restringido</footer></body></html>';
 }
 
 /* ---------- Enrutado de vistas ---------- */

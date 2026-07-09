@@ -1,62 +1,67 @@
 /**
- * Configuración del municipio — editar este archivo para personalizar el visor.
- * Reemplaza logos, nombre del municipio, dependencia y paleta de colores.
+ * Configuración del municipio — VILLAGRÁN, GUANAJUATO
+ * ---------------------------------------------------------------
+ * Instancia del Atlas Municipal de Peligros y Riesgos para Villagrán, Gto.
+ * Este es el municipio.config.js de la rama/despliegue `villagran`.
+ *
+ * Pendientes marcados con  [CONFIRMAR]  antes de producción.
  */
 window.MUNICIPIO_CONFIG = {
-  municipio:     'Apaseo el Grande',
+  municipio:     'Villagrán',
   estado:        'Guanajuato',
   dependencia:   'Protección Civil y Bomberos',
 
   geoserver: {
     url:       '/geoserver',
-    workspace: 'apaseo_gde'
+    workspace: 'villagran'          // [CONFIRMAR] crear este workspace en GeoServer + datastore a PostGIS
   },
 
   // Llaves de servicios externos (tokens de CLIENTE: viajan en el visor, no son secretos).
-  // Reemplazar por las del municipio. Vacío = esa función se desactiva.
   servicios: {
-    cesiumToken:  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI2OTJhNDMyYS1mNzdhLTQ2MzItOGJlOS1iMGZiYmQzYTU1MWYiLCJpZCI6NDM4MDkyLCJzdWIiOiJhbmdlbHNlcmdpbyIsImlzcyI6Imh0dHBzOi8vYXBpLmNlc2l1bS5jb20iLCJhdWQiOiJhdGxhcy1tdW5pY2lwYWwtY2VzaXVtIiwiaWF0IjoxNzgwMDk3NTYyfQ.lk79bwoXbJKDWyQUVX3PE4MhEFH9ArcigrPB7KQ1m1k', // Cesium ion (vista 3D) — https://ion.cesium.com/tokens
-    googleApiKey: ''   // Google (búsqueda de direcciones / Street View) — pendiente: llave propia de Apaseo
+    // Token de Cesium ion reutilizado (vista 3D). Se puede sustituir por uno propio de Villagrán.
+    cesiumToken:  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI2OTJhNDMyYS1mNzdhLTQ2MzItOGJlOS1iMGZiYmQzYTU1MWYiLCJpZCI6NDM4MDkyLCJzdWIiOiJhbmdlbHNlcmdpbyIsImlzcyI6Imh0dHBzOi8vYXBpLmNlc2l1bS5jb20iLCJhdWQiOiJhdGxhcy1tdW5pY2lwYWwtY2VzaXVtIiwiaWF0IjoxNzgwMDk3NTYyfQ.lk79bwoXbJKDWyQUVX3PE4MhEFH9ArcigrPB7KQ1m1k',
+    googleApiKey: ''   // [CONFIRMAR] llave propia de Villagrán (búsqueda de direcciones / Street View). Vacío = se desactiva.
   },
 
   // Capa de límite municipal: se dibuja siempre encima y se protege del modo radio.
   limiteMunicipalLayer: 'limite_municipal',
 
   mapa: {
-    center:         [-100.6235, 20.5914], // [longitud, latitud] WGS84 — centro del municipio de Apaseo el Grande
-    zoom:           12,
-    // Extensión del límite municipal (EPSG:3857), derivada de la capa limite_municipal
-    homeExtent3857: [-11217092.9685, 2328133.4185, -11185615.2763, 2358316.6365],
+    center:          [-100.99921, 20.54485], // [longitud, latitud] WGS84 — centro del municipio de Villagrán
+    zoom:            12,
+    // Extensión del municipio (EPSG:3857), derivada de la capa real limite_municipal (INEGI 11044).
+    homeExtent3857:  [-11255723.5498, 2332124.9953, -11230637.8139, 2343254.0004],
     // Mismo extent en grados [oeste, sur, este, norte] — usado por la vista 3D (Cesium)
-    homeExtentWGS84: [-100.76486, 20.46445, -100.48209, 20.71827],
+    homeExtentWGS84: [-101.111885, 20.498041, -100.886536, 20.591656],
     // Vista inicial de la cámara 3D
     vista3D: { height: 42000, pitch: -55 }
   },
 
   // Sesgo del buscador de lugares (Google Places): radio alrededor del centro del mapa.
-  geocoder: { radioMetros: 25000 },
+  geocoder: { radioMetros: 20000 },
 
   // Recursos enlazados desde el panel "Acerca de".
   recursos: {
     atlasPdf:       'pdf/atlas_municipal.pdf', // se sube/reemplaza desde el panel admin (pestaña Ajustes)
-    programasPcUrl: ''                        // URL de Programas de PC (vacío = se oculta)
+    programasPcUrl: ''                         // URL de Programas de PC (vacío = se oculta)
   },
 
-  logo:          'assets/images/branding/apaseo-pc.png',
-  logoEscudo:    'assets/images/branding/apaseo-pc.png',
-  logoMunicipio: 'assets/images/branding/apaseo-logo-horizontal.png',
+  logo:          'assets/images/branding/villagran-pc.png',   // escudo de Protección Civil (también splash)
+  logoEscudo:    'assets/images/branding/villagran-pc.png',
+  logoMunicipio: 'assets/images/branding/villagran-logo.png', // logo institucional del municipio (corazón/arcos)
 
+  // Paleta institucional: vino (#6a1c32) y variaciones del mismo tono.
   colores: {
-    primary:      '#1e73be',
-    primaryDark:  '#155a94',
-    primaryLight: '#52aae9',
-    accent:       '#2d9bea'
+    primary:      '#6a1c32',
+    primaryDark:  '#42111f',
+    primaryLight: '#d9839b',
+    accent:       '#9f2447'
   },
 
   contacto: {
-    telefono:     '(413) 158-3911',
-    telefonoHref: 'tel:+524131583911',
-    direccion:    'Melchor Ocampo #113, Zona Centro, C.P. 38160, Apaseo el Grande, Gto.',
-    mapsUrl:      'https://www.google.com/maps/search/?api=1&query=Melchor+Ocampo+113,+Zona+Centro,+Apaseo+el+Grande,+Gto.'
+    telefono:     '(411) 119-3300',
+    telefonoHref: 'tel:+524111193300',
+    direccion:    'Presidencia Municipal de Villagrán, Zona Centro, Villagrán, Gto.', // [CONFIRMAR] domicilio de Protección Civil
+    mapsUrl:      'https://www.google.com/maps/search/?api=1&query=Presidencia+Municipal+de+Villagr%C3%A1n,+Guanajuato'
   }
 };

@@ -12,7 +12,13 @@
   --radius:14px; --radius-sm:9px; --radius-xs:6px;
   --shadow-sm:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.05);
   --shadow-md:0 4px 14px rgba(16,24,40,.08);
-  --ring:0 0 0 3px rgba(30,115,190,.18);
+  /* Tintes derivados del primario (topbar/foco/hover). Cada instancia puede
+     sobreescribir estas 3 variables (además de --primary*) sin tocar el resto
+     de la hoja — ver view_header() en admin/inc/views.php. */
+  --primary-tint-06: rgba(30,115,190,.06);
+  --primary-tint-18: rgba(30,115,190,.18);
+  --primary-shadow:  rgba(21,90,148,.28);
+  --ring:0 0 0 3px var(--primary-tint-18);
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -28,7 +34,7 @@ body{
   display:flex;align-items:center;justify-content:space-between;gap:1rem;
   padding:.7rem 1.4rem;
   background:linear-gradient(180deg,var(--primary) 0%,var(--primary-dark) 100%);
-  color:#fff;box-shadow:0 2px 12px rgba(21,90,148,.28);
+  color:#fff;box-shadow:0 2px 12px var(--primary-shadow);
 }
 .brand{display:flex;align-items:center;gap:.8rem;min-width:0}
 .brand .logo{height:42px;width:auto;background:#fff;border-radius:9px;padding:3px;box-shadow:0 1px 3px rgba(0,0,0,.18)}
@@ -144,7 +150,7 @@ input[type=checkbox]{width:1.05rem;height:1.05rem;accent-color:var(--primary);cu
 .btn:hover{background:var(--bg);border-color:#d3dae3}
 .btn:active{transform:translateY(1px)}
 .btn:focus-visible{outline:none;box-shadow:var(--ring)}
-.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 1px 2px rgba(21,90,148,.25)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 1px 2px var(--primary-shadow)}
 .btn.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
 .btn.ghost{background:transparent}
 .btn.ghost:hover{background:var(--bg)}
@@ -201,7 +207,7 @@ input[type=checkbox]{width:1.05rem;height:1.05rem;accent-color:var(--primary);cu
   background:transparent;border:0;cursor:pointer;font:inherit;color:var(--ink);
   text-align:left;padding:.4rem .45rem;border-radius:7px;
 }
-.layer-toggle:hover{background:rgba(30,115,190,.06)}
+.layer-toggle:hover{background:var(--primary-tint-06)}
 .layer-toggle:focus-visible{outline:none;box-shadow:var(--ring)}
 .layer-toggle .caret{color:var(--muted);font-size:.78rem;flex:0 0 auto;transition:transform .18s ease}
 .layer.open .layer-toggle .caret{transform:rotate(90deg);color:var(--primary)}

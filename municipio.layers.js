@@ -1,15 +1,27 @@
 /**
  * Catálogo de capas del municipio — GENERADO automáticamente por el panel admin.
- * No editar a mano: usar https://<host>/atlas-apaseo-gde/admin/
- * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-08T05:06:15+00:00
+ * No editar a mano: usar el panel admin en <host>/<app>/admin/
+ * Fuente: admin/data/catalog.json   |   Regenerado: 2026-07-08T09:59:23+00:00
  */
 window.MUNICIPIO_LAYERS = {
     "extents": {
         "limite_municipal": [
-            -11217092.9685,
-            2328133.4185,
-            -11185615.2763,
-            2358316.6365
+            -11255723.340973705,
+            2332125.1012683683,
+            -11230638.422134956,
+            2343253.848185778
+        ],
+        "inundacion_fluvial": [
+            -11231401.876901446,
+            2336531.9163003787,
+            -11230648.119051186,
+            2336811.2026478765
+        ],
+        "inundacion_pluvial": [
+            -11251365.447422672,
+            2334661.0413085693,
+            -11250335.276387041,
+            2335213.859856573
         ],
         "guanajuato": [
             -11365389.64496024,
@@ -17,119 +29,95 @@ window.MUNICIPIO_LAYERS = {
             -11095358.654396243,
             2492256.177443656
         ],
-        "localidades": [
-            -11216862.295533799,
-            2329684.029902734,
-            -11185851.393960528,
-            2356601.0394009617
-        ],
-        "colonias_apaseo": [
-            -11210298.372325286,
-            2329693.4362538564,
-            -11193679.395487286,
-            2344504.4344541943
-        ],
-        "agebs_rurales": [
-            -11217092.968529863,
-            2328133.4185421593,
-            -11185615.276285773,
-            2358316.636473352
-        ],
-        "agebs_urbanos": [
-            -11210359.374547314,
-            2329684.029902734,
-            -11185851.393960528,
-            2344508.2888988256
-        ],
-        "calles_apaseo": [
-            -11216862.295641294,
-            2329684.0297227846,
-            -11185851.39406919,
-            2356601.039219044
-        ],
-        "red_vial_apaseo": [
-            -11217092.339603703,
-            2328149.475276915,
-            -11185615.549284955,
-            2356341.091403779
-        ],
-        "red_hidrografica": [
-            -11215432.120010009,
-            2305482.183210761,
-            -11140517.945087604,
-            2383724.635410001
-        ],
-        "limites_colonias": [
-            -11216862.295533799,
-            2329326.1058907732,
-            -11185851.393960528,
-            2356601.0394009617
-        ],
-        "zonas_inundacion_pluvial_apaseo": [
-            -11208366.218482355,
-            2338183.156891668,
-            -11199781.698328704,
-            2352814.5194257703
-        ],
-        "zonas_inundacion_fluvial_apaseo": [
-            -11211811.55166267,
-            2336214.1683035195,
-            -11189026.655465532,
-            2352807.359573696
-        ],
-        "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026": [
-            -11356480.49228996,
-            2270235.3924478125,
-            -11100556.982910873,
-            2473208.394414112
-        ],
-        "caminos": [
-            -11218905.908091355,
-            2325792.3370610727,
-            -11186057.22364267,
-            2359949.6096555707
-        ],
         "escuelas": [
-            -11216943.182850456,
-            2328195.1217681197,
-            -11186803.987063395,
-            2358193.0449959487
+            -11251899.699009415,
+            2333088.9531588573,
+            -11233108.54483625,
+            2340493.2191936844
         ],
-        "sierra_de_los_agustino": [
-            -11215437.205247167,
-            2326157.8525215313,
-            -11185652.672412163,
-            2358301.2894429476
-        ],
-        "carreteras": [
-            -11220478.8915934,
-            2317408.6832784135,
-            -11179054.422228802,
-            2362093.6020532576
-        ],
-        "manzanas_geoestadisticas": [
-            -11207620.373327425,
-            2338882.813919044,
-            -11187666.528680714,
-            2339479.057543071
+        "unidades_salud": [
+            -11251397.688180953,
+            2333458.9325901293,
+            -11234430.58846725,
+            2340061.4619409125
         ],
         "hidrocarburos": [
-            -11215973.030965593,
-            2328616.9331498276,
-            -11185916.768410746,
-            2356023.5299345064
-        ],
-        "refugios_temporales": [
-            -11216762.286129007,
-            2330541.940340782,
-            -11204873.364573648,
-            2358288.2606899156
+            -11250211.652477415,
+            2333365.302879251,
+            -11233162.419017013,
+            2335473.60580811
         ],
         "bomberos": [
-            -11217040.614984402,
-            2338046.631683587,
-            -11208662.908480069,
-            2358300.795380932
+            -11243003.443828993,
+            2334922.332314105,
+            -11243003.443828993,
+            2334922.332314105
+        ],
+        "localidades": [
+            -11252218.100514652,
+            2332764.320815083,
+            -11230640.70745555,
+            2341246.3566977987
+        ],
+        "agebs_urbanas": [
+            -11252218.100514652,
+            2333346.778679353,
+            -11234144.494005505,
+            2340671.368300249
+        ],
+        "agebs_rurales": [
+            -11255723.34097371,
+            2332125.101268372,
+            -11230638.422134958,
+            2343253.848185773
+        ],
+        "manzanas": [
+            -11252205.891078433,
+            2332771.160414037,
+            -11230641.621006478,
+            2341242.874350007
+        ],
+        "vialidad": [
+            -11252218.100514652,
+            2332764.3207080597,
+            -11230640.707456382,
+            2341245.617298147
+        ],
+        "refugios": [
+            -11243123.8547826,
+            2334575.6090231473,
+            -11242723.104615742,
+            2335388.6310253986
+        ],
+        "instalaciones_pc": [
+            -11243023.667240886,
+            2334944.0794055583,
+            -11243023.667240886,
+            2334944.0794055583
+        ],
+        "comandancias": [
+            -11243686.018211104,
+            2333495.2017826824,
+            -11243686.018211104,
+            2333495.2017826824
+        ],
+        "carreteras": [
+            -11254066.581306262,
+            2333335.295311314,
+            -11231404.817876862,
+            2341946.160319278
+        ],
+        "caminos": [
+            -11254850.925605336,
+            2332455.374952833,
+            -11230638.588384576,
+            2342066.8660399336
+        ],
+        "subcuencas": [
+            -11255723.340973705,
+            2332125.1012683683,
+            -11230638.422134956,
+            2343253.848185778
         ]
     },
     "groups": [
@@ -146,16 +134,7 @@ window.MUNICIPIO_LAYERS = {
                     "name": "Fenómenos Geológicos",
                     "icon": "fa-hill-rockslide",
                     "expanded": false,
-                    "layers": [
-                        {
-                            "name": "Inestabilidad en Laderas (Sierra de los Agustinos)",
-                            "layer": "sierra_de_los_agustino",
-                            "visible": false,
-                            "styleType": "classified",
-                            "color": "#1e73be",
-                            "width": 2
-                        }
-                    ]
+                    "layers": []
                 },
                 {
                     "id": "fenomenos-hidrometeorologicos",
@@ -164,28 +143,20 @@ window.MUNICIPIO_LAYERS = {
                     "expanded": false,
                     "layers": [
                         {
-                            "name": "Zonas Inundación Pluvial",
-                            "layer": "zonas_inundacion_pluvial_apaseo",
+                            "name": "Inundación fluvial (CENAPRED)",
+                            "layer": "inundacion_fluvial",
                             "visible": false,
-                            "styleType": "poly-outline",
-                            "color": "#00c0c0",
-                            "width": 2
+                            "styleType": "poly-fill",
+                            "color": "#1f6fb2",
+                            "width": 1
                         },
                         {
-                            "name": "Zonas Inundación Fluvial",
-                            "layer": "zonas_inundacion_fluvial_apaseo",
+                            "name": "Inundación pluvial (CENAPRED)",
+                            "layer": "inundacion_pluvial",
                             "visible": false,
-                            "styleType": "poly-outline",
-                            "color": "#a0a000",
-                            "width": 2
-                        },
-                        {
-                            "name": "Puntos de Riesgo de Inundación",
-                            "layer": "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
-                            "visible": false,
-                            "styleType": "point",
-                            "color": "#1e73be",
-                            "width": 2
+                            "styleType": "poly-fill",
+                            "color": "#1f6fb2",
+                            "width": 1
                         }
                     ]
                 },
@@ -196,12 +167,12 @@ window.MUNICIPIO_LAYERS = {
                     "expanded": false,
                     "layers": [
                         {
-                            "name": "Hidrocarburos",
+                            "name": "Hidrocarburos: gasolineras y gas L.P. (DENUE)",
                             "layer": "hidrocarburos",
                             "visible": false,
                             "styleType": "point",
-                            "color": "#1e73be",
-                            "width": 3
+                            "color": "#e53935",
+                            "width": 1
                         }
                     ]
                 },
@@ -226,44 +197,52 @@ window.MUNICIPIO_LAYERS = {
                     "expanded": false,
                     "layers": [
                         {
-                            "name": "Caminos",
-                            "layer": "caminos",
-                            "visible": false,
-                            "styleType": "classified",
-                            "color": "#1e73be",
-                            "width": 2
-                        },
-                        {
-                            "name": "Escuelas",
+                            "name": "Escuelas (DENUE)",
                             "layer": "escuelas",
                             "visible": false,
                             "styleType": "point",
-                            "color": "#812913",
-                            "width": 3
+                            "color": "#2e7d32",
+                            "width": 1
                         },
                         {
-                            "name": "Carreteras",
-                            "layer": "carreteras",
-                            "visible": false,
-                            "styleType": "classified",
-                            "color": "#1e73be",
-                            "width": 2
-                        },
-                        {
-                            "name": "Refugios Temporales",
-                            "layer": "refugios_temporales",
+                            "name": "Unidades y servicios de salud (DENUE)",
+                            "layer": "unidades_salud",
                             "visible": false,
                             "styleType": "point",
-                            "color": "#be1e1e",
-                            "width": 4
+                            "color": "#1565c0",
+                            "width": 1
                         },
                         {
-                            "name": "Bomberos",
+                            "name": "Bomberos (DENUE)",
                             "layer": "bomberos",
                             "visible": false,
                             "styleType": "point",
-                            "color": "#be4e1e",
-                            "width": 4
+                            "color": "#ef6c00",
+                            "width": 1
+                        },
+                        {
+                            "name": "Albergues y Refugios (INEGI)",
+                            "layer": "refugios",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#c0392b",
+                            "width": 1
+                        },
+                        {
+                            "name": "Instalaciones de Protección Civil (INEGI)",
+                            "layer": "instalaciones_pc",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#e67e22",
+                            "width": 1
+                        },
+                        {
+                            "name": "Comandancias de Seguridad Pública (INEGI)",
+                            "layer": "comandancias",
+                            "visible": false,
+                            "styleType": "point",
+                            "color": "#34495e",
+                            "width": 1
                         }
                     ]
                 },
@@ -295,92 +274,84 @@ window.MUNICIPIO_LAYERS = {
                     "expanded": true,
                     "layers": [
                         {
-                            "name": "Hidrografía",
-                            "layer": "red_hidrografica",
-                            "visible": false,
-                            "styleType": "line",
-                            "color": "#1fbfbf",
-                            "width": 2
-                        },
-                        {
-                            "name": "AGEBS Rurales",
-                            "layer": "agebs_rurales",
-                            "visible": false,
+                            "name": "Límite Municipal",
+                            "layer": "limite_municipal",
+                            "visible": true,
                             "styleType": "poly-outline",
-                            "color": "#008080",
-                            "width": 2
-                        },
-                        {
-                            "name": "AGEBS Urbanos",
-                            "layer": "agebs_urbanos",
-                            "visible": false,
-                            "styleType": "poly-outline",
-                            "color": "#2020c0",
-                            "width": 2
-                        },
-                        {
-                            "name": "Calles y Avenidas",
-                            "layer": "calles_apaseo",
-                            "visible": false,
-                            "styleType": "line",
-                            "color": "#bf0000",
-                            "width": 2
-                        },
-                        {
-                            "name": "Red Vial",
-                            "layer": "red_vial_apaseo",
-                            "visible": false,
-                            "styleType": "line",
-                            "color": "#bf00bf",
-                            "width": 2
+                            "color": "#941414",
+                            "width": 3
                         },
                         {
                             "name": "Localidades",
                             "layer": "localidades",
                             "visible": false,
                             "styleType": "poly-outline",
-                            "color": "#007f00",
-                            "width": 2
+                            "color": "#8e24aa",
+                            "width": 1.5
                         },
                         {
-                            "name": "Colonias",
-                            "layer": "colonias_apaseo",
+                            "name": "AGEB urbanas",
+                            "layer": "agebs_urbanas",
                             "visible": false,
                             "styleType": "poly-outline",
-                            "color": "#800080",
-                            "width": 2
+                            "color": "#00838f",
+                            "width": 1
                         },
                         {
-                            "name": "Manzanas",
-                            "layer": "manzanas_geoestadisticas",
+                            "name": "AGEB rurales",
+                            "layer": "agebs_rurales",
                             "visible": false,
                             "styleType": "poly-outline",
-                            "color": "#000000",
-                            "width": 2
+                            "color": "#558b2f",
+                            "width": 1
                         },
                         {
-                            "name": "Colonias y Localidades",
-                            "layer": "limites_colonias",
+                            "name": "Manzanas (Censo 2020)",
+                            "layer": "manzanas",
                             "visible": false,
                             "styleType": "poly-outline",
-                            "color": "#bfbf00",
-                            "width": 2
+                            "color": "#607d8b",
+                            "width": 0.8
                         },
                         {
-                            "name": "Límite Municipal",
-                            "layer": "limite_municipal",
-                            "visible": true,
-                            "styleType": "poly-outline",
-                            "color": "#1e73be",
-                            "width": 3
+                            "name": "Vialidad (ejes)",
+                            "layer": "vialidad",
+                            "visible": false,
+                            "styleType": "line",
+                            "color": "#795548",
+                            "width": 0.8
                         },
                         {
-                            "name": "Límite Estatal",
+                            "name": "Limite Estatal",
                             "layer": "guanajuato",
                             "visible": true,
                             "styleType": "poly-outline",
-                            "color": "#000000",
+                            "color": "#be1e1e",
                             "width": 3
+                        },
+                        {
+                            "name": "Carreteras (INEGI)",
+                            "layer": "carreteras",
+                            "visible": false,
+                            "styleType": "line",
+                            "color": "#4a4a4a",
+                            "width": 1.4
+                        },
+                        {
+                            "name": "Caminos (INEGI)",
+                            "layer": "caminos",
+                            "visible": false,
+                            "styleType": "line",
+                            "color": "#8d8d8d",
+                            "width": 0.9
+                        },
+                        {
+                            "name": "Subcuencas (INEGI)",
+                            "layer": "subcuencas",
+                            "visible": false,
+                            "styleType": "poly-outline",
+                            "color": "#2980b9",
+                            "width": 1.2
                         }
                     ]
                 }
@@ -397,77 +368,71 @@ window.MUNICIPIO_LAYERS = {
     "analisis": {
         "colonia": [
             {
-                "layer": "colonias_apaseo",
-                "name": "Colonias",
-                "field": "nombre",
+                "layer": "localidades",
+                "name": "Localidades",
+                "field": "nomgeo",
                 "geom": "MULTIPOLYGON"
             }
         ],
         "poblacion": [
             {
-                "layer": "manzanas_geoestadisticas",
-                "name": "Manzanas",
+                "layer": "manzanas",
+                "name": "Manzanas (Censo 2020)",
                 "field": "pobtot",
                 "geom": "MULTIPOLYGON"
             }
         ],
         "peligro": [
             {
-                "layer": "red_hidrografica",
-                "name": "Hidrografía",
-                "field": "",
-                "geom": "MULTILINESTRING"
-            },
-            {
-                "layer": "zonas_inundacion_pluvial_apaseo",
-                "name": "Zonas Inundación Pluvial",
+                "layer": "inundacion_fluvial",
+                "name": "Inundación fluvial (CENAPRED)",
                 "field": "peligro",
                 "geom": "MULTIPOLYGON"
             },
             {
-                "layer": "zonas_inundacion_fluvial_apaseo",
-                "name": "Zonas Inundación Fluvial",
+                "layer": "inundacion_pluvial",
+                "name": "Inundación pluvial (CENAPRED)",
                 "field": "peligro",
-                "geom": "MULTIPOLYGON"
-            },
-            {
-                "layer": "puntos_de_riesgo_de_inundacion_cepc_cmpc_2026",
-                "name": "Puntos de Riesgo de Inundación",
-                "field": "peligro",
-                "geom": "MULTIPOINT"
-            },
-            {
-                "layer": "sierra_de_los_agustino",
-                "name": "Inestabilidad en Laderas (Sierra de los Agustinos)",
-                "field": "intensidad",
                 "geom": "MULTIPOLYGON"
             },
             {
                 "layer": "hidrocarburos",
-                "name": "Hidrocarburos",
-                "field": "razon_soci",
+                "name": "Hidrocarburos: gasolineras y gas L.P. (DENUE)",
+                "field": "nom_estab",
                 "geom": "MULTIPOINT"
             }
         ],
         "equipamiento": [
             {
                 "layer": "escuelas",
-                "name": "Escuelas",
-                "field": "nombre_ct",
+                "name": "Escuelas (DENUE)",
+                "field": "nom_estab",
+                "geom": "MULTIPOINT"
+            },
+            {
+                "layer": "unidades_salud",
+                "name": "Unidades y servicios de salud (DENUE)",
+                "field": "nom_estab",
                 "geom": "MULTIPOINT"
             }
         ],
         "apoyo": [
             {
-                "layer": "refugios_temporales",
-                "name": "Refugios Temporales",
+                "layer": "bomberos",
+                "name": "Bomberos (DENUE)",
+                "field": "nom_estab",
+                "geom": "MULTIPOINT"
+            },
+            {
+                "layer": "refugios",
+                "name": "Albergues y Refugios (INEGI)",
                 "field": "nombre",
                 "geom": "MULTIPOINT"
             },
             {
-                "layer": "bomberos",
-                "name": "Bomberos",
-                "field": "razon_soc",
+                "layer": "instalaciones_pc",
+                "name": "Instalaciones de Protección Civil (INEGI)",
+                "field": "nombre",
                 "geom": "MULTIPOINT"
             }
         ]

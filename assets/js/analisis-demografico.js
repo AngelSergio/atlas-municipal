@@ -2050,98 +2050,33 @@
   }
 
   async function buildReportPdfBlob({ report, riskItems, supportItems, isPolygon, logoSrc }) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1240;
-    canvas.height = 1754;
-    const ctx = canvas.getContext('2d', { alpha: false });
-    if (!ctx) throw new Error('No se pudo crear el contexto del PDF.');
-
-    const page = {
-      width: canvas.width,
-      height: canvas.height,
-      margin: 72,
-      contentWidth: canvas.width - 144
-    };
-
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, page.width, page.height);
-    ctx.fillStyle = '#1e73be';
-    ctx.fillRect(0, 0, page.width, 82);
-
-    let y = 108;
+    const brand = window.MUNICIPIO_CONFIG?.colores?.primary || '#1e73be';
+    const brandDark = window.MUNICIPIO_CONFIG?.colores?.primaryDark || brand;
     const logo = await loadImageSafe(logoSrc);
-    if (logo) {
-      drawContainedImage(ctx, logo, page.margin, y - 8, 92, 92);
-    } else {
-      ctx.fillStyle = '#dfeaf4';
-      roundRect(ctx, page.margin, y - 8, 92, 92, 20, true, false);
-      ctx.fillStyle = '#1e73be';
-      ctx.font = '700 24px Arial, Helvetica, sans-serif';
-      ctx.fillText('PCB', page.margin + 20, y + 48);
-    }
+    const doc = makeReportDoc({ logo, report, brand, brandDark });
 
-    ctx.fillStyle = '#1e73be';
-    ctx.font = '700 34px Arial, Helvetica, sans-serif';
-    ctx.fillText('Análisis de riesgo por ubicación', page.margin + 116, y + 16);
+    // 1) Nivel de atención + resumen
+    doc.levelBadge(report.summary.level);
+    doc.card('Resumen', report.summary.text);
 
-    ctx.fillStyle = '#4d4d56';
-    ctx.font = '400 18px Arial, Helvetica, sans-serif';
-    ctx.fillText(`${window.MUNICIPIO_CONFIG?.dependencia || 'Protección Civil y Bomberos'} · Atlas Municipal de Peligros y Riesgos de ${MUNI}`, page.margin + 116, y + 48);
-    ctx.fillText(`Generado: ${report.generatedAt.toLocaleString('es-MX')}`, page.margin + 116, y + 74);
-    y += 114;
-
-    ctx.fillStyle = '#e8eff6';
-    roundRect(ctx, page.margin, y, 320, 42, 21, true, false);
-    ctx.fillStyle = '#1e73be';
-    ctx.font = '700 22px Arial, Helvetica, sans-serif';
-    ctx.fillText(`Nivel de atención: ${report.summary.level}`, page.margin + 18, y + 28);
-    y += 62;
-
-    y = drawCard(ctx, {
-      x: page.margin,
-      y,
-      width: page.contentWidth,
-      padding: 18,
-      title: 'Resumen',
-      bodyLines: wrapTextLines(ctx, report.summary.text, page.contentWidth - 36, '400 20px Arial, Helvetica, sans-serif')
-    });
-    y += 20;
-
-    const colGap = 18;
-    const colWidth = (page.contentWidth - colGap) / 2;
-    const kpis = [
+    // 2) Indicadores clave
+    doc.heading('Indicadores');
+    doc.kpiGrid([
       { value: String(report.summary.riskCount), label: 'Riesgos cercanos' },
       { value: isPolygon ? formatAreaCompact(report.selectionAreaM2) : `${report.radiusMeters} m`, label: isPolygon ? 'Área analizada' : 'Radio analizado' },
-      { value: String(report.summary.level), label: 'Nivel' }
-    ];
+      { value: String(report.summary.level), label: 'Nivel de atención' }
+    ]);
 
-    const kpiHeight = 92;
-    for (let i = 0; i < kpis.length; i += 1) {
-      const row = Math.floor(i / 2);
-      const col = i % 2;
-      const x = page.margin + (col * (colWidth + colGap));
-      const yy = y + (row * (kpiHeight + 14));
-      ctx.fillStyle = '#ffffff';
-      ctx.strokeStyle = '#dbe8f4';
-      ctx.lineWidth = 2;
-      roundRect(ctx, x, yy, colWidth, kpiHeight, 18, true, true);
-      ctx.fillStyle = '#1e73be';
-      ctx.font = '700 30px Arial, Helvetica, sans-serif';
-      fitText(ctx, kpis[i].value, x + 18, yy + 40, colWidth - 36, 30, 20);
-      ctx.fillStyle = '#5a5a62';
-      ctx.font = '400 18px Arial, Helvetica, sans-serif';
-      const labelLines = wrapTextLines(ctx, kpis[i].label, colWidth - 36, '400 18px Arial, Helvetica, sans-serif');
-      labelLines.slice(0, 2).forEach((line, idx) => ctx.fillText(line, x + 18, yy + 68 + (idx * 22)));
-    }
-    y += (kpiHeight * 2) + 42;
+    // 3) Metodología (explica cómo se obtiene el nivel)
+    doc.heading('Metodología');
+    doc.note('El nivel de riesgo combina el peligro identificado en el sitio con la exposición (población y equipamiento): Riesgo = Peligro × Exposición. Los recursos de apoyo (refugios, bomberos, PC) no elevan el nivel; son capacidad de respuesta.');
 
-    const ubicacionItems = buildContextPdfItems(report);
-    y = drawSectionList(ctx, 'Ubicación consultada', ubicacionItems, page.margin, y, page.contentWidth);
+    // 4) Ubicación consultada
+    doc.heading('Ubicación consultada');
+    doc.bullets(buildContextPdfItems(report));
+    doc.note(`Fuente de la información: ${report.context?.sourceDetail || 'Manzanas INEGI 2020 Censo de Población y Vivienda.'}`);
 
-    ctx.fillStyle = '#5a5a62';
-    ctx.font = 'italic 16px Arial, Helvetica, sans-serif';
-    y = drawWrappedText(ctx, `Fuente de la información: ${report.context?.sourceDetail || 'Manzanas INEGI 2020 Censo de Población y Vivienda.'}`, page.margin + 14, y + 10, page.contentWidth - 28, 22, 'italic 16px Arial, Helvetica, sans-serif', '#5a5a62') + 16;
-
+    // 5) Infraestructura de riesgo
     const riskTextItems = (riskItems.length ? riskItems : [{
       title: isPolygon ? 'Sin infraestructura de riesgo dentro del polígono' : 'Sin infraestructura de riesgo dentro del radio',
       detail: isPolygon
@@ -2153,38 +2088,233 @@
       const detailTxt = item.detail ? ` · ${item.detail}` : '';
       return `${item.title}${countTxt}${distTxt}${detailTxt}`;
     });
-    y = drawSectionList(ctx, 'Infraestructura de riesgo cercana', riskTextItems, page.margin, y, page.contentWidth);
+    doc.heading('Infraestructura de riesgo cercana');
+    doc.bullets(riskTextItems);
 
-    const supportTextItems = [buildSupportIntroText(report)].concat(getSupportDisplayItems(report).map(item => {
-      const detailTxt = item.detail ? ` · ${item.detail}` : '';
-      return `${item.title}${detailTxt}`;
-    }));
-    y = drawSectionList(ctx, supportSectionTitle(), supportTextItems, page.margin, y, page.contentWidth);
+    // 6) Equipamiento expuesto / soporte
+    doc.heading(supportSectionTitle());
+    const supportIntro = buildSupportIntroText(report);
+    if (supportIntro) doc.note(supportIntro);
+    doc.bullets(getSupportDisplayItems(report).map(item => `${item.title}${item.detail ? ` · ${item.detail}` : ''}`));
 
+    // 7) Recursos de apoyo (respuesta)
     if (anRole('apoyo').length) {
-      const apoyoTextItems = ['Recursos de respuesta cercanos (refugios, bomberos, PC…); no aumentan el nivel de riesgo.']
-        .concat(getApoyoDisplayItems(report).map(item => {
-          const detailTxt = item.detail ? ` · ${item.detail}` : '';
-          return `${item.title}${detailTxt}`;
-        }));
-      y = drawSectionList(ctx, 'Recursos de apoyo cercanos', apoyoTextItems, page.margin, y, page.contentWidth);
+      doc.heading('Recursos de apoyo cercanos');
+      doc.note('Recursos de respuesta cercanos (refugios, bomberos, PC…); no aumentan el nivel de riesgo.');
+      doc.bullets(getApoyoDisplayItems(report).map(item => `${item.title}${item.detail ? ` · ${item.detail}` : ''}`));
     }
 
-    y = drawSectionList(ctx, 'Recomendaciones', report.recommendations, page.margin, y, page.contentWidth);
+    // 8) Recomendaciones
+    doc.heading('Recomendaciones');
+    doc.bullets(report.recommendations);
 
-    if (y > page.height - 100) y = page.height - 100;
-    ctx.strokeStyle = '#dbe8f4';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(page.margin, page.height - 66);
-    ctx.lineTo(page.width - page.margin, page.height - 66);
-    ctx.stroke();
-    ctx.fillStyle = '#666666';
-    ctx.font = '400 15px Arial, Helvetica, sans-serif';
-    ctx.fillText('Ficha PDF generada para descarga directa desde el visor.', page.margin, page.height - 34);
+    const pages = doc.finalize();
+    return createPdfBlobFromJpegPages(pages, doc.width, doc.height);
+  }
 
-    const jpegDataUrl = canvas.toDataURL('image/jpeg', 0.92);
-    return createPdfBlobFromJpegDataUrl(jpegDataUrl, canvas.width, canvas.height);
+  // Motor de documento PDF paginado (multipágina). Dibuja sobre uno o varios
+  // canvas A4 (1240×1754 ≈ 150 dpi), haciendo salto de página automático cuando
+  // el contenido no cabe, de modo que nada se amontone al final. Cada página
+  // lleva encabezado; el pie ("Página X de N") se dibuja al finalizar, cuando
+  // ya se conoce el total. Los colores se toman de la marca del municipio.
+  function makeReportDoc({ logo, report, brand, brandDark }) {
+    const W = 1240;
+    const H = 1754;
+    const margin = 72;
+    const contentW = W - (margin * 2);
+    const footerH = 96;
+    const dependencia = window.MUNICIPIO_CONFIG?.dependencia || 'Protección Civil y Bomberos';
+    const pages = [];
+    let ctx = null;
+    let y = 0;
+
+    function startPage(kind) {
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const c = canvas.getContext('2d', { alpha: false });
+      if (!c) throw new Error('No se pudo crear el contexto del PDF.');
+      c.fillStyle = '#ffffff';
+      c.fillRect(0, 0, W, H);
+      c.fillStyle = brand;
+      c.fillRect(0, 0, W, kind === 'first' ? 12 : 8);
+      pages.push({ canvas, ctx: c });
+      ctx = c;
+      y = kind === 'first' ? drawFirstHeader() : drawContHeader();
+    }
+
+    function drawFirstHeader() {
+      const top = 104;
+      if (logo) {
+        drawContainedImage(ctx, logo, margin, top - 8, 92, 92);
+      } else {
+        ctx.fillStyle = withAlpha(brand, 0.14);
+        roundRect(ctx, margin, top - 8, 92, 92, 20, true, false);
+      }
+      ctx.fillStyle = brand;
+      ctx.font = '700 34px Arial, Helvetica, sans-serif';
+      ctx.fillText('Análisis de riesgo por ubicación', margin + 116, top + 16);
+      ctx.fillStyle = '#4d4d56';
+      ctx.font = '400 18px Arial, Helvetica, sans-serif';
+      ctx.fillText(`${dependencia} · Atlas Municipal de Peligros y Riesgos de ${MUNI}`, margin + 116, top + 48);
+      ctx.fillText(`Generado: ${report.generatedAt.toLocaleString('es-MX')}`, margin + 116, top + 74);
+      return top + 122;
+    }
+
+    function drawContHeader() {
+      const top = 78;
+      ctx.fillStyle = brand;
+      ctx.font = '700 22px Arial, Helvetica, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('Análisis de riesgo por ubicación', margin, top);
+      ctx.fillStyle = '#9aa0a6';
+      ctx.font = '400 15px Arial, Helvetica, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${MUNI} · Nivel ${report.summary.level}`, W - margin, top);
+      ctx.textAlign = 'left';
+      ctx.strokeStyle = '#e3e9f0';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(margin, top + 16);
+      ctx.lineTo(W - margin, top + 16);
+      ctx.stroke();
+      return top + 46;
+    }
+
+    // Asegura `need` px libres antes del pie; si no caben, abre página nueva.
+    function ensure(need) {
+      if (y + need > H - footerH) startPage('cont');
+    }
+
+    function levelBadge(level) {
+      const label = `Nivel de atención: ${level}`;
+      ctx.font = '700 22px Arial, Helvetica, sans-serif';
+      const w = Math.min(contentW, ctx.measureText(label).width + 44);
+      ensure(66);
+      ctx.fillStyle = withAlpha(brand, 0.12);
+      roundRect(ctx, margin, y, w, 44, 22, true, false);
+      ctx.fillStyle = brandDark;
+      ctx.font = '700 22px Arial, Helvetica, sans-serif';
+      ctx.fillText(label, margin + 20, y + 29);
+      y += 44 + 24;
+    }
+
+    function card(title, text) {
+      const lines = wrapTextLines(ctx, text, contentW - 36, '400 20px Arial, Helvetica, sans-serif');
+      const h = 18 + 28 + Math.max(28, lines.length * 28) + 18;
+      ensure(h + 12);
+      ctx.fillStyle = '#f7fbff';
+      ctx.strokeStyle = '#dbe8f4';
+      ctx.lineWidth = 2;
+      roundRect(ctx, margin, y, contentW, h, 18, true, true);
+      ctx.fillStyle = brand;
+      ctx.font = '700 22px Arial, Helvetica, sans-serif';
+      ctx.fillText(title, margin + 18, y + 36);
+      ctx.fillStyle = '#333333';
+      ctx.font = '400 20px Arial, Helvetica, sans-serif';
+      lines.forEach((line, idx) => ctx.fillText(line, margin + 18, y + 74 + (idx * 28)));
+      y += h + 22;
+    }
+
+    function kpiGrid(kpis) {
+      const gapX = 18;
+      const cols = kpis.length >= 3 ? 3 : kpis.length;
+      const cw = (contentW - (gapX * (cols - 1))) / cols;
+      const chh = 108;
+      ensure(chh + 12);
+      kpis.forEach((k, i) => {
+        const x = margin + ((i % cols) * (cw + gapX));
+        const yy = y + (Math.floor(i / cols) * (chh + 14));
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#dbe8f4';
+        ctx.lineWidth = 2;
+        roundRect(ctx, x, yy, cw, chh, 16, true, true);
+        ctx.fillStyle = brand;
+        fitText(ctx, k.value, x + 16, yy + 48, cw - 32, 30, 18);
+        ctx.fillStyle = '#5a5a62';
+        ctx.font = '400 17px Arial, Helvetica, sans-serif';
+        wrapTextLines(ctx, k.label, cw - 32, '400 17px Arial, Helvetica, sans-serif')
+          .slice(0, 2).forEach((line, idx) => ctx.fillText(line, x + 16, yy + 76 + (idx * 21)));
+      });
+      y += (Math.ceil(kpis.length / cols) * (chh + 14)) - 14 + 24;
+    }
+
+    function heading(title) {
+      ensure(40 + 52); // el título no queda huérfano al final de página
+      ctx.fillStyle = brand;
+      ctx.font = '700 24px Arial, Helvetica, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(title, margin, y + 22);
+      ctx.strokeStyle = withAlpha(brand, 0.35);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(margin, y + 34);
+      ctx.lineTo(margin + 60, y + 34);
+      ctx.stroke();
+      y += 48;
+    }
+
+    function bullets(items) {
+      const bulletX = margin + 18;
+      const textX = margin + 42;
+      const maxW = contentW - 60;
+      (items && items.length ? items : ['Sin datos.']).forEach(item => {
+        const lines = wrapTextLines(ctx, item, maxW, '400 18px Arial, Helvetica, sans-serif');
+        const blockH = Math.max(30, lines.length * 24) + 8;
+        ensure(blockH + 4);
+        ctx.fillStyle = brand;
+        ctx.beginPath();
+        ctx.arc(bulletX, y + 8, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#333333';
+        ctx.font = '400 18px Arial, Helvetica, sans-serif';
+        lines.forEach((line, idx) => ctx.fillText(line, textX, y + 14 + (idx * 24)));
+        y += blockH;
+      });
+      y += 16;
+    }
+
+    function note(text) {
+      const lines = wrapTextLines(ctx, text, contentW - 28, 'italic 16px Arial, Helvetica, sans-serif');
+      const h = lines.length * 22;
+      ensure(h + 12);
+      ctx.fillStyle = '#5a5a62';
+      ctx.font = 'italic 16px Arial, Helvetica, sans-serif';
+      lines.forEach((line, idx) => ctx.fillText(line, margin + 14, y + 14 + (idx * 22)));
+      y += h + 18;
+    }
+
+    function finalize() {
+      const total = pages.length;
+      pages.forEach((p, idx) => {
+        const c = p.ctx;
+        c.strokeStyle = '#dbe8f4';
+        c.lineWidth = 2;
+        c.beginPath();
+        c.moveTo(margin, H - 64);
+        c.lineTo(W - margin, H - 64);
+        c.stroke();
+        c.fillStyle = '#8a9099';
+        c.font = '400 15px Arial, Helvetica, sans-serif';
+        c.textAlign = 'left';
+        c.fillText(`${dependencia} · Atlas Municipal de Peligros y Riesgos de ${MUNI}`, margin, H - 34);
+        c.textAlign = 'right';
+        c.fillText(`Página ${idx + 1} de ${total}`, W - margin, H - 34);
+        c.textAlign = 'left';
+      });
+      return pages.map(p => p.canvas.toDataURL('image/jpeg', 0.92));
+    }
+
+    startPage('first');
+    return { levelBadge, card, kpiGrid, heading, bullets, note, finalize, width: W, height: H };
+  }
+
+  // Color de marca en rgba con opacidad (para fondos suaves), sobre #hex.
+  function withAlpha(hex, alpha) {
+    const m = /^#?([0-9a-fA-F]{6})$/.exec(String(hex || ''));
+    if (!m) return `rgba(30,115,190,${alpha})`;
+    const n = parseInt(m[1], 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
   }
 
   function buildReportFilename(report) {
@@ -2270,69 +2400,6 @@
     ctx.fillText(value, x, y);
   }
 
-  function drawCard(ctx, { x, y, width, padding, title, bodyLines }) {
-    const titleHeight = 28;
-    const lineHeight = 28;
-    const bodyHeight = Math.max(lineHeight, bodyLines.length * lineHeight);
-    const height = padding + titleHeight + bodyHeight + padding;
-    ctx.fillStyle = '#f7fbff';
-    ctx.strokeStyle = '#dbe8f4';
-    ctx.lineWidth = 2;
-    roundRect(ctx, x, y, width, height, 18, true, true);
-    ctx.fillStyle = '#1e73be';
-    ctx.font = '700 22px Arial, Helvetica, sans-serif';
-    ctx.fillText(title, x + padding, y + padding + 18);
-    ctx.fillStyle = '#333333';
-    ctx.font = '400 20px Arial, Helvetica, sans-serif';
-    bodyLines.forEach((line, idx) => ctx.fillText(line, x + padding, y + padding + titleHeight + 10 + (idx * lineHeight)));
-    return y + height;
-  }
-
-  function drawSectionList(ctx, title, items, x, y, width) {
-    ctx.fillStyle = '#1e73be';
-    ctx.font = '700 24px Arial, Helvetica, sans-serif';
-    ctx.fillText(title, x, y + 22);
-    y += 42;
-
-    ctx.fillStyle = '#ffffff';
-    ctx.strokeStyle = '#dbe8f4';
-    ctx.lineWidth = 2;
-    const listY = y;
-    let innerY = y + 22;
-    const bulletX = x + 18;
-    const textX = x + 42;
-    const maxWidth = width - 60;
-    items.forEach(item => {
-      const lines = wrapTextLines(ctx, item, maxWidth, '400 18px Arial, Helvetica, sans-serif');
-      ctx.fillStyle = '#1e73be';
-      ctx.beginPath();
-      ctx.arc(bulletX, innerY - 7, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#333333';
-      ctx.font = '400 18px Arial, Helvetica, sans-serif';
-      lines.forEach((line, idx) => ctx.fillText(line, textX, innerY + (idx * 24)));
-      innerY += Math.max(30, lines.length * 24) + 8;
-    });
-    const height = Math.max(62, innerY - listY);
-    ctx.fillStyle = 'rgba(255,255,255,0.96)';
-    ctx.strokeStyle = '#dbe8f4';
-    roundRect(ctx, x, listY, width, height, 18, true, true);
-
-    innerY = listY + 22;
-    items.forEach(item => {
-      const lines = wrapTextLines(ctx, item, maxWidth, '400 18px Arial, Helvetica, sans-serif');
-      ctx.fillStyle = '#1e73be';
-      ctx.beginPath();
-      ctx.arc(bulletX, innerY - 7, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#333333';
-      ctx.font = '400 18px Arial, Helvetica, sans-serif';
-      lines.forEach((line, idx) => ctx.fillText(line, textX, innerY + (idx * 24)));
-      innerY += Math.max(30, lines.length * 24) + 8;
-    });
-    return listY + height + 20;
-  }
-
   function dataUrlToBytes(dataUrl) {
     const parts = String(dataUrl || '').split(',');
     const base64 = parts.length > 1 ? parts[1] : '';
@@ -2343,35 +2410,44 @@
     return bytes;
   }
 
-  function createPdfBlobFromJpegDataUrl(dataUrl, imgWidthPx, imgHeightPx) {
-    const jpegBytes = dataUrlToBytes(dataUrl);
+  // Ensambla un PDF multipágina: una imagen JPEG (página completa) por hoja.
+  function createPdfBlobFromJpegPages(dataUrls, imgWidthPx, imgHeightPx) {
+    const list = Array.isArray(dataUrls) ? dataUrls : [dataUrls];
     const pageWidthPt = 595.28;
     const pageHeightPt = 841.89;
     const encoder = new TextEncoder();
     const text = value => encoder.encode(String(value));
+    const objects = {};
+    const kids = [];
+    let next = 3; // 1 = Catalog, 2 = Pages
+
+    list.forEach(dataUrl => {
+      const jpegBytes = dataUrlToBytes(dataUrl);
+      const imgNum = next++;
+      const contentNum = next++;
+      const pageNum = next++;
+      objects[imgNum] = [
+        text(`<< /Type /XObject /Subtype /Image /Width ${imgWidthPx} /Height ${imgHeightPx} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`),
+        jpegBytes,
+        text('\nendstream')
+      ];
+      const contentBytes = text(`q\n${pageWidthPt.toFixed(2)} 0 0 ${pageHeightPt.toFixed(2)} 0 0 cm\n/Im0 Do\nQ\n`);
+      objects[contentNum] = [text(`<< /Length ${contentBytes.length} >>\nstream\n`), contentBytes, text('endstream')];
+      objects[pageNum] = [text(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidthPt.toFixed(2)} ${pageHeightPt.toFixed(2)}] /Resources << /XObject << /Im0 ${imgNum} 0 R >> /ProcSet [/PDF /ImageC] >> /Contents ${contentNum} 0 R >>`)];
+      kids.push(`${pageNum} 0 R`);
+    });
+
+    objects[1] = [text('<< /Type /Catalog /Pages 2 0 R >>')];
+    objects[2] = [text(`<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${list.length} >>`)];
+
+    const totalObjs = next - 1;
     const parts = [];
     const offsets = [0];
     let size = 0;
-
-    const pushPart = part => {
-      parts.push(part);
-      size += part.length;
-    };
+    const pushPart = part => { parts.push(part); size += part.length; };
 
     pushPart(text('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'));
-
-    const contentStream = `q\n${pageWidthPt.toFixed(2)} 0 0 ${pageHeightPt.toFixed(2)} 0 0 cm\n/Im0 Do\nQ\n`;
-    const contentBytes = text(contentStream);
-
-    const objects = {
-      1: [text('<< /Type /Catalog /Pages 2 0 R >>')],
-      2: [text('<< /Type /Pages /Kids [3 0 R] /Count 1 >>')],
-      3: [text(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidthPt.toFixed(2)} ${pageHeightPt.toFixed(2)}] /Resources << /XObject << /Im0 4 0 R >> /ProcSet [/PDF /ImageC] >> /Contents 5 0 R >>`)],
-      4: [text(`<< /Type /XObject /Subtype /Image /Width ${imgWidthPx} /Height ${imgHeightPx} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`), jpegBytes, text('\nendstream')],
-      5: [text(`<< /Length ${contentBytes.length} >>\nstream\n`), contentBytes, text('endstream')]
-    };
-
-    for (let i = 1; i <= 5; i += 1) {
+    for (let i = 1; i <= totalObjs; i += 1) {
       offsets[i] = size;
       pushPart(text(`${i} 0 obj\n`));
       objects[i].forEach(pushPart);
@@ -2379,12 +2455,12 @@
     }
 
     const xrefOffset = size;
-    let xref = 'xref\n0 6\n0000000000 65535 f \n';
-    for (let i = 1; i <= 5; i += 1) {
+    let xref = `xref\n0 ${totalObjs + 1}\n0000000000 65535 f \n`;
+    for (let i = 1; i <= totalObjs; i += 1) {
       xref += `${String(offsets[i]).padStart(10, '0')} 00000 n \n`;
     }
     pushPart(text(xref));
-    pushPart(text(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`));
+    pushPart(text(`trailer\n<< /Size ${totalObjs + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`));
 
     return new Blob(parts, { type: 'application/pdf' });
   }
